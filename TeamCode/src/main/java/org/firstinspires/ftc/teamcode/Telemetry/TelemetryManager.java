@@ -71,6 +71,7 @@ public class TelemetryManager {
             if (isValid) {
                 telemetry.addLine(telemetryItems.get(i).getItem());
             }
+
         }
         telemetry.update();
     }
