@@ -75,4 +75,7 @@ public class TelemetryManager {
         }
         telemetry.update();
     }
+    public void reset(){
+        TelemetryManager.telemetryManager=null;
+    }
 }

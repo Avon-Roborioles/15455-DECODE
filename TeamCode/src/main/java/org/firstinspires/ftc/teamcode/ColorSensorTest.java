@@ -17,65 +17,19 @@ import java.util.concurrent.TimeUnit;
 
 @TeleOp
 public class ColorSensorTest extends OpMode {
+    ArtifactSensor sensor;
 
-    ColorSensor sensor;
-    double sum;
-    double nRed,nGreen, nBlue;
-    String color = "purple";
-    String distance = "in threshold";
-    boolean strongDetection= false;
     @Override
     public void init() {
+        sensor=new ArtifactSensor(hardwareMap);
 
-        sensor = hardwareMap.get(ColorSensor.class, "colorsensor");
-        double red = sensor.red();
-        double green = sensor.green();
-        double blue = sensor.blue();
-        sum = red+green+blue;
-        nRed = red/sum;
-        nGreen = green/sum;
-        nBlue=blue/sum;
-        new TelemetryData("Red",()-> sensor.red()*1.0);
-        new TelemetryData("Green",()-> sensor.green()*1.0);
-        new TelemetryData("Blue",()-> sensor.blue()*1.0);
-        new TelemetryData("nRed",()->nRed);
-        new TelemetryData("nGreen",()->nGreen);
-        new TelemetryData("nBlue",()->nBlue);
-        new TelemetryData("sum",()->sum);
-        new TelemetryItem(()->"Color: "+color);
-        new TelemetryItem(()->"Distance: "+distance);
-        new TelemetryItem(()->"Strong Detection: "+strongDetection);
     }
 
     @Override
     public void loop() {
 
-        double red = sensor.red();
-        double green = sensor.green();
-        double blue = sensor.blue();
-        sum = red+green+blue;
-        nRed = red/sum;
-        nGreen = green/sum;
-        nBlue=blue/sum;
-        strongDetection = false;
-        if (nGreen>.43){
-            strongDetection=nGreen>.47;
-            color = "green";
-        } else if (nBlue+nRed>.58){
-            strongDetection = (nBlue+nRed)>.6;
-            color = "purple";
-        } else {
-            color = "undetermined";
-        }
-        if (sum<300){
-            distance = "too far";
-        } else {
-            distance= "close enough";
-        }
-        if (strongDetection){
-            distance= "close enough";
 
-        }
+        telemetry.addData("Artifact",sensor.read());
 
         TelemetryManager.getInstance().print(telemetry);
 
