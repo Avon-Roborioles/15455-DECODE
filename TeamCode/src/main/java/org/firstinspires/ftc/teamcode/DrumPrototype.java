@@ -117,18 +117,18 @@ public class DrumPrototype implements Subsystem {
         ArrayList<Double> targets = new ArrayList<>();
         for (Compartment compartment:compartments){
             if (compartment.color().equals(color)){
-                targets.add(compartment.getIntakeCoords());
+                targets.add(compartment.getOuttakeCoords());
             }
         }
         updatePos = findClosestTarget(targets);
     }
 
     public void readColor(){
-        ArtifactColor color=colorSensor.read();
+        ArtifactColor curcolor=colorSensor.read();
         updateCurCompartment();
 
         if (curCompartment!=null) {
-            curCompartment.setColor(color);
+            curCompartment.setColor(curcolor);
         }
     }
 

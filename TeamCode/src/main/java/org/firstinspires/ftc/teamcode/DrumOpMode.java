@@ -34,7 +34,8 @@ public class DrumOpMode extends NextFTCOpMode {
         Gamepads.gamepad1().dpadUp().whenBecomesTrue(()->drumPrototype.turnToCompartment(CompartmentColor.BLACK));
         Gamepads.gamepad1().leftBumper().whenBecomesTrue(()->drumPrototype.shootColor(ArtifactColor.PURPLE));
         Gamepads.gamepad1().rightBumper().whenBecomesTrue(()->drumPrototype.shootColor(ArtifactColor.GREEN));
-        Gamepads.gamepad1().dpadDown().whenBecomesTrue(drumPrototype::shoot);
+        Gamepads.gamepad1().dpadDown().whenBecomesTrue(drumPrototype::turnToIntake);
+
     }
 
     @Override

@@ -12,20 +12,9 @@ public class Compartment {
         this.outtakeCoords =outtakeCoords;
         this.intakeCoords=intakeCoords;
     }
-    public void setGreen(){
-        color=ArtifactColor.GREEN;
-    }
-    public void setPurple(){
-        color = ArtifactColor.PURPLE;
-    }
-    public void setNothing(){
-        color = ArtifactColor.NOTHING;
-    }
+
     public void setColor(ArtifactColor color){
         this.color=color;
-    }
-    public void turnClockwise(){
-        outtakeCoords +=ticksPerRev/3;
     }
     public double getOuttakeCoords(){
         return outtakeCoords;
