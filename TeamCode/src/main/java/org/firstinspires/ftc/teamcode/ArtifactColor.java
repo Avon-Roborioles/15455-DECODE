@@ -9,6 +9,12 @@ public enum ArtifactColor {
         this.color=color;
     }
 
+    public boolean equals(ArtifactColor other){
+        if (other.ordinal()==this.ordinal()){
+            return true;
+        } else return false;
+    }
+
     @Override
     public String toString(){
         return color;

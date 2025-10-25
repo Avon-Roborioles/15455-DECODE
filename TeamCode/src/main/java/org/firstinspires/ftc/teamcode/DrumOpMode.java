@@ -7,16 +7,18 @@ import org.firstinspires.ftc.teamcode.UtilityOpModes.CompartmentColor;
 
 import dev.nextftc.bindings.BindingManager;
 import dev.nextftc.core.commands.CommandManager;
+import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
+import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 
 @TeleOp
 public class DrumOpMode extends NextFTCOpMode {
-    DrumPrototype drumPrototype;
+    DrumPrototype drumPrototype=DrumPrototype.INSTANCE;
     public DrumOpMode(){
-        drumPrototype=new DrumPrototype();
         addComponents(
-                new SubsystemComponent(drumPrototype)
+                new SubsystemComponent(DrumPrototype.INSTANCE),
+                BindingsComponent.INSTANCE
         );
     }
 
@@ -24,42 +26,19 @@ public class DrumOpMode extends NextFTCOpMode {
     @Override
     public void onStartButtonPressed(){
 //        drumPrototype.turnByOne();
+        Gamepads.gamepad1().a().whenBecomesTrue(DrumPrototype.INSTANCE::readColor);
+        Gamepads.gamepad1().b().whenBecomesTrue(DrumPrototype.INSTANCE::setIntakeMode);
+        Gamepads.gamepad1().x().whenBecomesTrue(DrumPrototype.INSTANCE::setShootMode);
+        Gamepads.gamepad1().dpadLeft().whenBecomesTrue(()->drumPrototype.turnToCompartment(CompartmentColor.PINK));
+        Gamepads.gamepad1().dpadRight().whenBecomesTrue(()->drumPrototype.turnToCompartment(CompartmentColor.RED));
+        Gamepads.gamepad1().dpadUp().whenBecomesTrue(()->drumPrototype.turnToCompartment(CompartmentColor.BLACK));
+        Gamepads.gamepad1().leftBumper().whenBecomesTrue(()->drumPrototype.shootColor(ArtifactColor.PURPLE));
+        Gamepads.gamepad1().rightBumper().whenBecomesTrue(()->drumPrototype.shootColor(ArtifactColor.GREEN));
+        Gamepads.gamepad1().dpadDown().whenBecomesTrue(drumPrototype::shoot);
     }
-    boolean lastAon = false;
-    boolean lastBon = false;
-    boolean lastLefton = false;
-    boolean lastRighton = false;
-    boolean lastUpon = false;
-    boolean lastXon = false;
+
     @Override
     public void onUpdate(){
-        BindingManager.update();
-        if (!lastAon&& gamepad1.a){
-            drumPrototype.readColor();
-        }
-
-        if (!lastBon&& gamepad1.b){
-            drumPrototype.setIntakeMode();
-        }
-        if (!lastXon&& gamepad1.x){
-            drumPrototype.setShootMode();
-        }
-        if (!lastLefton&& gamepad1.dpad_left){
-            drumPrototype.turnToCompartment(CompartmentColor.PINK);
-        }
-        if (!lastUpon&& gamepad1.dpad_up){
-            drumPrototype.turnToCompartment(CompartmentColor.BLACK);
-        }
-        if (!lastRighton&& gamepad1.dpad_right){
-            drumPrototype.turnToCompartment(CompartmentColor.RED);
-        }
-
-        lastRighton = gamepad1.dpad_right;
-        lastUpon = gamepad1.dpad_up;
-        lastLefton = gamepad1.dpad_left;
-        lastBon=gamepad1.b;
-        lastAon= gamepad1.a;
-        lastXon = gamepad1.x;
 
         TelemetryManager.getInstance().print(telemetry);
 

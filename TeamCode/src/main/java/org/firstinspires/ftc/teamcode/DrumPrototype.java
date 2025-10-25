@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
@@ -14,9 +15,11 @@ import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
 import dev.nextftc.hardware.impl.MotorEx;
 
+@Configurable
 public class DrumPrototype implements Subsystem {
+    public static final DrumPrototype INSTANCE = new DrumPrototype();
     private MotorEx motorEx;
-    private double ticksPerRev=1012;
+    private final double ticksPerRev=1012;
     ControlSystem controlSystem;
     private double curPos=0;
     private double updatePos = 0;
@@ -24,8 +27,13 @@ public class DrumPrototype implements Subsystem {
     private Compartment curCompartment;
     boolean intakeMode=false;
     private ArtifactSensor colorSensor;
+    double power;
 
     private ArrayList<Compartment> compartments;
+    public static double kp=.005;
+    public static double kI=1./Math.pow(10,13);
+    public double lastKP=0;
+    double lastKI=0;
 
     @Override
     public void initialize(){
@@ -35,12 +43,13 @@ public class DrumPrototype implements Subsystem {
 
 
             controlSystem = ControlSystem.builder()
-                    .posPid(.0006, 0.000000000015, .0000000000)
+                    .posPid(kp,kI,0)
                     .build();
             motorEx.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motorEx.setPower(0);
             motorEx.reverse();
             motorEx.zero();
+            curPos=0;
             updatePos = 0;
         }
         colorSensor = new ArtifactSensor(ActiveOpMode.hardwareMap());
@@ -60,7 +69,8 @@ public class DrumPrototype implements Subsystem {
             new TelemetryData("Target",()->updatePos);
             new TelemetryItem(()->"Is intake mode: "+intakeMode);
             new TelemetryItem(this::getCurCompartment);
-
+            new TelemetryData("Power",()->power);
+            new TelemetryData("KP",()->kp);
 
         }
     }
@@ -115,7 +125,7 @@ public class DrumPrototype implements Subsystem {
 
     public void readColor(){
         ArtifactColor color=colorSensor.read();
-
+        updateCurCompartment();
 
         if (curCompartment!=null) {
             curCompartment.setColor(color);
@@ -124,6 +134,7 @@ public class DrumPrototype implements Subsystem {
 
     public void updateCurCompartment(){
         double normalizedCoords = updatePos%ticksPerRev;
+        if (normalizedCoords<0) normalizedCoords+=ticksPerRev;
         if (Math.abs(pink.getIntakeCoords()-normalizedCoords)<30){
             curCompartment= pink;
         } else if (Math.abs(red.getIntakeCoords()-normalizedCoords)<30){
@@ -206,14 +217,20 @@ public class DrumPrototype implements Subsystem {
         controlSystem.setGoal(
                 new KineticState(Math.round(updatePos))
         );
+        power= controlSystem.calculate(
+                new KineticState(motorEx.getCurrentPosition(),motorEx.getVelocity())
+        );
         motorEx.setPower(
-                controlSystem.calculate(
-                        new KineticState(motorEx.getCurrentPosition(),motorEx.getVelocity())
-                )
+                power
         );
         updateCurCompartment();
-
-
+        if (kp!=lastKP||kI!=lastKI) {
+            lastKP=kp;
+            lastKI=kI;
+            controlSystem = ControlSystem.builder()
+                    .posPid(lastKP, lastKI, 0)
+                    .build();
+        }
 
     }
 
