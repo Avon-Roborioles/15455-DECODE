@@ -2,10 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
-import org.firstinspires.ftc.teamcode.UtilityOpModes.CompartmentColor;
 
-import dev.nextftc.bindings.BindingManager;
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -14,35 +13,39 @@ import dev.nextftc.ftc.NextFTCOpMode;
 
 @TeleOp
 public class DrumOpMode extends NextFTCOpMode {
-    DrumPrototype drumPrototype=DrumPrototype.INSTANCE;
+
     public DrumOpMode(){
         addComponents(
-                new SubsystemComponent(DrumPrototype.INSTANCE),
+                new SubsystemComponent(DrumSubsystem.INSTANCE),
                 BindingsComponent.INSTANCE
         );
     }
 
-
     @Override
     public void onStartButtonPressed(){
-//        drumPrototype.turnByOne();
-        Gamepads.gamepad1().a().whenBecomesTrue(DrumPrototype.INSTANCE::readColor);
-        Gamepads.gamepad1().b().whenBecomesTrue(DrumPrototype.INSTANCE::setIntakeMode);
-        Gamepads.gamepad1().x().whenBecomesTrue(DrumPrototype.INSTANCE::setShootMode);
-        Gamepads.gamepad1().dpadLeft().whenBecomesTrue(()->drumPrototype.turnToCompartment(CompartmentColor.PINK));
-        Gamepads.gamepad1().dpadRight().whenBecomesTrue(()->drumPrototype.turnToCompartment(CompartmentColor.RED));
-        Gamepads.gamepad1().dpadUp().whenBecomesTrue(()->drumPrototype.turnToCompartment(CompartmentColor.BLACK));
-        Gamepads.gamepad1().leftBumper().whenBecomesTrue(()->drumPrototype.shootColor(ArtifactColor.PURPLE));
-        Gamepads.gamepad1().rightBumper().whenBecomesTrue(()->drumPrototype.shootColor(ArtifactColor.GREEN));
-        Gamepads.gamepad1().dpadDown().whenBecomesTrue(drumPrototype::turnToIntake);
 
+
+
+
+        Gamepads.gamepad1().leftBumper().whenBecomesTrue(DrumSubsystem.INSTANCE.shootPurple);
+        Gamepads.gamepad1().rightBumper().whenBecomesTrue(DrumSubsystem.INSTANCE.shootGreen);
+        Gamepads.gamepad1().dpadLeft().whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBalls);
+        Gamepads.gamepad1().dpadRight().whenBecomesTrue(DrumSubsystem.INSTANCE.intakeOneBall);
+        Gamepads.gamepad1().dpadUp().whenBecomesTrue(DrumSubsystem.INSTANCE.shootPattern);
+
+
+        Gamepads.gamepad2().a().whenBecomesTrue(DrumSubsystem.INSTANCE::readColor);
+        Gamepads.gamepad2().b().whenBecomesTrue(DrumSubsystem.INSTANCE::setIntakeMode);
+        Gamepads.gamepad2().x().whenBecomesTrue(DrumSubsystem.INSTANCE::setShootMode);
+
+        Gamepads.gamepad2().dpadLeft().whenBecomesTrue(DrumSubsystem.INSTANCE.turnToPink);
+        Gamepads.gamepad2().dpadRight().whenBecomesTrue(DrumSubsystem.INSTANCE.turnToRed);
+        Gamepads.gamepad2().dpadUp().whenBecomesTrue(DrumSubsystem.INSTANCE.turnToBlack);
     }
 
     @Override
     public void onUpdate(){
-
         TelemetryManager.getInstance().print(telemetry);
-
     }
     @Override
     public void onStop(){

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.teamcode.Enums.ArtifactColor;
+
 public class Compartment {
 
     private ArtifactColor color;

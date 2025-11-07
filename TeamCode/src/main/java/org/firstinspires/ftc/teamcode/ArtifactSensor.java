@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.sax.StartElementListener;
-
-import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Enums.ArtifactColor;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 
@@ -22,8 +20,8 @@ public class ArtifactSensor {
     double purpleDifference;
     double greenDifference;
     public ArtifactSensor(HardwareMap hMap){
-        sensor=hMap.get(ColorSensor.class,"colorsensor");
-        dSensor = hMap.get(DistanceSensor.class,"distancesensor");
+        sensor=hMap.get(ColorSensor.class,"colorSensor");
+        dSensor = hMap.get(DistanceSensor.class,"distanceSensor");
 
         new TelemetryData("Red",()->1.*nRed);
         new TelemetryData("Green",()->1.*nGreen);
@@ -82,7 +80,7 @@ public class ArtifactSensor {
 //        } else {
 //            color = ArtifactColor.NOTHING;
 //        }
-        if (dSensor.getDistance(DistanceUnit.INCH)>2.5){
+        if (dSensor.getDistance(DistanceUnit.INCH)>4.+.8){
             color=ArtifactColor.NOTHING;
         }
         return  color;
