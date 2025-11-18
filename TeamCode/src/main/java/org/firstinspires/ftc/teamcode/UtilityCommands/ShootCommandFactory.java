@@ -14,9 +14,10 @@ import dev.nextftc.hardware.powerable.SetPower;
 public class ShootCommandFactory {
 
 
-    public static Command getShootAndEject(DrumSubsystem drumSubsystem, boolean green, boolean purple){
+    public static Command getShootAndEject( boolean green, boolean purple){
 
         double pos=1000000;
+        DrumSubsystem drumSubsystem = DrumSubsystem.INSTANCE;
         if (green&&purple){
             pos = drumSubsystem.calculateAllShootPos();
         } else if (green){

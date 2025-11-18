@@ -10,7 +10,7 @@ public enum ArtifactColor {
     }
 
     public boolean equals(ArtifactColor other){
-        if (other.ordinal()==this.ordinal()){
+        if (other.color.equals(this.color)){
             return true;
         } else return false;
     }

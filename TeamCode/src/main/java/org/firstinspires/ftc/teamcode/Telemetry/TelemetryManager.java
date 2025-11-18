@@ -10,6 +10,7 @@ public class TelemetryManager {
     private ArrayList<TelemetryItem> telemetryItems;
     private ArrayList<String> tagsToExclude;
     private ArrayList<String> tagsToInclude;
+    private ArrayList<String> tempTelemetry=new ArrayList<>();
 
     public synchronized static TelemetryManager getInstance(){
         if (TelemetryManager.telemetryManager==null){
@@ -51,6 +52,9 @@ public class TelemetryManager {
             tagsToInclude.remove(tag);
         }
     }
+    public void addTempTelemetry(String temp){
+        tempTelemetry.add(temp);
+    }
 
     public void print(Telemetry telemetry){
         for (int i=0;i<telemetryItems.size();i++){
@@ -73,7 +77,11 @@ public class TelemetryManager {
             }
 
         }
+        for (String temp :tempTelemetry){
+            telemetry.addLine(temp);
+        }
         telemetry.update();
+        tempTelemetry= new ArrayList<>();
     }
     public void reset(){
         TelemetryManager.telemetryManager=null;
