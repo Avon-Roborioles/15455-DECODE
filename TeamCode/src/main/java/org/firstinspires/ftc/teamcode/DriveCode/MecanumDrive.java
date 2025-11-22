@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.DriveCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.commands.utility.PerpetualCommand;
+import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.hardware.driving.FieldCentric;
@@ -33,18 +36,16 @@ public class MecanumDrive extends NextFTCOpMode {
     }
     @Override
     public void onStartButtonPressed(){
-        driverControlled = new MecanumDriverControlled(
-                rf,
-                lf,
-                rr,
-                lr,
-                Gamepads.gamepad1().leftStickY().negate(),
-                Gamepads.gamepad1().leftStickX(),
-                Gamepads.gamepad1().rightStickX(),
-                new FieldCentric(imu)
+        new PerpetualCommand(
+                new InstantCommand(()->{PedroComponent.follower().setTeleOpDrive(
+                        gamepad1.left_stick_y,
+                        gamepad1.left_stick_x,
+                        gamepad1.right_stick_x,
+                        false
+                                    );}
+                )
+        ).schedule();
+                ;
 
-
-        );
-        driverControlled.schedule();
     }
 }
