@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.LauncherSubsystem;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -16,14 +17,23 @@ public class LauncherOpMode extends NextFTCOpMode {
 
     public LauncherOpMode(){
         addComponents(
-                new SubsystemComponent(LauncherSubsystem.INSTANCE, DrumSubsystem.INSTANCE),
+                new SubsystemComponent(LauncherSubsystem.INSTANCE),
                 BindingsComponent.INSTANCE
         );
     }
 
+    public void onStartButtonPressed(){
+        Gamepads.gamepad1().dpadUp().whenBecomesFalse(LauncherSubsystem.INSTANCE::calculateVelocity);
+        Gamepads.gamepad1().dpadDown().whenBecomesFalse(LauncherSubsystem.INSTANCE::decreaseRPMby100);
+    }
+
     @Override
     public void onUpdate(){
-        Gamepads.gamepad1().dpadUp().whenBecomesTrue(LauncherSubsystem.INSTANCE::increaseRPMby100);
-        Gamepads.gamepad1().dpadDown().whenBecomesTrue(LauncherSubsystem.INSTANCE::decreaseRPMby100);
+
+        TelemetryManager.getInstance().print(telemetry);
+    }
+    @Override
+    public void onStop(){
+        TelemetryManager.getInstance().reset();
     }
 }
