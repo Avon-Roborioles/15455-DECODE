@@ -48,7 +48,7 @@ public class Constants {
             .strafePodX(-4)
             .forwardPodY(4.75)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
-            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD)
+            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .hardwareMapName("pinpoint")
             ;
 

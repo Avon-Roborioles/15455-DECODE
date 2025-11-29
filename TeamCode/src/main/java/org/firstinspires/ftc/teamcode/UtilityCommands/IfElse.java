@@ -26,6 +26,7 @@ public class IfElse extends Command {
         } else {
             curCommand=c2;
         }
+        curCommand.start();
     }
     @Override
     public void update(){
