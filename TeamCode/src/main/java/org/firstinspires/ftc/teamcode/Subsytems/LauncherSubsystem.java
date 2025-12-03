@@ -69,7 +69,7 @@ public class LauncherSubsystem implements Subsystem {
         double distance = LauncherSubsystem.distanceCm;
         double radians = Math.toRadians(37);
         rpm = distance*Math.sqrt(-7614.432/ ( 2*Math.pow(Math.cos(radians),2)*(87-distance*Math.tan(radians)) ) );
-        rpm = 500;
+        rpm = 1000; // 500
     }
     private void stop(){
         rpm = 0;

@@ -37,6 +37,7 @@ public class TestTeleop extends NextFTCOpMode {
                 new SequentialGroup(
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
                         new InstantCommand(()->new TelemetryItem(()->"Running Finished")),
+                        // need to add a shootAll, which rotates the drum a full 360 without stopping at each slot
                         DrumSubsystem.INSTANCE.shootAny,
                         DrumSubsystem.INSTANCE.shootAny,
                         DrumSubsystem.INSTANCE.shootAny
