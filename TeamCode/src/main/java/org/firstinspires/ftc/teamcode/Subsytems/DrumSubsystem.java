@@ -52,7 +52,7 @@ public class DrumSubsystem implements Subsystem {
     public static double kp=.0025;
     public static double kI=150./Math.pow(10,13);
 
-    public CRServoEx servo= new CRServoEx("ejectServo");;
+    public CRServoEx servo= new CRServoEx("ejectServo");
     public ControlSystem controlSystem= ControlSystem.builder()
             .posPid(kp,kI)
             .build();
