@@ -44,13 +44,23 @@ public class Constants {
 
             ;
 
-    public static PinpointConstants pinpointConstants = new PinpointConstants()
-            .strafePodX(-4)
-            .forwardPodY(4.75)
-            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
-            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-            .hardwareMapName("pinpoint")
-            ;
+//    public static PinpointConstants pinpointConstants = new PinpointConstants()
+//            .strafePodX(-4)
+//            .forwardPodY(4.75)
+//            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
+//            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+//            .hardwareMapName("pinpoint")
+//            ;
+public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
+        .forwardEncoder_HardwareMapName("frontLeft")
+        .strafeEncoder_HardwareMapName("backLeft ")
+        .IMU_HardwareMapName("imu")
+        .IMU_Orientation(
+                new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                )
+        );
 
 
 
@@ -58,7 +68,54 @@ public class Constants {
         return new FollowerBuilder(followerConstants, hardwareMap)
                 .pathConstraints(pathConstraints)
                 .mecanumDrivetrain(driveConstants)
-                .pinpointLocalizer(pinpointConstants)
+                .twoWheelLocalizer(localizerConstants
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                )
+//                .pinpointLocalizer(pinpointConstants)
 
                 .build();
 
