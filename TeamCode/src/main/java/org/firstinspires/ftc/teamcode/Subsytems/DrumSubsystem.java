@@ -73,11 +73,15 @@ public class DrumSubsystem implements Subsystem {
     private PIDCoefficients coefficients = new PIDCoefficients(kp,kI,kD);
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     public CRServoEx servo= new CRServoEx("ejectServo");
     public ControlSystem controlSystem= ControlSystem.builder()
             .posPid(kp,kI)
             .build();
     private ControlSystem controlSystem2;
+=======
+    private ControlSystem controlSystem2=null;
+>>>>>>> Stashed changes
 =======
     private ControlSystem controlSystem2=null;
 >>>>>>> Stashed changes

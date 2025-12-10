@@ -37,18 +37,24 @@ public class CompTeleOp extends NextFTCOpMode {
                         DrumSubsystem.INSTANCE.servoEject,
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
                         new InstantCommand(()->new TelemetryItem(()->"Running Finished")),
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/TestTeleop.java
                         // need to add a shootAll, which rotates the drum a full 360 without stopping at each slot
                         DrumSubsystem.INSTANCE.shootAny,
                         DrumSubsystem.INSTANCE.shootAny,
                         DrumSubsystem.INSTANCE.shootAny
 =======
+=======
+>>>>>>> Stashed changes
                         DrumSubsystem.INSTANCE.shootPurple,
                         DrumSubsystem.INSTANCE.shootGreen,
                         DrumSubsystem.INSTANCE.shootPurple,
                         LauncherSubsystem.INSTANCE.stop
 
+<<<<<<< Updated upstream
 >>>>>>> Stashed changes:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/CompTeleOp.java
+=======
+>>>>>>> Stashed changes
                 )
         );
         Gamepads.gamepad1().x().whenBecomesTrue(DrumSubsystem.INSTANCE.stopIntakeWheels);
