@@ -28,6 +28,7 @@ import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.commands.utility.NullCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
+import dev.nextftc.hardware.impl.CRServoEx;
 import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.hardware.impl.ServoEx;
 import dev.nextftc.hardware.positionable.SetPosition;
@@ -72,19 +73,14 @@ public class DrumSubsystem implements Subsystem {
     public ServoEx servo= new ServoEx("ejectServo");
     private PIDCoefficients coefficients = new PIDCoefficients(kp,kI,kD);
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    public CRServoEx servo= new CRServoEx("ejectServo");
+
     public ControlSystem controlSystem= ControlSystem.builder()
             .posPid(kp,kI)
             .build();
     private ControlSystem controlSystem2;
-=======
-    private ControlSystem controlSystem2=null;
->>>>>>> Stashed changes
-=======
-    private ControlSystem controlSystem2=null;
->>>>>>> Stashed changes
+
+
+
 
     public Command servoFreeRotate = new SetPosition(servo,servoIntakePos);
     public Command servoEject = new SetPosition(servo,servoEjectPos);
@@ -154,7 +150,7 @@ public class DrumSubsystem implements Subsystem {
 
 //    public Command turnToRed = new LambdaCommand()
 //            .setStart(()->controlSystem.setGoal(new KineticState(turnToCompartment(CompartmentColor.RED))))
-//            .setIsDone(()->controlSystem.isWithinTolerance(tolerance));
+//            .setIsDone(()->controlSystem.isWithinTolerance(tole   rance));
 //
 //    public Command turnToPink= new LambdaCommand()
 //            .setStart(()->controlSystem.setGoal(new KineticState(turnToCompartment(CompartmentColor.PINK))))
