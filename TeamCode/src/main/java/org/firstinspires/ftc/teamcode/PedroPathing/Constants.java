@@ -59,7 +59,6 @@ public class Constants {
                 .pathConstraints(pathConstraints)
                 .mecanumDrivetrain(driveConstants)
                 .pinpointLocalizer(pinpointConstants)
-
                 .build();
 
     }

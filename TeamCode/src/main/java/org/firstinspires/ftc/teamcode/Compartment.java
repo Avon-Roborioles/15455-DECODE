@@ -8,11 +8,13 @@ public class Compartment {
     private double outtakeCoords;
     private double intakeCoords;
 
+    private String string;
     private double ticksPerRev=1012;
-    public Compartment(double outtakeCoords,double intakeCoords){
+    public Compartment(double outtakeCoords,double intakeCoords,String string){
         color = ArtifactColor.NOTHING;
         this.outtakeCoords =outtakeCoords;
         this.intakeCoords=intakeCoords;
+        this.string=string;
     }
 
     public void setColor(ArtifactColor color){
@@ -27,4 +29,8 @@ public class Compartment {
     public ArtifactColor color(){
         return color;
     }
+    public String toString(){
+        return string;
+    }
+
 }

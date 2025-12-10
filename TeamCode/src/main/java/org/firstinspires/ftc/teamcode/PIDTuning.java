@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.robocol.Command;
 
@@ -21,6 +22,7 @@ import dev.nextftc.hardware.impl.MotorEx;
 import static dev.nextftc.extensions.pedro.PedroComponent.follower;
 
 @TeleOp
+@Disabled
 public class PIDTuning extends NextFTCOpMode {
 
     Limelight3A limelight;

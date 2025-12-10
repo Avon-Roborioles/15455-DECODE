@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Subsytems;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -6,8 +6,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Enums.ArtifactColor;
-import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
+
+import dev.nextftc.ftc.ActiveOpMode;
 
 public class ArtifactSensor {
 
@@ -41,6 +42,12 @@ public class ArtifactSensor {
         }
 
         return sum;
+    }
+
+    public void initialize(){
+        HardwareMap hMap = ActiveOpMode.hardwareMap();
+        sensor=hMap.get(ColorSensor.class,"colorSensor");
+        dSensor = hMap.get(DistanceSensor.class,"distanceSensor");
     }
 
     public ArtifactColor read() {

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.SubsystemOpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,7 +11,7 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 
-@TeleOp
+@TeleOp(group = "Single Subsystem")
 public class DrumOpMode extends NextFTCOpMode {
 
     public DrumOpMode(){
@@ -29,18 +29,12 @@ public class DrumOpMode extends NextFTCOpMode {
 
         Gamepads.gamepad1().leftBumper().whenBecomesTrue(DrumSubsystem.INSTANCE.shootPurple);
         Gamepads.gamepad1().rightBumper().whenBecomesTrue(DrumSubsystem.INSTANCE.shootGreen);
-        Gamepads.gamepad1().dpadLeft().whenBecomesTrue(DrumSubsystem.INSTANCE.testCommand);
         Gamepads.gamepad1().dpadRight().whenBecomesTrue(DrumSubsystem.INSTANCE.intakeOneBall);
         //Gamepads.gamepad1().dpadUp().whenBecomesTrue(DrumSubsystem.INSTANCE.shootPattern);
 
 
         Gamepads.gamepad2().a().whenBecomesTrue(DrumSubsystem.INSTANCE::readColorAndReturnValidity);
-        Gamepads.gamepad2().b().whenBecomesTrue(DrumSubsystem.INSTANCE::setIntakeMode);
-        Gamepads.gamepad2().x().whenBecomesTrue(DrumSubsystem.INSTANCE::setShootMode);
 
-//        Gamepads.gamepad2().dpadLeft().whenBecomesTrue(DrumSubsystem.INSTANCE.turnToPink);
-//        Gamepads.gamepad2().dpadRight().whenBecomesTrue(DrumSubsystem.INSTANCE.turnToRed);
-//        Gamepads.gamepad2().dpadUp().whenBecomesTrue(DrumSubsystem.INSTANCE.turnToBlack);
     }
 
     @Override

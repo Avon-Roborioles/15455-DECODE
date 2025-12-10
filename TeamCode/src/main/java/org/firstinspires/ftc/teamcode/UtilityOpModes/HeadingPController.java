@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.UtilityOpModes;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -8,12 +8,11 @@ import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.extensions.pedro.PedroDriverControlled;
-import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
-import dev.nextftc.hardware.driving.DriverControlledCommand;
+
 import static dev.nextftc.extensions.pedro.PedroComponent.follower;
 
-@TeleOp
+@TeleOp(group = "Test")
 public class HeadingPController extends NextFTCOpMode {
     PedroDriverControlled driverControlled;
     Limelight3A limelight3A;

@@ -12,9 +12,9 @@ public class PedroDriveCommand extends Command {
     }
     public void update(){
         PedroComponent.follower().setTeleOpDrive(
-                Gamepads.gamepad1().leftStickY().get(),
-                Gamepads.gamepad1().leftStickX().get(),
-                Gamepads.gamepad1().rightStickX().get(),
+                Gamepads.gamepad1().getGamepad().invoke().left_stick_y,
+                Gamepads.gamepad1().getGamepad().invoke().left_stick_x,
+                Gamepads.gamepad1().getGamepad().invoke().right_stick_x,
                 true
         );
     }

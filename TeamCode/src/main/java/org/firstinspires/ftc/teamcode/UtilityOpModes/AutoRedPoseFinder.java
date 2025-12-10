@@ -13,7 +13,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import static dev.nextftc.extensions.pedro.PedroComponent.follower;
 
-@TeleOp
+@TeleOp(group = "Utility")
 public class AutoRedPoseFinder extends NextFTCOpMode {
     public AutoRedPoseFinder(){
         addComponents(

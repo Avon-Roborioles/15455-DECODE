@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.UtilityOpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,7 +12,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import static dev.nextftc.extensions.pedro.PedroComponent.follower;
 
 
-@TeleOp
+@TeleOp(group = "Utility")
 public class DistanceFinder extends NextFTCOpMode {
     public double distance;
     public double x =0;
