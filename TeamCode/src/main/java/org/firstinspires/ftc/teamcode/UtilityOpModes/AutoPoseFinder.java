@@ -1,21 +1,17 @@
 package org.firstinspires.ftc.teamcode.UtilityOpModes;
 
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-import dev.nextftc.core.commands.Command;
-import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import static dev.nextftc.extensions.pedro.PedroComponent.follower;
 
 @TeleOp(group = "Utility")
-public class AutoRedPoseFinder extends NextFTCOpMode {
-    public AutoRedPoseFinder(){
+public class AutoPoseFinder extends NextFTCOpMode {
+    public AutoPoseFinder(){
         addComponents(
                 new PedroComponent(Constants::createFollower)
         );
@@ -23,7 +19,7 @@ public class AutoRedPoseFinder extends NextFTCOpMode {
     }
     @Override
     public void onInit(){
-        follower().setPose(new Pose(0,0,3*Math.PI/2));
+        follower().setPose(new Pose(0,0,0));
 
     }
     @Override

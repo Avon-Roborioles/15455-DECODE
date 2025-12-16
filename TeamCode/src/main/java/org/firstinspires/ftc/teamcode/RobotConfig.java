@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.control.PIDFCoefficients;
+import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathConstraints;
 
 import dev.nextftc.control.KineticState;
@@ -64,5 +65,7 @@ public class RobotConfig {
 
     }
 
-
+    public static class FieldConstants {
+        public static Pose redGoal = new Pose(51,-53);
+    }
 }

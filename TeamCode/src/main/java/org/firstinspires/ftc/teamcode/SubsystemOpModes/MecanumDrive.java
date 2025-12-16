@@ -41,7 +41,7 @@ public class MecanumDrive extends NextFTCOpMode {
 
     public void onUpdate(){
         follower().setTeleOpDrive(
-                gamepad1.left_stick_y,
+                -gamepad1.left_stick_y,
                 gamepad1.left_stick_x,
                 gamepad1.right_stick_x,
                 true

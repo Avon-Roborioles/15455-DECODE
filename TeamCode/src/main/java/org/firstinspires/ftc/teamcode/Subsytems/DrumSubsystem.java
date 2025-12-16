@@ -39,16 +39,16 @@ public class DrumSubsystem implements Subsystem {
     public static final DrumSubsystem INSTANCE = new DrumSubsystem();
     private MotorEx drumMotor= new MotorEx("drumMotor");
     private MotorEx intakeMotor=new MotorEx("intakeMotor");
-    private final double ticksPerRev=867;
+    private final double ticksPerRev=1212;
 
-    private Compartment pink = new Compartment(0, 433,"pink/blue");
-    private Compartment red = new Compartment(ticksPerRev / 3, 722,"red");
-    private Compartment black = new Compartment(ticksPerRev / 3 * 2, 151,"black/black and blue");
+    private Compartment pink = new Compartment(0, 607,"pink/blue");
+    private Compartment red = new Compartment(ticksPerRev / 3, 1015,"red");
+    private Compartment black = new Compartment(ticksPerRev / 3 * 2, 203,"black/black and blue");
     private ArrayList<Compartment> compartments = new ArrayList<>();
-    private double servoEjectPos=.233;
+    private double servoEjectPos=.2539;
     private double servoIntakePos = 0;
 
-    private double maxPower = 1;
+    private static double maxPower = 1;
 
 
     private double curPos=0;
@@ -62,21 +62,19 @@ public class DrumSubsystem implements Subsystem {
 
     private ArtifactSensor colorSensor;
     double power;
-    public KineticState tolerance = new KineticState(5,0);
+    public KineticState tolerance = new KineticState(10,0);
 
     private Pattern pattern = new Pattern(ArtifactColor.PURPLE,ArtifactColor.GREEN,ArtifactColor.PURPLE);
     private double smoothEjectDirection=1;
-    public static double kp=0*.00065;
-    public static double kI=2/Math.pow(10,11);
-    public static double kD = 0*5/Math.pow(10,6);
+    public static double kp=0.000002;
+    public static double kI=0.000000000008;
+    public static double kD = 0.0004;
 
     public ServoEx servo= new ServoEx("ejectServo");
     private PIDCoefficients coefficients = new PIDCoefficients(kp,kI,kD);
 
 
-    public ControlSystem controlSystem= ControlSystem.builder()
-            .posPid(kp,kI)
-            .build();
+
     private ControlSystem controlSystem2;
 
 
@@ -106,10 +104,11 @@ public class DrumSubsystem implements Subsystem {
             ()->!isValid(false,true),
             new NullCommand(5,6),
             new SequentialGroup(
+                    servoEject,
                     new LambdaCommand()
                             .setStart((()->this.setToOuttakeColor(ArtifactColor.PURPLE)))
-                            .setIsDone(()->controlSystem2.isWithinTolerance(tolerance)),
-//                        setPower,
+                                .setIsDone(()->controlSystem2.isWithinTolerance(tolerance)),
+
                     new Delay(ejectDelay),
 //                        stopServo,
                     new InstantCommand(this::setEjectCompartmentToNothing)
@@ -120,11 +119,12 @@ public class DrumSubsystem implements Subsystem {
             ()->!isValid(true,false),
             new NullCommand(5,6),
             new SequentialGroup(
+                    servoEject,
                     new LambdaCommand()
                             .setStart((()->this.setToOuttakeColor(ArtifactColor.GREEN)))
                             .setIsDone(()->controlSystem2.isWithinTolerance(tolerance)),
 //                        setPower,
-            new Delay(ejectDelay),
+                    new Delay(ejectDelay),
 //                        stopServo,
                     new InstantCommand(this::setEjectCompartmentToNothing)
 
@@ -166,13 +166,14 @@ public class DrumSubsystem implements Subsystem {
             .setStart(this::setToIntake)
             .setIsDone(()->controlSystem2.isWithinTolerance(tolerance));
 
-    private Command rotateIntakeWheels= new SetPower(intakeMotor,1);
+    public Command rotateIntakeWheels= new SetPower(intakeMotor,1);
     public Command stopIntakeWheels =  new SetPower(intakeMotor,0);
     private Command spitOutIntakeWheels = new SetPower(intakeMotor,-1);
 
     //public Command shootPattern = shootPattern();;
 
     private Command intakeOneWithoutStop=new SequentialGroup(
+            servoFreeRotate,
             turnToIntake,
             new InstantCommand(()->new TelemetryItem(()->"turned to intake")),
             new ParallelDeadlineGroup(
@@ -182,7 +183,7 @@ public class DrumSubsystem implements Subsystem {
                     ,
                     rotateIntakeWheels
             ),
-            new InstantCommand(()->new TelemetryItem(()->"Done w/ Parallel")),
+
             stopIntakeWheels
 //                ,
 //                new ParallelDeadlineGroup(
@@ -225,6 +226,7 @@ public class DrumSubsystem implements Subsystem {
         compartments.add(red);
         compartments.add(black);
         targetCompartments.add(pink);
+        drumMotor.reverse();
     }
     @Override
     public void initialize(){
@@ -244,7 +246,7 @@ public class DrumSubsystem implements Subsystem {
             //drumMotor= new MotorEx("drumMotor");
             drumMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            drumMotor.reverse();
+
 
             curPos=0;
             updatePos = 0;
@@ -307,7 +309,7 @@ public class DrumSubsystem implements Subsystem {
         updateTarget();
     }
     private void plusOneRev(){
-        controlSystem2.setGoal(new KineticState(drumMotor.getCurrentPosition()+ticksPerRev));
+        controlSystem2.setGoal(new KineticState(controlSystem2.getGoal().getPosition()+ticksPerRev));
     }
 
     private void startZeroing(){
@@ -592,6 +594,7 @@ public class DrumSubsystem implements Subsystem {
 
         if (drumMode.equals(DrumMode.INTAKE)||drumMode.equals(DrumMode.DISCRETE_OUTTAKE)||drumMode.equals(DrumMode.RAPID_OUTTAKE_SETUP)||drumMode.equals(DrumMode.RAPID_OUTTAKING)){
             power= controlSystem2.calculate(drumMotor.getState());
+            TelemetryManager.getInstance().addTempTelemetry("Before filter power: "+power);
             if (power>0&&power>maxPower){
                 power = maxPower;
             } else if (power<0&&power<-maxPower){

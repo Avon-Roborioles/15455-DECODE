@@ -5,6 +5,7 @@ import static dev.nextftc.extensions.pedro.PedroComponent.follower;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.Subsytems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
@@ -16,6 +17,7 @@ import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.PedroComponent;
+import dev.nextftc.extensions.pedro.PedroDriverControlled;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 
@@ -23,7 +25,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 public class CompTeleOp extends NextFTCOpMode {
     public CompTeleOp(){
         addComponents(
-                new SubsystemComponent(DrumSubsystem.INSTANCE, LauncherSubsystem.INSTANCE),
+                new SubsystemComponent(DrumSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, DriveSubsystem.INSTANCE),
                 new PedroComponent(Constants::createFollower),
                 BindingsComponent.INSTANCE
         );
@@ -56,24 +58,24 @@ public class CompTeleOp extends NextFTCOpMode {
 
                 DrumSubsystem.INSTANCE.rapidOuttake
         ));
-//        new PedroDriverControlled(
-//                Gamepads.gamepad1().leftStickY(),
-//                Gamepads.gamepad1().leftStickX(),
-//                Gamepads.gamepad1().rightStickX(),
-//                false
-//        ).schedule();
+        new PedroDriverControlled(
+                Gamepads.gamepad1().leftStickY(),
+                Gamepads.gamepad1().leftStickX(),
+                Gamepads.gamepad1().rightStickX(),
+                false
+        ).schedule();
         PedroComponent.follower().startTeleopDrive();
     }
     @Override
     public void onUpdate(){
 
 
-        follower().setTeleOpDrive(
-                gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                -.25*gamepad1.right_stick_x,
-                true
-        );
+//        follower().setTeleOpDrive(
+//                gamepad1.left_stick_y,
+//                gamepad1.left_stick_x,
+//                -.25*gamepad1.right_stick_x,
+//                true
+//        );
         TelemetryManager.getInstance().print(telemetry);
 //        if (true||!CommandManager.INSTANCE.hasCommandsUsing(DriveSubsystem.INSTANCE)){
 //            DriveSubsystem.INSTANCE.normalDrive.schedule();
