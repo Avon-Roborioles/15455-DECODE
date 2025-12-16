@@ -39,11 +39,11 @@ public class DrumSubsystem implements Subsystem {
     public static final DrumSubsystem INSTANCE = new DrumSubsystem();
     private MotorEx drumMotor= new MotorEx("drumMotor");
     private MotorEx intakeMotor=new MotorEx("intakeMotor");
-    private final double ticksPerRev=1212;
+    private final double ticksPerRev=1211;
 
-    private Compartment pink = new Compartment(0, 607,"pink/blue");
-    private Compartment red = new Compartment(ticksPerRev / 3, 1015,"red");
-    private Compartment black = new Compartment(ticksPerRev / 3 * 2, 203,"black/black and blue");
+    private Compartment pink = new Compartment(0, 607,"pink/1");
+    private Compartment red = new Compartment(ticksPerRev / 3, 1015,"red/2");
+    private Compartment black = new Compartment(ticksPerRev / 3 * 2, 203,"black/3");
     private ArrayList<Compartment> compartments = new ArrayList<>();
     private double servoEjectPos=.2539;
     private double servoIntakePos = 0;
@@ -66,7 +66,7 @@ public class DrumSubsystem implements Subsystem {
 
     private Pattern pattern = new Pattern(ArtifactColor.PURPLE,ArtifactColor.GREEN,ArtifactColor.PURPLE);
     private double smoothEjectDirection=1;
-    public static double kp=0.000002;
+    public static double kp=0.004;
     public static double kI=0.000000000008;
     public static double kD = 0.0004;
 
@@ -109,7 +109,7 @@ public class DrumSubsystem implements Subsystem {
                             .setStart((()->this.setToOuttakeColor(ArtifactColor.PURPLE)))
                                 .setIsDone(()->controlSystem2.isWithinTolerance(tolerance)),
 
-                    new Delay(ejectDelay),
+                    //new Delay(ejectDelay),
 //                        stopServo,
                     new InstantCommand(this::setEjectCompartmentToNothing)
 
@@ -124,7 +124,7 @@ public class DrumSubsystem implements Subsystem {
                             .setStart((()->this.setToOuttakeColor(ArtifactColor.GREEN)))
                             .setIsDone(()->controlSystem2.isWithinTolerance(tolerance)),
 //                        setPower,
-                    new Delay(ejectDelay),
+                    //new Delay(ejectDelay),
 //                        stopServo,
                     new InstantCommand(this::setEjectCompartmentToNothing)
 
@@ -175,7 +175,7 @@ public class DrumSubsystem implements Subsystem {
     private Command intakeOneWithoutStop=new SequentialGroup(
             servoFreeRotate,
             turnToIntake,
-            new InstantCommand(()->new TelemetryItem(()->"turned to intake")),
+            //new InstantCommand(()->new TelemetryItem(()->"turned to intake")),
             new ParallelDeadlineGroup(
                     new LambdaCommand()
                                 .setIsDone(()->readColorAndReturnValidity())
@@ -226,7 +226,7 @@ public class DrumSubsystem implements Subsystem {
         compartments.add(red);
         compartments.add(black);
         targetCompartments.add(pink);
-        drumMotor.reverse();
+        //drumMotor.reverse();
     }
     @Override
     public void initialize(){
@@ -259,9 +259,13 @@ public class DrumSubsystem implements Subsystem {
             new TelemetryData("Drum Motor Position", drumMotor::getCurrentPosition);
             new TelemetryData("Drum Target",()->updatePos);
             //new TelemetryItem(()->"Is intake mode: "+intakeMode);
-            new TelemetryItem(this::getCurCompartmentString);
+            //new TelemetryItem(this::getCurCompartmentString);
             new TelemetryData("Drum Power",()->drumMotor.getPower());
             new TelemetryData("Drum Control System 2 Target", ()->controlSystem2.getGoal().getPosition());
+
+            new TelemetryItem(()->pink.toString()+" color: "+pink.color().toString());
+            new TelemetryItem(()->red.toString()+" color: "+red.color().toString());
+            new TelemetryItem(()->black.toString()+" color: "+black.color().toString());
         }
 
     }
@@ -377,7 +381,7 @@ public class DrumSubsystem implements Subsystem {
         Compartment compartment= getIntakeCurCompartment();
 
         if (compartment!=null) {
-            //new TelemetryItem(()->"Set "+getCurCompartmentString()+"to: "+curcolor.toString());
+            new TelemetryItem(()->"Set "+compartment.toString()+"to: "+curcolor.toString());
             compartment.setColor(curcolor);
             return curcolor != ArtifactColor.NOTHING;
         } else {
@@ -444,7 +448,7 @@ public class DrumSubsystem implements Subsystem {
             name = "invalid";
         }
         double finalNormalizedCoords = normalizedCoords;
-        //new TelemetryItem(()->"Eject Pos: "+ finalNormalizedCoords +"Eject Compartment: "+name);
+         new TelemetryItem(()->"Eject Pos: "+ finalNormalizedCoords +"Eject Compartment: "+name);
         return toRet;
     }
 
