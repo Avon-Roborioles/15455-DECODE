@@ -14,30 +14,29 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
+import dev.nextftc.ftc.components.BulkReadComponent;
+import dev.nextftc.ftc.components.LoopTimeComponent;
 
-@TeleOp
+@TeleOp(group= "Subsystem")
 public class LauncherOpMode extends NextFTCOpMode {
 
 
     public LauncherOpMode(){
         addComponents(
-                new SubsystemComponent(LauncherSubsystem.INSTANCE, DriveSubsystem.INSTANCE, DrumSubsystem.INSTANCE),
+                new SubsystemComponent(LauncherSubsystem.INSTANCE),
                 BindingsComponent.INSTANCE,
                 new PedroComponent(Constants::createFollower),
-                new TelemetryComponent()
+                new TelemetryComponent(),
+                new LoopTimeComponent(),
+                BulkReadComponent.INSTANCE
         );
     }
 
     public void onStartButtonPressed(){
         Gamepads.gamepad1().dpadUp().whenBecomesFalse(LauncherSubsystem.INSTANCE.runToCalculatedPos);
         Gamepads.gamepad1().dpadDown().whenBecomesFalse(LauncherSubsystem.INSTANCE::decreaseRPMby100);
-        DrumSubsystem.INSTANCE.rotateIntakeWheels.schedule();
     }
 
-    @Override
-    public void onUpdate(){
 
-
-    }
 
 }

@@ -6,21 +6,28 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.extensions.pedro.PedroDriverControlled;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
+import dev.nextftc.ftc.components.BulkReadComponent;
+import dev.nextftc.ftc.components.LoopTimeComponent;
 
-@TeleOp
+@TeleOp(group = "Subsystem")
 public class MecanumDrive extends NextFTCOpMode {
 
 
     public MecanumDrive(){
         addComponents(
                 new PedroComponent(Constants::createFollower),
-                BindingsComponent.INSTANCE
+                BindingsComponent.INSTANCE,
+                new TelemetryComponent(),
+                new LoopTimeComponent(),
+                BulkReadComponent.INSTANCE
         );
 
 
@@ -37,6 +44,9 @@ public class MecanumDrive extends NextFTCOpMode {
                 Gamepads.gamepad1().rightStickX(),
                 false
         ).schedule();
+        new TelemetryData("LSY: ",()->(double)gamepad1.left_stick_y);
+        new TelemetryData("LSX: ",()->(double)gamepad1.left_stick_x);
+        new TelemetryData("RSX: ",()->(double)gamepad1.right_stick_x);
     }
 
     public void onUpdate(){
@@ -46,9 +56,5 @@ public class MecanumDrive extends NextFTCOpMode {
                 gamepad1.right_stick_x,
                 true
         );
-        telemetry.addData("LSY:",gamepad1.left_stick_y);
-        telemetry.addData("LSX:",gamepad1.left_stick_x);
-        telemetry.addData("RSX:",gamepad1.right_stick_x);
-        telemetry.update();
     }
 }

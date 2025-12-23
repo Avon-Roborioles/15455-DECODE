@@ -6,11 +6,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Enums.ArtifactColor;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 
+import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
 
-public class ArtifactSensor {
+public class ArtifactSensor  {
 
     ColorSensor sensor;
     DistanceSensor dSensor;
@@ -20,6 +22,13 @@ public class ArtifactSensor {
     double normalDifference;
     double purpleDifference;
     double greenDifference;
+
+    private double red=0;
+    private double blue =0;
+    private double green=0;
+    private double distance =0;
+
+
     public ArtifactSensor(HardwareMap hMap){
         sensor=hMap.get(ColorSensor.class,"colorSensor");
         dSensor = hMap.get(DistanceSensor.class,"distanceSensor");
@@ -27,8 +36,8 @@ public class ArtifactSensor {
 //        new TelemetryData("Red",()->1.*nRed);
 //        new TelemetryData("Green",()->1.*nGreen);
 //        new TelemetryData("Blue",()->1.*nBlue);
-        new TelemetryItem(()->"Color"+this.read().toString());
-//        new TelemetryData("Inches Away",()->dSensor.getDistance(DistanceUnit.INCH));
+        new TelemetryItem(()->"Color: "+this.read().toString());
+        new TelemetryData("Inches Away",()->distance);
 //        new TelemetryData("Normal Difference",()->normalDifference);
 //        new TelemetryData("Purple Difference",()->purpleDifference);
 //        new TelemetryData("Green Difference",()->greenDifference);
@@ -43,11 +52,16 @@ public class ArtifactSensor {
 
         return sum;
     }
+    public void updateSensorReads(){
+        distance= dSensor.getDistance(DistanceUnit.INCH);
+        if (distance<4+.8){
+            red=sensor.red();
+            green= sensor.green();
+            blue= sensor.blue();
+        }
 
-    public void initialize(){
-        HardwareMap hMap = ActiveOpMode.hardwareMap();
-        sensor=hMap.get(ColorSensor.class,"colorSensor");
-        dSensor = hMap.get(DistanceSensor.class,"distanceSensor");
+
+
     }
 
     public ArtifactColor read() {
@@ -58,9 +72,7 @@ public class ArtifactSensor {
 
 
 
-        double red = sensor.red();
-        double green = sensor.green();
-        double blue = sensor.blue();
+
         sum = red + green + blue;
         nRed = red / sum;
         nGreen = green / sum;
@@ -87,9 +99,10 @@ public class ArtifactSensor {
 //        } else {
 //            color = ArtifactColor.NOTHING;
 //        }
-        if (dSensor.getDistance(DistanceUnit.INCH)>4.+.8){
+        if (distance>4.+.8){
             color=ArtifactColor.NOTHING;
         }
         return  color;
     }
+
 }

@@ -65,7 +65,7 @@ public class ShooterAngle extends NextFTCOpMode {
     }
     @Override
     public void onStartButtonPressed(){
-        Gamepads.gamepad1().a().whenBecomesTrue(ShooterAngleSub.INSTANCE ::setVelo);
+        Gamepads.gamepad1().a().whenBecomesTrue(ShooterAngleSub.INSTANCE::setVelo);
     }
 
 

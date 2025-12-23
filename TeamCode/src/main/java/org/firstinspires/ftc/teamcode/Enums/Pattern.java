@@ -2,23 +2,23 @@ package org.firstinspires.ftc.teamcode.Enums;
 
 public class Pattern {
 
-    private ArtifactColor first;
-    private ArtifactColor second;
-    private ArtifactColor third;
+    private ArtifactColor[] first;
+    private ArtifactColor[] second;
+    private ArtifactColor[] third;
 
     public Pattern(ArtifactColor first,ArtifactColor second,ArtifactColor third){
-        this.first=first;
-        this.second=second;
-        this.third=third;
+        this.first=new ArtifactColor[]{first};
+        this.second=new ArtifactColor[]{second};
+        this.third=new ArtifactColor[] {third};
     }
 
-    public ArtifactColor first(){
+    public ArtifactColor[] first(){
         return first;
     }
-    public ArtifactColor second(){
+    public ArtifactColor[] second(){
         return second;
     }
-    public ArtifactColor third(){
+    public ArtifactColor[] third(){
         return third;
     }
 

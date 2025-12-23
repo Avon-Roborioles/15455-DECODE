@@ -83,6 +83,33 @@ public class TelemetryManager {
         telemetry.update();
         tempTelemetry= new ArrayList<>();
     }
+    public void print(com.bylazar.telemetry.TelemetryManager telemetry){
+        for (int i=0;i<telemetryItems.size();i++){
+            TelemetryItem item = telemetryItems.get(i);
+            boolean isValid =true;
+            //exclude
+            for (int j=0;j<item.getTags().size();i++){
+                if (tagsToExclude.contains(item.getTags().get(j))==false){
+                    isValid=false;
+                }
+            }
+            //include
+            for (int j=0;j<item.getTags().size();i++){
+                if (tagsToInclude.contains(item.getTags().get(j))==true){
+                    isValid=true;
+                }
+            }
+            if (isValid) {
+                telemetry.addLine(telemetryItems.get(i).getItem());
+            }
+
+        }
+        for (String temp :tempTelemetry){
+            telemetry.addLine(temp);
+        }
+        telemetry.update();
+        tempTelemetry= new ArrayList<>();
+    }
     public void reset(){
         TelemetryManager.telemetryManager=null;
     }
