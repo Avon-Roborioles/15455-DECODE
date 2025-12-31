@@ -11,6 +11,7 @@ public class TelemetryComponent implements Component {
     public void postUpdate(){
         TelemetryManager.getInstance().print(telemetryManager);
         TelemetryManager.getInstance().print(ActiveOpMode.telemetry());
+        TelemetryManager.getInstance().resetTempTelemetry();
     }
     @Override
     public void postStop(){

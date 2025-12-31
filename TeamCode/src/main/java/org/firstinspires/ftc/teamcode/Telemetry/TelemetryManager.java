@@ -81,7 +81,7 @@ public class TelemetryManager {
             telemetry.addLine(temp);
         }
         telemetry.update();
-        tempTelemetry= new ArrayList<>();
+        //tempTelemetry= new ArrayList<>();
     }
     public void print(com.bylazar.telemetry.TelemetryManager telemetry){
         for (int i=0;i<telemetryItems.size();i++){
@@ -108,8 +108,12 @@ public class TelemetryManager {
             telemetry.addLine(temp);
         }
         telemetry.update();
-        tempTelemetry= new ArrayList<>();
+        //tempTelemetry= new ArrayList<>();
     }
+    public void resetTempTelemetry(){
+        tempTelemetry=new ArrayList<String>();
+    }
+
     public void reset(){
         TelemetryManager.telemetryManager=null;
     }

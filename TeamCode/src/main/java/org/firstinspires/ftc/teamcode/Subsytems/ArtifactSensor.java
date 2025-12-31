@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Enums.ArtifactColor;
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 
@@ -54,7 +55,7 @@ public class ArtifactSensor  {
     }
     public void updateSensorReads(){
         distance= dSensor.getDistance(DistanceUnit.INCH);
-        if (distance<4+.8){
+        if (distance< RobotConfig.SensorConstants.distanceThreshold){
             red=sensor.red();
             green= sensor.green();
             blue= sensor.blue();
@@ -99,7 +100,7 @@ public class ArtifactSensor  {
 //        } else {
 //            color = ArtifactColor.NOTHING;
 //        }
-        if (distance>4.+.8){
+        if (distance> RobotConfig.SensorConstants.distanceThreshold){
             color=ArtifactColor.NOTHING;
         }
         return  color;

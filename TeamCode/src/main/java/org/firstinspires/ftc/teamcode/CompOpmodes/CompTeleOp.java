@@ -1,20 +1,17 @@
-package org.firstinspires.ftc.teamcode;
-
-import static dev.nextftc.extensions.pedro.PedroComponent.follower;
+package org.firstinspires.ftc.teamcode.CompOpmodes;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Commands.PatternSetCommand;
 import org.firstinspires.ftc.teamcode.Commands.PedroDriveCommand;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Subsytems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.LauncherSubsystem;
+import org.firstinspires.ftc.teamcode.Subsytems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
-import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
-import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 
 import dev.nextftc.bindings.BindingManager;
 import dev.nextftc.core.commands.delays.Delay;
@@ -31,8 +28,8 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 import dev.nextftc.ftc.components.LoopTimeComponent;
 
 
-@TeleOp(group = "Comp")
-public class CompTeleOp extends NextFTCOpMode {
+
+public abstract class CompTeleOp extends NextFTCOpMode {
 
 
     PedroDriverControlled fieldCentric;
@@ -41,7 +38,7 @@ public class CompTeleOp extends NextFTCOpMode {
 
     public CompTeleOp(){
         addComponents(
-                new SubsystemComponent(DrumSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, DriveSubsystem.INSTANCE),
+                new SubsystemComponent(DrumSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, DriveSubsystem.INSTANCE, LimelightSubsystem.INSTANCE),
                 new PedroComponent(Constants::createFollower),
                 BindingsComponent.INSTANCE,
                 new TelemetryComponent(),
@@ -53,9 +50,12 @@ public class CompTeleOp extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed(){
+
+
         BindingManager.update();
         follower=PedroComponent.follower();
         follower.setPose(new Pose());
+        Gamepads.gamepad2().dpadUp().whenBecomesTrue(new PatternSetCommand());
         Gamepads.gamepad1().rightTrigger().atLeast(.7).whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBalls);
         Gamepads.gamepad1().leftTrigger().atLeast(.7).whenBecomesTrue(
                 new SequentialGroup(
@@ -63,17 +63,16 @@ public class CompTeleOp extends NextFTCOpMode {
                                 DrumSubsystem.INSTANCE.servoEject,
                                 LauncherSubsystem.INSTANCE.runToCalculatedPos
                         ),
-                        //new Delay(5),
+                        new Delay(.5),
                         //new InstantCommand(()->new TelemetryItem(()->"Running Finished")),
-                        DrumSubsystem.INSTANCE.shootPurple,
-                        DrumSubsystem.INSTANCE.shootGreen,
-                        DrumSubsystem.INSTANCE.shootPurple,
+                        DrumSubsystem.INSTANCE.shootPattern,
                         new Delay(2),
                         new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.schedule())
 
 
                 )
         );
+        Gamepads.gamepad1().rightBumper().whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBallsWithPause);
         Gamepads.gamepad1().x().whenBecomesTrue(DrumSubsystem.INSTANCE.stopIntakeWheels);
         Gamepads.gamepad1().dpadDown().whenBecomesTrue(DrumSubsystem.INSTANCE.zero);
         Gamepads.gamepad1().dpadLeft().whenBecomesTrue(new SequentialGroup(
@@ -101,10 +100,7 @@ public class CompTeleOp extends NextFTCOpMode {
         //fieldCentric.schedule();
         Gamepads.gamepad1().rightStickButton().whenBecomesTrue(robotCentric);
         Gamepads.gamepad1().rightStickButton().whenBecomesFalse(fieldCentric);
-        new TelemetryData("LSX: ",()->Gamepads.gamepad1().leftStickX().get());
-        new TelemetryData("LSY: ",()->Gamepads.gamepad1().leftStickY().get());
-        new TelemetryData("RSX: ",()->Gamepads.gamepad1().rightStickX().get());
-        hasStarted=false;
+               hasStarted=false;
     }
 
     boolean hasStarted = false;

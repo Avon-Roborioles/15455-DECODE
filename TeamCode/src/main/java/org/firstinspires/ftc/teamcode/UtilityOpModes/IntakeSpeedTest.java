@@ -20,7 +20,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 @Configurable
 public class IntakeSpeedTest extends NextFTCOpMode {
 
-    public static double maxPower=.3;
+    public static double maxPower=.2;
 
     public IntakeSpeedTest(){
         addComponents(
@@ -32,6 +32,7 @@ public class IntakeSpeedTest extends NextFTCOpMode {
 
 
     public void onStartButtonPressed(){
+        DrumSubsystem.INSTANCE.setZero(0);
         Path forward = new Path(
                 new BezierLine(
                         new Pose(0,0),

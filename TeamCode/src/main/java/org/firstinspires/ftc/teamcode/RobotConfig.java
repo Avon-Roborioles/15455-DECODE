@@ -4,6 +4,9 @@ import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathConstraints;
 
+import org.firstinspires.ftc.teamcode.Enums.ArtifactColor;
+import org.firstinspires.ftc.teamcode.Enums.Pattern;
+
 import dev.nextftc.control.KineticState;
 import dev.nextftc.hardware.impl.CRServoEx;
 
@@ -44,6 +47,8 @@ public class RobotConfig {
         public static double[] purpleTemplate = {0.232,0.344,0.427};
         public static double[] greenTemplate = {0.14,0.49,0.37};
 
+        public static double distanceThreshold = 2.5+.8;
+
 
     }
 
@@ -56,6 +61,30 @@ public class RobotConfig {
         public static String servoName ="ejectServo";
         public static KineticState kineticStateTolerance = new KineticState(20,0);
 
+        //ppg id = 23
+        public static Pattern ppgPattern = new Pattern.PatternBuilder()
+                .first(ArtifactColor.PURPLE)
+                .second(ArtifactColor.PURPLE)
+                .third(ArtifactColor.GREEN)
+                .build();
+
+        //pgp id = 22
+        public static Pattern pgpPattern = new Pattern.PatternBuilder()
+                .first(ArtifactColor.PURPLE)
+                .second(ArtifactColor.GREEN)
+                .third(ArtifactColor.PURPLE)
+                .build();
+
+
+        //gpp id = 21
+        public static Pattern gppPattern = new Pattern.PatternBuilder()
+                .first(ArtifactColor.GREEN)
+                .second(ArtifactColor.PURPLE)
+                .third(ArtifactColor.PURPLE)
+                .build();
+
+
+
     }
     public static class LauncherConstant{
 
@@ -67,5 +96,8 @@ public class RobotConfig {
 
     public static class FieldConstants {
         public static Pose redGoal = new Pose(51,-53);
+    }
+    public static class GlobalConstants {
+        public static Pose startPose = new Pose(-69.667,-.525,Math.toRadians(-177.57));
     }
 }
