@@ -1,17 +1,16 @@
 package org.firstinspires.ftc.teamcode.Subsytems;
 
+import static org.firstinspires.ftc.teamcode.RobotConfig.SensorConstants.*;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Enums.ArtifactColor;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
-
-import dev.nextftc.core.subsystems.Subsystem;
-import dev.nextftc.ftc.ActiveOpMode;
 
 public class ArtifactSensor  {
 
@@ -31,8 +30,8 @@ public class ArtifactSensor  {
 
 
     public ArtifactSensor(HardwareMap hMap){
-        sensor=hMap.get(ColorSensor.class,"colorSensor");
-        dSensor = hMap.get(DistanceSensor.class,"distanceSensor");
+        sensor=hMap.get(ColorSensor.class,colorSensorName);
+        dSensor = hMap.get(DistanceSensor.class, distanceSensorName);
 
 //        new TelemetryData("Red",()->1.*nRed);
 //        new TelemetryData("Green",()->1.*nGreen);
@@ -67,9 +66,7 @@ public class ArtifactSensor  {
 
     public ArtifactColor read() {
         ArtifactColor color;
-        double[] normal = {.244,.424,.346};
-        double[] purpleTemplate = {.232,.344,.427};
-        double[] greenTemplate = {.14,.49,.37};
+
 
 
 

@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 
-@TeleOp(group = "Subsystem")
+@TeleOp
 public class IntakeTest extends NextFTCOpMode {
     public IntakeTest(){
         addComponents(

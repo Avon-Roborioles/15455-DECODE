@@ -1,23 +1,35 @@
 package org.firstinspires.ftc.teamcode.CompOpmodes;
 
+import static dev.nextftc.extensions.pedro.PedroComponent.follower;
+import static org.firstinspires.ftc.teamcode.RobotConfig.TeleOpConstants.*;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Commands.PatternSetCommand;
 import org.firstinspires.ftc.teamcode.Commands.PedroDriveCommand;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.PoseTrackerComponent;
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Subsytems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 
 import dev.nextftc.bindings.BindingManager;
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
+import dev.nextftc.core.commands.utility.ForcedParallelCommand;
 import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.PedroComponent;
@@ -32,9 +44,7 @@ import dev.nextftc.ftc.components.LoopTimeComponent;
 public abstract class CompTeleOp extends NextFTCOpMode {
 
 
-    PedroDriverControlled fieldCentric;
-    PedroDriveCommand robotCentric;
-    Follower follower;
+    public Servo servo;
 
     public CompTeleOp(){
         addComponents(
@@ -43,86 +53,129 @@ public abstract class CompTeleOp extends NextFTCOpMode {
                 BindingsComponent.INSTANCE,
                 new TelemetryComponent(),
                 new LoopTimeComponent(),
-                BulkReadComponent.INSTANCE
+                BulkReadComponent.INSTANCE,
+                new PoseTrackerComponent()
         );
     }
 
 
     @Override
     public void onStartButtonPressed(){
-
-
+        servo =hardwareMap.get(Servo.class,"driverLight");
         BindingManager.update();
-        follower=PedroComponent.follower();
+        Follower follower=PedroComponent.follower();
         follower.setPose(new Pose());
-        Gamepads.gamepad2().dpadUp().whenBecomesTrue(new PatternSetCommand());
-        Gamepads.gamepad1().rightTrigger().atLeast(.7).whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBalls);
-        Gamepads.gamepad1().leftTrigger().atLeast(.7).whenBecomesTrue(
-                new SequentialGroup(
-                        new ParallelGroup(
-                                DrumSubsystem.INSTANCE.servoEject,
-                                LauncherSubsystem.INSTANCE.runToCalculatedPos
-                        ),
-                        new Delay(.5),
-                        //new InstantCommand(()->new TelemetryItem(()->"Running Finished")),
-                        DrumSubsystem.INSTANCE.shootPattern,
-                        new Delay(2),
-                        new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.schedule())
+        Gamepads.gamepad2().dpadUp().inLayer(normalOperationLayer).whenBecomesTrue(new PatternSetCommand());
+        Gamepads.gamepad1().rightTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBalls);
+
+        Gamepads.gamepad1().rightBumper().inLayer(normalOperationLayer).whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBallsWithPause);
+
+        Gamepads.gamepad1().b().inLayer(normalOperationLayer).whenBecomesTrue(DrumSubsystem.INSTANCE.spitOutIntakeWheels);
+        Gamepads.gamepad1().b().inLayer(normalOperationLayer).whenBecomesFalse(DrumSubsystem.INSTANCE.stopIntakeWheels);
 
 
-                )
-        );
-        Gamepads.gamepad1().rightBumper().whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBallsWithPause);
-        Gamepads.gamepad1().x().whenBecomesTrue(DrumSubsystem.INSTANCE.stopIntakeWheels);
-        Gamepads.gamepad1().dpadDown().whenBecomesTrue(DrumSubsystem.INSTANCE.zero);
-        Gamepads.gamepad1().dpadLeft().whenBecomesTrue(new SequentialGroup(
-                LauncherSubsystem.INSTANCE.runToCalculatedPos,
-
-                DrumSubsystem.INSTANCE.rapidOuttake
-        ));
-        fieldCentric= new PedroDriverControlled(
-
+        Command normalDrive= new PedroDriverControlled(
                 Gamepads.gamepad1().leftStickY().negate().deadZone(.1),
                 Gamepads.gamepad1().leftStickX().negate().deadZone(.1),
                 Gamepads.gamepad1().rightStickX().negate().deadZone(.1).map((Double input)->{return input/3;}),
                 false
-        );
-        fieldCentric.requires(DriveSubsystem.INSTANCE);
-        robotCentric=new PedroDriveCommand(
-                follower,
+        ).requires(DriveSubsystem.INSTANCE).setInterruptible(true).named("Field Centric");
+
+        Command robotCentric = new PedroDriverControlled(
                 Gamepads.gamepad1().leftStickY().negate().deadZone(.1),
                 Gamepads.gamepad1().leftStickX().negate().deadZone(.1),
                 Gamepads.gamepad1().rightStickX().negate().deadZone(.1).map((Double input)->{return input/3;}),
                 true
-        );
-        robotCentric.requires(DriveSubsystem.INSTANCE);
+        ).requires(DriveSubsystem.INSTANCE).setInterruptible(true).named("Robot Centric");
 
-        //fieldCentric.schedule();
-        Gamepads.gamepad1().rightStickButton().whenBecomesTrue(robotCentric);
-        Gamepads.gamepad1().rightStickButton().whenBecomesFalse(fieldCentric);
-               hasStarted=false;
+        Command realNormalDrive = new SequentialGroup(
+                new Delay(.015),
+                normalDrive
+        );
+        Command realRobotCentric = new SequentialGroup(
+                new Delay(.015),
+                robotCentric
+        );
+
+
+        Gamepads.gamepad1().leftStickButton().whenBecomesTrue(realRobotCentric);
+        Gamepads.gamepad1().leftStickButton().whenBecomesFalse(realNormalDrive);
+
+
+        Command aprilTagTracking = new SequentialGroup(
+                new ParallelGroup(
+                        new SequentialGroup(
+                                LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                                new InstantCommand(()->new TelemetryItem(()->"Finished Running to speed"))
+                        ),
+                        new SequentialGroup(
+                                new InstantCommand(()->servo.setPosition(.63)),
+                                new Delay(.015),
+                                LimelightSubsystem.INSTANCE.aprilTagAim,
+                                DriveSubsystem.INSTANCE.targetDrive,
+                                new InstantCommand(DriveSubsystem.INSTANCE::resetLastAprilTagReadms),
+                                new InstantCommand(()-> follower().holdPoint(follower.getPose())),
+                                new InstantCommand(()->new TelemetryItem(()->"Finished Aiming")),
+                                new InstantCommand(()->servo.setPosition(.5))
+                        )
+                ),
+                new SequentialGroup(
+                        DrumSubsystem.INSTANCE.servoEject,
+                        new Delay(.5),
+                        DrumSubsystem.INSTANCE.shootPattern,
+                        new Delay(.5),
+                        new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.schedule())
+                ),
+                new InstantCommand(follower::breakFollowing),
+                new InstantCommand(()->servo.setPosition(.388))
+
+        ).requires(LimelightSubsystem.INSTANCE,DriveSubsystem.INSTANCE).setInterruptible(true).named("April Tag Alignment");
+        Gamepads.gamepad1().leftTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(aprilTagTracking);
+
+        BindingManager.setLayer(RobotConfig.TeleOpConstants.normalOperationLayer);
+        DriveSubsystem.INSTANCE.setDefaultCommand(realNormalDrive);
+
+        Gamepads.gamepad2().rightBumper()
+                .inLayer(normalOperationLayer).whenBecomesTrue(
+                        new SequentialGroup(
+                                DrumSubsystem.INSTANCE.manual,
+                                new InstantCommand(()->BindingManager.setLayer(debugOperationLayer))
+                        )
+                );
+
+        //DEBUG COMMANDS
+
+        Gamepads.gamepad2().a().inLayer(debugOperationLayer).whenBecomesTrue(DrumSubsystem.INSTANCE.rotateIntakeWheels);
+        Gamepads.gamepad2().a().inLayer(debugOperationLayer).whenBecomesFalse(DrumSubsystem.INSTANCE.stopIntakeWheels);
+
+        Gamepads.gamepad2().rightBumper().inLayer(debugOperationLayer).whenBecomesTrue(LauncherSubsystem.INSTANCE::increaseRPMby50);
+        Gamepads.gamepad2().leftBumper().inLayer(debugOperationLayer).whenBecomesTrue(LauncherSubsystem.INSTANCE::decreaseRPMby50);
+        Gamepads.gamepad2().y().inLayer(debugOperationLayer).whenBecomesTrue(LauncherSubsystem.INSTANCE::calculateVelocity);
+        Gamepads.gamepad2().rightStickButton().inLayer(debugOperationLayer).whenBecomesTrue(LauncherSubsystem.INSTANCE::stop);
+        Gamepads.gamepad2().rightBumper().and(Gamepads.gamepad2().leftBumper()).and(Gamepads.gamepad2().dpadDown()).and(Gamepads.gamepad2().x())
+                .inLayer(debugOperationLayer).whenBecomesTrue(
+                        new SequentialGroup(
+                                DrumSubsystem.INSTANCE.manual,
+                                new InstantCommand(()->BindingManager.setLayer(normalOperationLayer))
+                        )
+                );
+        Gamepads.gamepad2().rightTrigger().atLeast(.7).inLayer(debugOperationLayer).whenBecomesTrue(DrumSubsystem.INSTANCE.servoEject);
+        Gamepads.gamepad2().leftTrigger().atLeast(.7).inLayer(debugOperationLayer).whenBecomesTrue(DrumSubsystem.INSTANCE.servoFreeRotate);
+
+        new TelemetryItem(()->"Current Layer: " +BindingManager.getLayer());
+        new TelemetryItem(()->"G2 Right Bumper"+Gamepads.gamepad2().rightBumper().get());
     }
 
-    boolean hasStarted = false;
+
 
     @Override
     public void onUpdate(){
-        if (!hasStarted){
-            hasStarted=true;
-            fieldCentric.schedule();
-        }
-
-//        follower().setTeleOpDrive(
-//                gamepad1.left_stick_y,
-//                gamepad1.left_stick_x,
-//                -.25*gamepad1.right_stick_x,
-//                true
-//        );
-//        if (true||!CommandManager.INSTANCE.hasCommandsUsing(DriveSubsystem.INSTANCE)){
-//            DriveSubsystem.INSTANCE.normalDrive.schedule();
-//        }
         BindingManager.update();
 
+    }
+    @Override
+    public void onStop(){
+        CommandManager.INSTANCE.cancelAll();
     }
 
 }

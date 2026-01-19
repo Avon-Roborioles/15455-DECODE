@@ -5,6 +5,7 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 
 import java.util.List;
 
@@ -45,6 +46,11 @@ public class LimelightSubsystem implements Subsystem {
         LLResult result = limelight.getLatestResult();
         if (result!=null&&result.isValid()){
             return result.getTx();
+        }
+        if (result==null){
+            TelemetryManager.getInstance().addTempTelemetry("Null");
+        } else if (!result.isValid()){
+            TelemetryManager.getInstance().addTempTelemetry("Not Valid");
         }
         throw new Exception();
     }

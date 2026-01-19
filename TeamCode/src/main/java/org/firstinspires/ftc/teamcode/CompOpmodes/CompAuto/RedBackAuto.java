@@ -18,7 +18,10 @@ import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
+import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
+import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
@@ -44,7 +47,7 @@ public class RedBackAuto extends NextFTCOpMode {
     }
 
     public void onStartButtonPressed(){
-        //PedroComponent.follower().setPose(new Pose(-69.667,-.525,Math.toRadians(-177.57)));
+        PedroComponent.follower().setPose(new Pose(-69.667,-.525,Math.toRadians(-180)));
         DrumSubsystem.INSTANCE.readyAuto();
         Path startTurnToShoot = new Path(
                 new BezierLine(
@@ -52,15 +55,38 @@ public class RedBackAuto extends NextFTCOpMode {
                         new Pose(-67.24,-2.7)
                 )
         );
-        startTurnToShoot.setLinearHeadingInterpolation(Math.toRadians(-177),Math.toRadians(165.8));
+        startTurnToShoot.setLinearHeadingInterpolation(Math.toRadians(180),Math.toRadians(155.8));
+        Path backToIntake3 = new Path(
+                new BezierLine(
+                        new Pose(-67.27,-2.7),
+                        new Pose(-44.58,-16.52)
+                )
+        );
+        backToIntake3.setLinearHeadingInterpolation(Math.toRadians(-160),Math.toRadians(-89.0390));
         FollowPath startTurnToShootCommand = new FollowPath(startTurnToShoot);
+        Path intake3 = new Path(
+                new BezierLine(
+
+                        new Pose(-44.58,-16.52),
+                        new Pose(-44.58,-42.52)
+                )
+        );
+        intake3.setLinearHeadingInterpolation(Math.toRadians(-90.03),Math.toRadians(-90.03));
 
         new TelemetryItem(()->"Pose: "+PedroComponent.follower().getPose());
         Command autoRoutine = new SequentialGroup(
                 LimelightSubsystem.INSTANCE.detectObelisk,
                 startTurnToShootCommand,
                 LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootPattern
+                DrumSubsystem.INSTANCE.shootPattern,
+                new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
+                new FollowPath(backToIntake3),
+                new ParallelGroup(
+                        DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
+                        new InstantCommand(()->PedroComponent.follower().setMaxPower(.35)),
+                        new FollowPath(intake3)
+                ),
+                new InstantCommand(()->PedroComponent.follower().setMaxPower(1))
         );
         autoRoutine.schedule();
 

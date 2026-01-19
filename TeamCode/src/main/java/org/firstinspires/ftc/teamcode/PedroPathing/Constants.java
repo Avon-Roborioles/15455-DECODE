@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.PedroPathing;
 
+import static org.firstinspires.ftc.teamcode.RobotConfig.DriveConstants.*;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
@@ -16,41 +17,40 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(12.35)
-            .forwardZeroPowerAcceleration(-42.44)
-            .lateralZeroPowerAcceleration(-61.21)
-            .translationalPIDFCoefficients(new PIDFCoefficients(.6,.0001,.055,0))
-            .headingPIDFCoefficients(new PIDFCoefficients(5,7,.2,.01))
+            .mass(mass)
+            .forwardZeroPowerAcceleration(forwardZPwrAcc)
+            .lateralZeroPowerAcceleration(lateralZPwrAcc)
+            .translationalPIDFCoefficients(translationalPID)
+            .headingPIDFCoefficients(headingPID)
             .useSecondaryDrivePIDF(true)
-            .centripetalScaling(.0009)
+            .centripetalScaling(centripetalScaling)
             ;
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1)
-            ;
+    public static PathConstraints pathConstraints = constraints;
 
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
-            .rightFrontMotorName("frontRight")
-            .leftFrontMotorName("frontLeft")
-            .leftRearMotorName("backLeft")
-            .rightRearMotorName("backRight")
+            .rightFrontMotorName(frontRightWheel)
+            .leftFrontMotorName(frontLeftWheel)
+            .leftRearMotorName(backLeftWheel)
+            .rightRearMotorName(backRightWheel)
             .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity( 75.64)
-            .yVelocity(58.5)
+            .xVelocity( xVelocity)
+            .yVelocity(yVelocity)
 
 
             ;
 
     public static PinpointConstants pinpointConstants = new PinpointConstants()
-            .strafePodX(-3.25)
-            .forwardPodY(-5.575)
+            .strafePodX(strafePodX)
+            .forwardPodY(strafePodY)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-            .hardwareMapName("pinpoint")
+            .hardwareMapName(pinpointName)
             ;
 
 

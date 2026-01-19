@@ -54,7 +54,8 @@ public class HeadingPController extends NextFTCOpMode {
                         .setStop((Boolean b)->follower().breakFollowing())
         ).requires(LimelightSubsystem.INSTANCE,DriveSubsystem.INSTANCE);
 
-        runCommand.schedule();
+
+        Gamepads.gamepad1().b().whenBecomesTrue(runCommand);
         BindingManager.update();
     }
 

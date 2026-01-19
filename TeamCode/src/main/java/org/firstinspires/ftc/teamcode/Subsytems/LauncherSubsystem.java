@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode.Subsytems;
 
+
+import static org.firstinspires.ftc.teamcode.RobotConfig.LauncherConstant.*;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
-import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
@@ -17,74 +19,85 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.extensions.pedro.PedroComponent;
+import dev.nextftc.ftc.ActiveOpMode;
+import dev.nextftc.ftc.Gamepads;
+import dev.nextftc.hardware.controllable.MotorGroup;
 import dev.nextftc.hardware.impl.MotorEx;
+import dev.nextftc.hardware.impl.VoltageCompensatingMotor;
 
 @Configurable
 public class LauncherSubsystem implements Subsystem {
 
     public static final LauncherSubsystem INSTANCE = new LauncherSubsystem();
-    private final double ticksPerRev = 537.6;
+    private MotorEx cHubMotor  =new MotorEx(cHubLaunchName);
+    private MotorEx eHubMotor = new MotorEx(eHubLaunchName);
+    private VoltageCompensatingMotor cHubLaunchMotor = new VoltageCompensatingMotor(cHubMotor);
+    private VoltageCompensatingMotor eHubLaunchMotor = new VoltageCompensatingMotor(eHubMotor);
+    private MotorGroup launchGroup = new MotorGroup(
+            cHubMotor,
+            eHubMotor
+    );
+    private double lastTickTime = 0;
+    private double deltaCharge =0;
 
-    private MotorEx launchMotor = new MotorEx("launchMotor");
 
-
-    public static double vkP=.02;
+    public static double vkP=.00;
     public static double vkI=0;
     public static double vkD=0;
 
-    public static double kV = .001;
-    public static double kA =.005;
-    public static double rpmMultiplier=.01;
+    public static double kV = .000;
+    public static double kA =.00;
+
+    public static double shootRPM = 1600;
 
 
     PIDCoefficients coefficients=new PIDCoefficients(.02);
-    BasicFeedforwardParameters basicFeedforwardParameters=new BasicFeedforwardParameters(.001,.005);
+    BasicFeedforwardParameters basicFeedforwardParameters=new BasicFeedforwardParameters(kV,kA);
 
     private ControlSystem normalControlSystem = ControlSystem.builder()
             .velPid(coefficients)
             .basicFF(basicFeedforwardParameters)
             //.angular(AngleType.REVOLUTIONS,feedback->feedback.velPid(1))
             .build();
-    private ControlSystem controlSystem = ControlSystem.builder()
-            .velPid(coefficients)
 
-            //.angular(AngleType.REVOLUTIONS,feedback->feedback.velPid(1))
-            .build();
 
-    private static double rpm;
+    private  double rpm;
     public static double distanceCm= 100;
-    public static double realPower=1;
+    public static double realPower=0 ;
     public Command runToCalculatedPos= new LambdaCommand()
             .setUpdate(this::calculateVelocity)
-            .setIsDone(()->controlSystem.isWithinTolerance(new KineticState(50,0,0)));
+            .setIsDone(()-> Gamepads.gamepad1().b().get()||normalControlSystem.isWithinTolerance(new KineticState(50,100,0)))
+            .setStop((Boolean b)->{if (b){rpm=0;}});
     public Command stop= new LambdaCommand()
             .setUpdate(this::stop)
-            .setIsDone(()->controlSystem.isWithinTolerance(new KineticState(50,0,0)));
+            .setIsDone(()->true);
 
 
     @Override
     public void initialize(){
-
+        deltaCharge=0;
         rpm =0;
-        launchMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        launchMotor.setDirection(-1);
-        new TelemetryData("Position",()->launchMotor.getCurrentPosition());
-        new TelemetryData("Velocity",()->-launchMotor.getVelocity());
-        new TelemetryData("Velocity (Deg)",()->-launchMotor.getMotor().getVelocity(AngleUnit.DEGREES));
-        new TelemetryData("Velocity (Deg ->RPM)",()->-launchMotor.getMotor().getVelocity(AngleUnit.DEGREES)/360*60);
-        new TelemetryData("Target Velocity",()->rpm);
-        //new TelemetryData("Current RPM",()-> launchMotor.getMotor().getVelocity(AngleUnit.RADIANS)*2*Math.PI);
+
+        eHubMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        cHubMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        cHubMotor.setDirection(-1);
+        eHubMotor.setDirection(1);
+        new TelemetryData("Launcher Position",()-> cHubMotor.getCurrentPosition());
+        new TelemetryData("Launcher Velocity",()->cHubMotor.getVelocity());
+        new TelemetryData("Launcher Target Velocity",()->rpm);
         new TelemetryData("Calculated Distance Cm",()->distanceCm);
-        new TelemetryData("Power",()->launchMotor.getPower());
-        //new TelemetryData("Version",()->1.);
+        new TelemetryData("Launcher Power",()-> launchGroup.getPower());
+        new TelemetryData("Real Power",()-> cHubMotor.getPower());
+        //new TelemetryData("Current",()-> eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS));
+        new TelemetryData("Charge Consumed",()->deltaCharge);
     }
 
-    public void increaseRPMby100(){
-        rpm+=100;
+    public void increaseRPMby50(){
+        rpm+=50;
     }
 
-    public void decreaseRPMby100(){
-        rpm-=100;
+    public void decreaseRPMby50(){
+        rpm-=50;
 
     }
     public void calculateVelocity(){
@@ -96,50 +109,52 @@ public class LauncherSubsystem implements Subsystem {
                                 Math.sin(pedroPose.getHeading())
                         ),
                         1,
-                        -9.5
+                        -7
                 )
         );
         double distance = distanceInch*2.54;
         distanceCm=distance;
         double radians = Math.toRadians(37);
-        //rpm = distance*Math.sqrt(-7614.432/ ( 2*Math.pow(Math.cos(radians),2)*(87-distance*Math.tan(radians)) ) );
+        //rpm = distance*Math.sqrt(gravity/ ( 2*Math.pow(Math.cos(radians),2)*(87-distance*Math.tan(radians)) ) );
          // 500
-        rpm = 1500;
-        controlSystem.setGoal(new KineticState(0,rpm));
+//        rpm = shootRPM;
+        rpm =0.000151386*Math.pow(distance,3)-0.121004*Math.pow(distance,2)+29.927*Math.pow(distance,1)-3629;
+        normalControlSystem.setGoal(new KineticState(0,rpm));
 
     }
-    private void stop(){
+    public void stop(){
         rpm = 0;
     }
     @Override
     public void periodic(){
-        controlSystem.setGoal(new KineticState(0,rpm));
         normalControlSystem.setGoal(new KineticState(0,rpm));
         double maxPower = 1;
         double power;
+        calculateVelocity();
+        power = normalControlSystem.calculate(cHubMotor.getState());
 
-        if (normalControlSystem.isWithinTolerance(new KineticState(0,250))) {
-            power =controlSystem.calculate(new KineticState(0, -launchMotor.getVelocity()));
-            TelemetryManager.getInstance().addTempTelemetry("In normal control system");
-        } else {
-            power = normalControlSystem.calculate(new KineticState(0,-launchMotor.getVelocity()));
-            TelemetryManager.getInstance().addTempTelemetry("In speed up control system");
-        }
         if (rpm == 0){
             power = 0;
         }
-        if (power>0&&power>maxPower){
-            power = maxPower;
-        } else if (power<0&&power<maxPower){
-            power = -maxPower;
+//        if (power>0&&power>maxPower){
+//            power = maxPower;
+//        } else if (power<0&&power<maxPower){
+//            power = -maxPower;
+//        }
+
+        if (realPower!=0)power = realPower;
+        if (ActiveOpMode.opModeIsActive()) {
+            launchGroup.setPower(power);
         }
-        power = power + rpm*rpmMultiplier;
-        power = realPower;
-        launchMotor.setPower(power);
         coefficients.kP=vkP;
         coefficients.kI=vkI;
         coefficients.kD=vkD;
         basicFeedforwardParameters.kV=kV;
         basicFeedforwardParameters.kA=kA;
+        if (lastTickTime ==0){
+            lastTickTime = System.currentTimeMillis();
+        }
+        deltaCharge+=(System.currentTimeMillis()-lastTickTime)/1000.* (cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS));
+        lastTickTime=System.currentTimeMillis();
     }
 }

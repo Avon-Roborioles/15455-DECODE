@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.PedroPathing;
+package org.firstinspires.ftc.teamcode.Tuning;
 
-import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.changes;
-import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.drawOnlyCurrent;
-import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.draw;
-import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.follower;
-import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.stopRobot;
-import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.telemetryM;
+import static org.firstinspires.ftc.teamcode.Tuning.Tuning.changes;
+import static org.firstinspires.ftc.teamcode.Tuning.Tuning.drawOnlyCurrent;
+import static org.firstinspires.ftc.teamcode.Tuning.Tuning.draw;
+import static org.firstinspires.ftc.teamcode.Tuning.Tuning.follower;
+import static org.firstinspires.ftc.teamcode.Tuning.Tuning.stopRobot;
+import static org.firstinspires.ftc.teamcode.Tuning.Tuning.telemetryM;
 
 import com.bylazar.configurables.PanelsConfigurables;
 import com.bylazar.configurables.annotations.Configurable;
@@ -24,6 +24,8 @@ import com.pedropathing.util.*;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +36,7 @@ import java.util.List;
  * @version 1.0, 6/26/2025
  */
 @Configurable
-@TeleOp(name = "Tuning", group = "Pedro Pathing")
+@TeleOp(name = "Tuning", group = "Tuning")
 public class Tuning extends SelectableOpMode {
     public static Follower follower;
 

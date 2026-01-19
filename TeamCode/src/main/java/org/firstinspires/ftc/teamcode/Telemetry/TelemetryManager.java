@@ -38,9 +38,7 @@ public class TelemetryManager {
         }
     }
     public void removeExcludedTag(String tag){
-        if (tagsToExclude.contains(tag)) {
-            tagsToExclude.remove(tag);
-        }
+        tagsToExclude.remove(tag);
     }
     public void addIncludedTag(String tag){
         if (!tagsToInclude.contains(tag)) {
@@ -48,9 +46,7 @@ public class TelemetryManager {
         }
     }
     public void removeIncludedTag(String tag){
-        if (tagsToInclude.contains(tag)) {
-            tagsToInclude.remove(tag);
-        }
+        tagsToInclude.remove(tag);
     }
     public void addTempTelemetry(String temp){
         tempTelemetry.add(temp);
@@ -62,13 +58,13 @@ public class TelemetryManager {
             boolean isValid =true;
             //exclude
             for (int j=0;j<item.getTags().size();i++){
-                if (tagsToExclude.contains(item.getTags().get(j))==false){
+                if (!tagsToExclude.contains(item.getTags().get(j))){
                     isValid=false;
                 }
             }
             //include
             for (int j=0;j<item.getTags().size();i++){
-                if (tagsToInclude.contains(item.getTags().get(j))==true){
+                if (tagsToInclude.contains(item.getTags().get(j))){
                     isValid=true;
                 }
             }
@@ -89,13 +85,13 @@ public class TelemetryManager {
             boolean isValid =true;
             //exclude
             for (int j=0;j<item.getTags().size();i++){
-                if (tagsToExclude.contains(item.getTags().get(j))==false){
+                if (!tagsToExclude.contains(item.getTags().get(j))){
                     isValid=false;
                 }
             }
             //include
             for (int j=0;j<item.getTags().size();i++){
-                if (tagsToInclude.contains(item.getTags().get(j))==true){
+                if (tagsToInclude.contains(item.getTags().get(j))){
                     isValid=true;
                 }
             }

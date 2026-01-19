@@ -26,7 +26,7 @@ public class MecanumDrive extends NextFTCOpMode {
                 new PedroComponent(Constants::createFollower),
                 BindingsComponent.INSTANCE,
                 new TelemetryComponent(),
-                new LoopTimeComponent(),
+                //new LoopTimeComponent(),
                 BulkReadComponent.INSTANCE
         );
 
@@ -38,12 +38,12 @@ public class MecanumDrive extends NextFTCOpMode {
         PedroComponent.follower().setPose(new Pose());
         PedroComponent.follower().startTeleopDrive();
 
-        new PedroDriverControlled(
-                Gamepads.gamepad1().leftStickY(),
-                Gamepads.gamepad1().leftStickX(),
-                Gamepads.gamepad1().rightStickX(),
-                false
-        ).schedule();
+//        new PedroDriverControlled(
+//                Gamepads.gamepad1().leftStickY(),
+//                Gamepads.gamepad1().leftStickX(),
+//                Gamepads.gamepad1().rightStickX(),
+//                false
+//        ).schedule();
         new TelemetryData("LSY: ",()->(double)gamepad1.left_stick_y);
         new TelemetryData("LSX: ",()->(double)gamepad1.left_stick_x);
         new TelemetryData("RSX: ",()->(double)gamepad1.right_stick_x);

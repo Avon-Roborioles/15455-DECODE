@@ -1,17 +1,12 @@
-package org.firstinspires.ftc.teamcode.UtilityOpModes;
+package org.firstinspires.ftc.teamcode.Tuning;
 
 
-import com.bylazar.panels.Panels;
-import com.bylazar.panels.json.PanelsWidget;
-import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
-import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
-import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
