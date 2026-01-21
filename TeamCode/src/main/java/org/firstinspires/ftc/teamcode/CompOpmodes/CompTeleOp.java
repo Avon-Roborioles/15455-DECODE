@@ -58,13 +58,16 @@ public abstract class CompTeleOp extends NextFTCOpMode {
         );
     }
 
+    public abstract Command getFieldCentricDrive();
+    public abstract Command getRobotCentricDrive();
+
 
     @Override
     public void onStartButtonPressed(){
         servo =hardwareMap.get(Servo.class,"driverLight");
         BindingManager.update();
         Follower follower=PedroComponent.follower();
-        follower.setPose(new Pose());
+        follower.setPose(new Pose(72,72,Math.toRadians(90)));
         Gamepads.gamepad2().dpadUp().inLayer(normalOperationLayer).whenBecomesTrue(new PatternSetCommand());
         Gamepads.gamepad1().rightTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBalls);
 

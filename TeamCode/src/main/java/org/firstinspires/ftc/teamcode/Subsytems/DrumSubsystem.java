@@ -135,7 +135,7 @@ public class DrumSubsystem implements Subsystem {
             new SetPosition(servo,servoEjectPos),
             new Delay(0.2)
     ).requires(servo);
-    private double ejectDelay = 0;
+    private double ejectDelay = 0.3;
 
 
 
@@ -158,12 +158,14 @@ public class DrumSubsystem implements Subsystem {
             ()->!isValid(false,true),
             new NullCommand(5,6),
             new SequentialGroup(
+
                     servoEject,
                     new LambdaCommand()
                             .setStart((()->this.setToOuttakeColor(ArtifactColor.PURPLE)))
                             .setIsDone(this::isWithinTolerance),
 
-                    //new Delay(ejectDelay),
+
+                    new Delay(ejectDelay),
                     new InstantCommand(this::setEjectCompartmentToNothing)
 
             )
@@ -176,7 +178,7 @@ public class DrumSubsystem implements Subsystem {
                     new LambdaCommand()
                             .setStart((()->this.setToOuttakeColor(ArtifactColor.GREEN)))
                             .setIsDone(this::isWithinTolerance),
-                    //new Delay(ejectDelay),
+                    new Delay(ejectDelay),
                     new InstantCommand(this::setEjectCompartmentToNothing)
             )
     );//.requires(servo,drumMotor);;
@@ -203,17 +205,17 @@ public class DrumSubsystem implements Subsystem {
             shootAny
     );
 
-    private Command shootFirstPattern = new IfElse(
+    public Command shootFirstPattern = new IfElse(
             ()->isNthBallGreen(1),
             shootWeakGreen,
             shootWeakPurple
     );
-    private Command shootSecondPattern = new IfElse(
+    public Command shootSecondPattern = new IfElse(
             ()->isNthBallGreen(2),
             shootWeakGreen,
             shootWeakPurple
     );
-    private Command shootThirdPattern = new IfElse(
+    public Command shootThirdPattern = new IfElse(
             ()->isNthBallGreen(3),
             shootWeakGreen,
             shootWeakPurple
@@ -228,6 +230,7 @@ public class DrumSubsystem implements Subsystem {
             //new InstantCommand(()->new TelemetryItem(()->"Shooting Third Pattern")),
             shootThirdPattern,
             new InstantCommand(this::resetNextPattern)
+
     );
 
 

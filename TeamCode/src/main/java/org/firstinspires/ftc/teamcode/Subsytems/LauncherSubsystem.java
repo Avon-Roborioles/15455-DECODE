@@ -5,11 +5,12 @@ import static org.firstinspires.ftc.teamcode.RobotConfig.LauncherConstant.*;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
@@ -20,7 +21,6 @@ import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.ActiveOpMode;
-import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.controllable.MotorGroup;
 import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.hardware.impl.VoltageCompensatingMotor;
@@ -40,12 +40,13 @@ public class LauncherSubsystem implements Subsystem {
     private double lastTickTime = 0;
     private double deltaCharge =0;
 
+    public Servo servo;
 
-    public static double vkP=.00;
+    public static double vkP=.003;
     public static double vkI=0;
     public static double vkD=0;
 
-    public static double kV = .000;
+    public static double kV = .00055;
     public static double kA =.00;
 
     public static double shootRPM = 1600;
@@ -66,7 +67,12 @@ public class LauncherSubsystem implements Subsystem {
     public static double realPower=0 ;
     public Command runToCalculatedPos= new LambdaCommand()
             .setUpdate(this::calculateVelocity)
-            .setIsDone(()-> Gamepads.gamepad1().b().get()||normalControlSystem.isWithinTolerance(new KineticState(50,100,0)))
+            .setIsDone(()-> Math.abs(rpm-cHubMotor.getVelocity())<40)
+            .setStop((Boolean b)->{if (b){rpm=0;}});
+
+    public Command runBackToCalculatedPos = new LambdaCommand()
+            .setUpdate(this::calculateVelocity)
+            .setIsDone(()-> Math.abs(rpm-cHubMotor.getVelocity())<100)
             .setStop((Boolean b)->{if (b){rpm=0;}});
     public Command stop= new LambdaCommand()
             .setUpdate(this::stop)
@@ -77,6 +83,7 @@ public class LauncherSubsystem implements Subsystem {
     public void initialize(){
         deltaCharge=0;
         rpm =0;
+        servo = ActiveOpMode.hardwareMap().get(Servo.class,"driverLight");
 
         eHubMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         cHubMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -87,7 +94,6 @@ public class LauncherSubsystem implements Subsystem {
         new TelemetryData("Launcher Target Velocity",()->rpm);
         new TelemetryData("Calculated Distance Cm",()->distanceCm);
         new TelemetryData("Launcher Power",()-> launchGroup.getPower());
-        new TelemetryData("Real Power",()-> cHubMotor.getPower());
         //new TelemetryData("Current",()-> eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS));
         new TelemetryData("Charge Consumed",()->deltaCharge);
     }
@@ -127,10 +133,10 @@ public class LauncherSubsystem implements Subsystem {
     }
     @Override
     public void periodic(){
-        normalControlSystem.setGoal(new KineticState(0,rpm));
+        normalControlSystem.setGoal(new KineticState(launchGroup.getCurrentPosition(),rpm));
         double maxPower = 1;
         double power;
-        calculateVelocity();
+        //calculateVelocity();
         power = normalControlSystem.calculate(cHubMotor.getState());
 
         if (rpm == 0){
@@ -156,5 +162,13 @@ public class LauncherSubsystem implements Subsystem {
         }
         deltaCharge+=(System.currentTimeMillis()-lastTickTime)/1000.* (cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS));
         lastTickTime=System.currentTimeMillis();
+        if (normalControlSystem.isWithinTolerance(new KineticState(0,40))){
+            servo.setPosition(.5);
+            TelemetryManager.getInstance().addTempTelemetry("Finished Speed");
+        } else {
+            servo.setPosition(.63);
+            TelemetryManager.getInstance().addTempTelemetry("NOT FINISHED");
+
+        }
     }
 }

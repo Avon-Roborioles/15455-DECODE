@@ -1,13 +1,10 @@
 package org.firstinspires.ftc.teamcode.CompOpmodes.CompAuto;
 
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.*;
 import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
-import com.pedropathing.paths.PathBuilder;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Commands.PedroDriveCommand;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.PoseTrackerComponent;
 import org.firstinspires.ftc.teamcode.Subsytems.DriveSubsystem;
@@ -18,11 +15,10 @@ import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 
 import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
+import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
-import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
@@ -47,46 +43,130 @@ public class RedBackAuto extends NextFTCOpMode {
     }
 
     public void onStartButtonPressed(){
-        PedroComponent.follower().setPose(new Pose(-69.667,-.525,Math.toRadians(-180)));
+        PedroComponent.follower().setPose(redBackStart);
         DrumSubsystem.INSTANCE.readyAuto();
         Path startTurnToShoot = new Path(
                 new BezierLine(
-                        new Pose(-69.667,-.525),
-                        new Pose(-67.24,-2.7)
+                        redBackStart,
+                        redBackPose2
                 )
         );
-        startTurnToShoot.setLinearHeadingInterpolation(Math.toRadians(180),Math.toRadians(155.8));
+        startTurnToShoot.setLinearHeadingInterpolation(redBackStart.getHeading(),redBackPose2.getHeading());
         Path backToIntake3 = new Path(
                 new BezierLine(
-                        new Pose(-67.27,-2.7),
-                        new Pose(-44.58,-16.52)
+                        redBackPose2,
+                        redBackPose3
                 )
         );
-        backToIntake3.setLinearHeadingInterpolation(Math.toRadians(-160),Math.toRadians(-89.0390));
+        backToIntake3.setLinearHeadingInterpolation(redBackPose2.getHeading(), redBackPose3.getHeading());
         FollowPath startTurnToShootCommand = new FollowPath(startTurnToShoot);
         Path intake3 = new Path(
                 new BezierLine(
 
-                        new Pose(-44.58,-16.52),
-                        new Pose(-44.58,-42.52)
+                        redBackPose3,
+                        redBackPose4
                 )
         );
-        intake3.setLinearHeadingInterpolation(Math.toRadians(-90.03),Math.toRadians(-90.03));
+        intake3.setLinearHeadingInterpolation(0,0);
+        FollowPath backToIntake3Command = new FollowPath(backToIntake3);
+        FollowPath intake3Command = new FollowPath(intake3);
+
+        Path intake3ToShoot = new Path(
+                new BezierLine(
+                        redBackPose4,
+                        redBackPose2
+                )
+        );
+        intake3ToShoot.setLinearHeadingInterpolation(redBackPose4.getHeading(), redBackPose2.getHeading());
+
+        Path shootToIntakeHPZone = new Path(
+                new BezierLine(
+                        redBackPose2,
+                        redHPZoneIntakeStart
+                )
+        );
+        shootToIntakeHPZone.setLinearHeadingInterpolation(redBackPose2.getHeading(), redHPZoneIntakeStart.getHeading());
+
+        Path intakeHP = new Path(
+                new BezierLine(
+                        redHPZoneIntakeStart,
+                        redHPZoneIntakeEnd
+                )
+        );
+        intakeHP.setLinearHeadingInterpolation(redHPZoneIntakeStart.getHeading(), redHPZoneIntakeEnd.getHeading());
+
+        Path intakeHpToShoot = new Path(
+                new BezierLine(
+                        redHPZoneIntakeEnd,
+                        redBackPose2
+                )
+        );
+        intakeHpToShoot.setLinearHeadingInterpolation(redHPZoneIntakeEnd.getHeading(), redBackPose2.getHeading());
+
 
         new TelemetryItem(()->"Pose: "+PedroComponent.follower().getPose());
         Command autoRoutine = new SequentialGroup(
-                LimelightSubsystem.INSTANCE.detectObelisk,
-                startTurnToShootCommand,
-                LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootPattern,
+                new ParallelGroup(
+                        new SequentialGroup(
+                                LimelightSubsystem.INSTANCE.detectObelisk,
+                                startTurnToShootCommand
+                        ),
+                        LauncherSubsystem.INSTANCE.runToCalculatedPos
+                ),
+
+                new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
+                DrumSubsystem.INSTANCE.shootFirstPattern,
+                LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
+                DrumSubsystem.INSTANCE.shootSecondPattern,
+                LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
+                DrumSubsystem.INSTANCE.shootThirdPattern,
+
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
-                new FollowPath(backToIntake3),
+
                 new ParallelGroup(
                         DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
-                        new InstantCommand(()->PedroComponent.follower().setMaxPower(.35)),
-                        new FollowPath(intake3)
+
+                        new SequentialGroup(
+                                backToIntake3Command,
+                                //new Delay(500),
+                                new InstantCommand(()->PedroComponent.follower().setMaxPower(.75)),
+                                intake3Command
+
+                        )
                 ),
-                new InstantCommand(()->PedroComponent.follower().setMaxPower(1))
+                new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
+                new FollowPath(intake3ToShoot),
+                new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
+                LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                DrumSubsystem.INSTANCE.shootFirstPattern,
+                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                DrumSubsystem.INSTANCE.shootSecondPattern,
+                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                DrumSubsystem.INSTANCE.shootThirdPattern,
+                new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
+
+
+                new ParallelGroup(
+                        DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
+
+                        new SequentialGroup(
+                                new FollowPath(shootToIntakeHPZone),
+                                //new Delay(500),
+                                new InstantCommand(()->PedroComponent.follower().setMaxPower(.5)),
+                                new FollowPath(intakeHP)
+
+                        )
+                ),
+                new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
+                new FollowPath(intakeHpToShoot),
+                new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
+                LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                DrumSubsystem.INSTANCE.shootFirstPattern,
+                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                DrumSubsystem.INSTANCE.shootSecondPattern,
+                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                DrumSubsystem.INSTANCE.shootThirdPattern
+
         );
         autoRoutine.schedule();
 

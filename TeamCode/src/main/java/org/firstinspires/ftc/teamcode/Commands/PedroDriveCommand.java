@@ -15,27 +15,28 @@ public class PedroDriveCommand extends Command {
     Supplier<Double> turn;
     boolean isRobotCentric;
     Follower follower;
+    double offset;
 
 
-    public PedroDriveCommand(Follower follower,Supplier<Double> forward, Supplier<Double>strafe, Supplier<Double>turn, boolean isRobotCentric){
-        this.follower=follower;
+    public PedroDriveCommand(Supplier<Double> forward, Supplier<Double>strafe, Supplier<Double>turn, boolean isRobotCentric, double radiansOffset){
+
         this.forward=forward;
         this.strafe=strafe;
         this.turn=turn;
         this.isRobotCentric=isRobotCentric;
+        offset=radiansOffset;
     }
 
     public void start(){
         follower.startTeleopDrive();
-        follower.update();
     }
     public void update(){
-        follower.update();
         follower.setTeleOpDrive(
                 forward.get(),
                 strafe.get(),
                 turn.get(),
-                isRobotCentric
+                isRobotCentric,
+                offset
         );
     }
     public boolean isDone(){
