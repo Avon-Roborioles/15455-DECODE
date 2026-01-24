@@ -4,8 +4,12 @@ package org.firstinspires.ftc.teamcode.Subsytems;
 import static dev.nextftc.extensions.pedro.PedroComponent.follower;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.geometry.Pose;
 
 
+import org.firstinspires.ftc.teamcode.AllianceComponent;
+import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
@@ -31,7 +35,7 @@ public class DriveSubsystem implements Subsystem {
 
 
     public static DriveSubsystem INSTANCE = new DriveSubsystem();
-    public static double kP = 0.005;
+    public static double kP = 0.5;
     public static double kI=0.00000000003;
     public static double kD = 0.0001;
     public PIDCoefficients coefficients = new PIDCoefficients(kP,kI,kD);
@@ -79,20 +83,22 @@ public class DriveSubsystem implements Subsystem {
     }
 
     public double getAprilTagHeadingPower(){
-        double heading;
 
-        try {
 
-            double result = LimelightSubsystem.INSTANCE.getAprilTagOffset();
-
-            heading =lockOnConrolSystem.calculate(new KineticState(result));
-            TelemetryManager.getInstance().addTempTelemetry("No Exception");
-        } catch (Exception e) {
-            lockOnConrolSystem.reset();
-            heading = -Gamepads.gamepad1().getGamepad().invoke().right_stick_x;
-            TelemetryManager.getInstance().addTempTelemetry("Exception");
+        Pose difference = follower().getPose().copy().minus(RobotConfig.FieldConstants.redGoal);
+        if (AllianceComponent.getColor().equals(AllianceColor.BLUE)){
+            difference = follower().getPose().copy().minus(RobotConfig.FieldConstants.blueGoal);
         }
-        return  heading;
+
+        double requiredAngle = Math.atan2(difference.getY(),difference.getX());
+        lockOnConrolSystem.setGoal(new KineticState(requiredAngle));
+        double currentAngle = follower().getPose().getHeading();
+        double power = lockOnConrolSystem.calculate(new KineticState(currentAngle));
+        TelemetryManager.getInstance().addTempTelemetry("Lock on power: "+power);
+        TelemetryManager.getInstance().addTempTelemetry("Goal Error: "+(requiredAngle-currentAngle));
+        return power;
+
+
     }
 
     @Override

@@ -33,7 +33,7 @@ public class RedBackAuto extends NextFTCOpMode {
                 new SubsystemComponent(LauncherSubsystem.INSTANCE, DriveSubsystem.INSTANCE, DrumSubsystem.INSTANCE,LimelightSubsystem.INSTANCE),
                 new TelemetryComponent(),
                 new PedroComponent(Constants::createFollower),
-                new PoseTrackerComponent(),
+                PoseTrackerComponent.INSTANCE,
                 new LoopTimeComponent(),
                 BulkReadComponent.INSTANCE
         );
@@ -151,7 +151,6 @@ public class RedBackAuto extends NextFTCOpMode {
 
                         new SequentialGroup(
                                 new FollowPath(shootToIntakeHPZone),
-                                //new Delay(500),
                                 new InstantCommand(()->PedroComponent.follower().setMaxPower(.5)),
                                 new FollowPath(intakeHP)
 

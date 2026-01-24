@@ -45,10 +45,10 @@ public class PatternSetCommand extends Command {
         lastLeftDpad=ActiveOpMode.gamepad2().dpad_left;
         lastRightBumper=ActiveOpMode.gamepad2().right_bumper;
         lastRightDpad=ActiveOpMode.gamepad2().dpad_right;
-        if (aY){
+        if (aX){
             method.apply(ArtifactColor.PURPLE);
         }
-        if (aX){
+        if (aY){
             method.apply(ArtifactColor.GREEN);
         }
         if (aRB){

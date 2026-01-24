@@ -6,6 +6,10 @@ import dev.nextftc.core.components.Component;
 import dev.nextftc.extensions.pedro.PedroComponent;
 
 public class PoseTrackerComponent implements Component {
+    public static PoseTrackerComponent INSTANCE = new PoseTrackerComponent();
+    private PoseTrackerComponent(){
+
+    }
 
     @Override
     public void postInit(){

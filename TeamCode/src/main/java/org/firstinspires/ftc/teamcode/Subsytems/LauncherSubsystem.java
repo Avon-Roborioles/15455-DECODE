@@ -6,8 +6,11 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.AllianceComponent;
+import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
@@ -31,8 +34,7 @@ public class LauncherSubsystem implements Subsystem {
     public static final LauncherSubsystem INSTANCE = new LauncherSubsystem();
     private MotorEx cHubMotor  =new MotorEx(cHubLaunchName);
     private MotorEx eHubMotor = new MotorEx(eHubLaunchName);
-    private VoltageCompensatingMotor cHubLaunchMotor = new VoltageCompensatingMotor(cHubMotor);
-    private VoltageCompensatingMotor eHubLaunchMotor = new VoltageCompensatingMotor(eHubMotor);
+
     private MotorGroup launchGroup = new MotorGroup(
             cHubMotor,
             eHubMotor
@@ -94,8 +96,7 @@ public class LauncherSubsystem implements Subsystem {
         new TelemetryData("Launcher Target Velocity",()->rpm);
         new TelemetryData("Calculated Distance Cm",()->distanceCm);
         new TelemetryData("Launcher Power",()-> launchGroup.getPower());
-        //new TelemetryData("Current",()-> eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS));
-        new TelemetryData("Charge Consumed",()->deltaCharge);
+
     }
 
     public void increaseRPMby50(){
@@ -108,7 +109,12 @@ public class LauncherSubsystem implements Subsystem {
     }
     public void calculateVelocity(){
         Pose pedroPose = PedroComponent.follower().getPose();
-        double distanceInch = RobotConfig.FieldConstants.redGoal.distanceFrom(
+
+        Pose goal = RobotConfig.FieldConstants.redGoal;
+        if (AllianceComponent.getColor().equals(AllianceColor.BLUE)){
+            goal=RobotConfig.FieldConstants.blueGoal;
+        }
+        double distanceInch = goal.distanceFrom(
                 pedroPose.copy().linearCombination(
                         new Pose(
                                 Math.cos(pedroPose.getHeading()),
@@ -160,7 +166,7 @@ public class LauncherSubsystem implements Subsystem {
         if (lastTickTime ==0){
             lastTickTime = System.currentTimeMillis();
         }
-        deltaCharge+=(System.currentTimeMillis()-lastTickTime)/1000.* (cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS));
+        //deltaCharge+=(System.currentTimeMillis()-lastTickTime)/1000.* (cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS));
         lastTickTime=System.currentTimeMillis();
         if (normalControlSystem.isWithinTolerance(new KineticState(0,40))){
             servo.setPosition(.5);

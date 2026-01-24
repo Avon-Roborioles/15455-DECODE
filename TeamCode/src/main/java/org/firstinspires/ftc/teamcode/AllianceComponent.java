@@ -6,7 +6,8 @@ import dev.nextftc.core.components.Component;
 
 public class AllianceComponent implements Component {
 
-    private static AllianceComponent INSTANCE = null;
+    private static AllianceComponent INSTANCE;
+
     private final AllianceColor color;
     private AllianceComponent(AllianceColor color){
         this.color=color;
@@ -17,6 +18,10 @@ public class AllianceComponent implements Component {
             INSTANCE=new AllianceComponent(color);
         }
         return INSTANCE;
+    }
+
+    public static AllianceColor getColor(){
+        return INSTANCE.color;
     }
 
 

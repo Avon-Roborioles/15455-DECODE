@@ -7,8 +7,9 @@ import java.util.function.Supplier;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.Gamepads;
+import dev.nextftc.hardware.driving.DriverControlledCommand;
 
-public class PedroDriveCommand extends Command {
+public class PedroDriveCommand extends DriverControlledCommand {
 
     Supplier<Double> forward;
     Supplier<Double> strafe;
@@ -25,12 +26,16 @@ public class PedroDriveCommand extends Command {
         this.turn=turn;
         this.isRobotCentric=isRobotCentric;
         offset=radiansOffset;
+        follower=PedroComponent.follower();
     }
 
     public void start(){
         follower.startTeleopDrive();
     }
-    public void update(){
+
+
+    @Override
+    public void calculateAndSetPowers(double [] powers){
         follower.setTeleOpDrive(
                 forward.get(),
                 strafe.get(),
@@ -38,9 +43,6 @@ public class PedroDriveCommand extends Command {
                 isRobotCentric,
                 offset
         );
-    }
-    public boolean isDone(){
-        return false;
     }
 
 }

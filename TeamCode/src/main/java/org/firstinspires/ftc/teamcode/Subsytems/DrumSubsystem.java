@@ -776,7 +776,14 @@ public class DrumSubsystem implements Subsystem {
         TelemetryManager.getInstance().addTempTelemetry("Modified Target: "+ finalModifiedTarget);
         return modifiedTarget;
     }
-
+    public void resetZero(){
+        setZero(0);
+    }
+    public void resetCompartments(){
+        for (Compartment compartment: compartments){
+            compartment.setColor(ArtifactColor.NOTHING);
+        }
+    }
     public void updateTarget(){
         ArrayList<Double> doubleTargets = new ArrayList<>();
 

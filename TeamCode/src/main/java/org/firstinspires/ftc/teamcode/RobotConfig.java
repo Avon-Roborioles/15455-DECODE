@@ -119,11 +119,12 @@ public class RobotConfig {
     }
 
     public static class FieldConstants {
-        public static Pose center= new Pose(72,72);
+        public static Pose center= new Pose(72,72, Math.toRadians(90));
         public static Pose redGoal = new Pose(72+70.5,72+70.5);
+        public static Pose blueGoal = new Pose (72-70.5,72+70.5);
     }
     public static class GlobalConstants {
-        public static Pose startPose = new Pose(79,9);
+        public static Pose startPose = FieldConstants.center;
     }
 
     public static class PoseConstants {
@@ -132,6 +133,6 @@ public class RobotConfig {
         public static Pose redBackPose3 = new Pose(98,35,Math.toRadians(0));
         public static Pose redBackPose4 = new Pose(132,35,Math.toRadians(0));
         public static Pose redHPZoneIntakeStart = new Pose(134,26,Math.toRadians(-30));
-        public static Pose redHPZoneIntakeEnd = new Pose(redHPZoneIntakeStart.getX(),9,Math.toRadians(-30));
+        public static Pose redHPZoneIntakeEnd = new Pose(redHPZoneIntakeStart.getX(),9,redHPZoneIntakeStart.getHeading());
     }
 }

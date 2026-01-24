@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.AllianceComponent;
 import org.firstinspires.ftc.teamcode.Commands.PedroDriveCommand;
 import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
+import org.firstinspires.ftc.teamcode.Subsytems.DriveSubsystem;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.ftc.Gamepads;
@@ -24,7 +25,7 @@ public class BlueCompTeleOp extends CompTeleOp {
                 Gamepads.gamepad1().rightStickX().negate().deadZone(.1).map((Double input)->{return input/3;}),
                 false,
                 Math.toRadians(180)
-        );
+        ).requires(DriveSubsystem.INSTANCE);
     }
 
     @Override
@@ -35,6 +36,6 @@ public class BlueCompTeleOp extends CompTeleOp {
                 Gamepads.gamepad1().rightStickX().negate().deadZone(.1).map((Double input)->{return input/3;}),
                 true,
                 Math.toRadians(0)
-        );
+        ).requires(DriveSubsystem.INSTANCE);
     }
 }
