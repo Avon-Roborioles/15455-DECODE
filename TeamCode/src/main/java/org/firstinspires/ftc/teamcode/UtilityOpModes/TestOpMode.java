@@ -1,16 +1,19 @@
-package org.firstinspires.ftc.teamcode.CompOpmodes;
+package org.firstinspires.ftc.teamcode.UtilityOpModes;
 
+import static org.firstinspires.ftc.teamcode.RobotConfig.TeleOpConstants.debugOperationLayer;
+import static org.firstinspires.ftc.teamcode.RobotConfig.TeleOpConstants.normalOperationLayer;
 import static dev.nextftc.extensions.pedro.PedroComponent.follower;
-import static org.firstinspires.ftc.teamcode.RobotConfig.TeleOpConstants.*;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.AllianceComponent;
 import org.firstinspires.ftc.teamcode.Commands.PatternSetCommand;
+import org.firstinspires.ftc.teamcode.Commands.PedroDriveCommand;
 import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.PoseTrackerComponent;
@@ -39,14 +42,13 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 import dev.nextftc.ftc.components.LoopTimeComponent;
 
-
-
-public abstract class CompTeleOp extends NextFTCOpMode {
+@TeleOp
+public  class TestOpMode extends NextFTCOpMode {
 
 
     public Servo servo;
 
-    public CompTeleOp(){
+    public TestOpMode(){
         addComponents(
                 new SubsystemComponent(DrumSubsystem.INSTANCE, LauncherSubsystem.INSTANCE, DriveSubsystem.INSTANCE, LimelightSubsystem.INSTANCE),
                 new PedroComponent(Constants::createFollower),
@@ -54,12 +56,11 @@ public abstract class CompTeleOp extends NextFTCOpMode {
                 new TelemetryComponent(),
                 new LoopTimeComponent(),
                 BulkReadComponent.INSTANCE,
-                PoseTrackerComponent.INSTANCE
+                AllianceComponent.getINSTANCE(AllianceColor.RED)
         );
     }
 
-    public abstract Command getFieldCentricDrive();
-    public abstract Command getRobotCentricDrive();
+
 
 
     @Override
@@ -67,7 +68,7 @@ public abstract class CompTeleOp extends NextFTCOpMode {
         servo =hardwareMap.get(Servo.class,"driverLight");
         //BindingManager.update();
         Follower follower=PedroComponent.follower();
-
+        follower.setPose(RobotConfig.FieldConstants.center);
         Gamepads.gamepad2().dpadUp().inLayer(normalOperationLayer).whenBecomesTrue(new PatternSetCommand());
         Gamepads.gamepad1().rightTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBalls);
 
@@ -77,9 +78,21 @@ public abstract class CompTeleOp extends NextFTCOpMode {
         Gamepads.gamepad1().b().inLayer(normalOperationLayer).whenBecomesFalse(DrumSubsystem.INSTANCE.stopIntakeWheels);
 
 
-        Command normalDrive= getFieldCentricDrive();
+        Command normalDrive= new PedroDriveCommand(
+                Gamepads.gamepad1().leftStickY().negate().deadZone(.1),
+                Gamepads.gamepad1().leftStickX().negate().deadZone(.1),
+                Gamepads.gamepad1().rightStickX().negate().deadZone(.1).map((Double input)->{return input/3;}),
+                false,
+                Math.toRadians(0)
+        ).requires(DriveSubsystem.INSTANCE);
 
-        Command robotCentric = getRobotCentricDrive();
+        Command robotCentric = new PedroDriveCommand(
+                Gamepads.gamepad1().leftStickY().negate().deadZone(.1),
+                Gamepads.gamepad1().leftStickX().negate().deadZone(.1),
+                Gamepads.gamepad1().rightStickX().negate().deadZone(.1).map((Double input)->{return input/3;}),
+                true,
+                Math.toRadians(0)
+        ).requires(DriveSubsystem.INSTANCE);
 
         Command realNormalDrive = new SequentialGroup(
                 new Delay(.015),
@@ -114,26 +127,7 @@ public abstract class CompTeleOp extends NextFTCOpMode {
         );
 
         Command aprilTagTracking = new SequentialGroup(
-                new ParallelGroup(
-                        new InstantCommand(()->servo.setPosition(.63)),
-                        new SequentialGroup(
-                                new LambdaCommand()
-                                        .setUpdate(LauncherSubsystem.INSTANCE::calculateVelocity)
-                                //new InstantCommand(()->new TelemetryItem(()->"Finished Running to speed"))
-
-
-                                ),
-                        LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                        new SequentialGroup(
-
-                                new Delay(.015),
-                                DriveSubsystem.INSTANCE.targetDrive,
-                                new InstantCommand(DriveSubsystem.INSTANCE::resetLastAprilTagReadms),
-                                new InstantCommand(()-> follower().holdPoint(follower.getPose()))
-                                //new InstantCommand(()->new TelemetryItem(()->"Finished Aiming")),
-
-                        )
-                ),
+                LauncherSubsystem.INSTANCE.runToLowRPM,
                 new SequentialGroup(
                         DrumSubsystem.INSTANCE.servoEject,
                         new Delay(.5),

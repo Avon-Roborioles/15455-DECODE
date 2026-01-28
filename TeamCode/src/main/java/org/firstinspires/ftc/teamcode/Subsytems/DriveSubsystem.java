@@ -17,6 +17,7 @@ import dev.nextftc.bindings.BindingManager;
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
 import dev.nextftc.control.builder.ControlSystemBuilder;
+import dev.nextftc.control.feedback.AngleType;
 import dev.nextftc.control.feedback.PIDCoefficients;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
@@ -35,8 +36,8 @@ public class DriveSubsystem implements Subsystem {
 
 
     public static DriveSubsystem INSTANCE = new DriveSubsystem();
-    public static double kP = 0.5;
-    public static double kI=0.00000000003;
+    public static double kP = 1;
+    public static double kI=0.000000005;
     public static double kD = 0.0001;
     public PIDCoefficients coefficients = new PIDCoefficients(kP,kI,kD);
     public double integral = 0;
@@ -44,7 +45,10 @@ public class DriveSubsystem implements Subsystem {
 
     private Command defaultCommand = new NullCommand();
     ControlSystem lockOnConrolSystem = new ControlSystemBuilder()
-            .posPid(coefficients)
+
+            .angular(AngleType.RADIANS,
+                    feedback -> feedback.posPid(coefficients)
+            )
             .build();
 
 
@@ -97,8 +101,6 @@ public class DriveSubsystem implements Subsystem {
         TelemetryManager.getInstance().addTempTelemetry("Lock on power: "+power);
         TelemetryManager.getInstance().addTempTelemetry("Goal Error: "+(requiredAngle-currentAngle));
         return power;
-
-
     }
 
     @Override

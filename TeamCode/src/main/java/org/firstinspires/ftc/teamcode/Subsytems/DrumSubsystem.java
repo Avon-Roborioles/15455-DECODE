@@ -135,7 +135,7 @@ public class DrumSubsystem implements Subsystem {
             new SetPosition(servo,servoEjectPos),
             new Delay(0.2)
     ).requires(servo);
-    private double ejectDelay = 0.3;
+    private double ejectDelay = 0.15;
 
 
 
@@ -258,11 +258,12 @@ public class DrumSubsystem implements Subsystem {
                     turnToIntake,
                     rotateIntakeWheels,
                     new LambdaCommand()
-                                .setIsDone(()->readColorAndReturnValidity()),
+                            .setIsDone(this::readColorAndReturnValidity)
+                            .setStop((Boolean b)->{if (b) intakeMotor.getMotor().setPower(0);disableArtifactSensor();}),
                     new InstantCommand(this::disableArtifactSensor)
             ),
             new NullCommand()
-    );;
+    );
 
     public Command intakeOneBall=new SequentialGroup(
             intakeOneWithoutStop,
@@ -283,7 +284,7 @@ public class DrumSubsystem implements Subsystem {
             ),
             stopIntakeWheels,
             secureBalls
-    ).requires(this);;
+    ).requires(this);
     public Command intakeThreeBallsWithPause = new SequentialGroup(
             intakeOneBall,
             intakeOneBall,
@@ -848,64 +849,68 @@ public class DrumSubsystem implements Subsystem {
     public static int useUnJamming = 1;
     public double lastVelocity=0;
     public boolean isJammed(){
-        if (
-                useUnJamming==1
-                &&Math.abs(drumMotor.getVelocity())<30
-                &&Math.abs(drumMotor.getPower())>.8
-                &&Math.abs(drumMotor.getVelocity())<Math.abs(previousVelocity)
-                &&!(drumMotor.getPower()*drumMotor.getVelocity()<0)
-
-        ){
-            return true;
-        }
-        return false;
+        return useUnJamming == 1
+                && Math.abs(drumMotor.getVelocity()) < 30
+                && Math.abs(drumMotor.getPower()) > .3
+                && Math.abs(drumMotor.getVelocity()) < Math.abs(previousVelocity)
+                && !(drumMotor.getPower() * drumMotor.getVelocity() < 0);
     }
     public double previousVelocity = 0;
 
+    public void useObelisk(){
+        useObelisk=true;
+    }
+    public void stopUseObelisk(){
+        useObelisk=false;
+    }
+
     @Override
     public void periodic(){
-
-        curPos = getCurPos();
-        updatePos=controlSystem2.getGoal().getPosition();
-        if (hasBeenJammed) {
-            if (!(System.currentTimeMillis()-lastJamTime<unJamTimeMs)){
-                hasBeenJammed=false;
-            }
-        }
-        if (isJammed()){
-            lastVelocity=drumMotor.getVelocity();
-            hasBeenJammed=true;
-            unJamDirection=-1*Math.signum(drumMotor.getPower());
-            lastJamTime=System.currentTimeMillis();
-            drumMotor.setPower(unJamDirection * unJamPower);
-
-        } else if (hasBeenJammed) {
-
-        }else if (drumMode.equals(DrumMode.SECURE)
-                ||drumMode.equals(DrumMode.INTAKE)
-                ||drumMode.equals(DrumMode.DISCRETE_OUTTAKE)
-        ){
-            power= controlSystem2.calculate(new KineticState(getCurPos(),drumMotor.getState().getVelocity(),drumMotor.getState().getAcceleration()));
-            if (power>0&&power>maxPower){
-                power = maxPower;
-            } else if (power<0&&power<-maxPower){
-                power=-maxPower;
-            }
-            drumMotor.setPower(power);
-        } else if (drumMode.equals(DrumMode.RAPID_OUTTAKING)){
-            double oldPower=power;
-            if (getEjectCompartment(curPos)==null){
-                power = .3;
-            } else {
-                power = .1;
-            }
-            if (controlSystem2.isWithinTolerance(kineticStateTolerance)) power =0;
-            if (Math.abs(oldPower-power)>.01)drumMotor.setPower(power);
-        } else if (drumMode.equals(DrumMode.STANDBY)){
+        if (Gamepads.gamepad1().rightStickButton().get()){
             drumMotor.setPower(0);
-        } else if (drumMode.equals(DrumMode.MANUAL)){
-            controlSystem2.setGoal(new KineticState(controlSystem2.getGoal().getPosition()+10*Gamepads.gamepad2().getGamepad().invoke().right_stick_y));
-            drumMotor.setPower(controlSystem2.calculate(new KineticState(getCurPos(),drumMotor.getVelocity())));
+        } else {
+            curPos = getCurPos();
+            updatePos = controlSystem2.getGoal().getPosition();
+            if (hasBeenJammed) {
+                if (!(System.currentTimeMillis() - lastJamTime < unJamTimeMs)) {
+                    hasBeenJammed = false;
+                }
+            }
+            if (isJammed()) {
+                lastVelocity = drumMotor.getVelocity();
+                hasBeenJammed = true;
+                unJamDirection = -1 * Math.signum(drumMotor.getPower());
+                lastJamTime = System.currentTimeMillis();
+                drumMotor.setPower(unJamDirection * unJamPower);
+
+            } else if (hasBeenJammed) {
+
+            } else if (drumMode.equals(DrumMode.SECURE)
+                    || drumMode.equals(DrumMode.INTAKE)
+                    || drumMode.equals(DrumMode.DISCRETE_OUTTAKE)
+            ) {
+                power = controlSystem2.calculate(new KineticState(getCurPos(), drumMotor.getState().getVelocity(), drumMotor.getState().getAcceleration()));
+                if (power > 0 && power > maxPower) {
+                    power = maxPower;
+                } else if (power < 0 && power < -maxPower) {
+                    power = -maxPower;
+                }
+                drumMotor.setPower(power);
+            } else if (drumMode.equals(DrumMode.RAPID_OUTTAKING)) {
+                double oldPower = power;
+                if (getEjectCompartment(curPos) == null) {
+                    power = .3;
+                } else {
+                    power = .1;
+                }
+                if (controlSystem2.isWithinTolerance(kineticStateTolerance)) power = 0;
+                if (Math.abs(oldPower - power) > .01) drumMotor.setPower(power);
+            } else if (drumMode.equals(DrumMode.STANDBY)) {
+                drumMotor.setPower(0);
+            } else if (drumMode.equals(DrumMode.MANUAL)) {
+                controlSystem2.setGoal(new KineticState(controlSystem2.getGoal().getPosition() + 10 * Gamepads.gamepad2().getGamepad().invoke().right_stick_y));
+                drumMotor.setPower(controlSystem2.calculate(new KineticState(getCurPos(), drumMotor.getVelocity())));
+            }
         }
         loopsSinceSensorUpdate++;
         if (loopsSinceSensorUpdate==3){
@@ -919,7 +924,7 @@ public class DrumSubsystem implements Subsystem {
         coefficients.kI=kI;
         coefficients.kP=kp;
         coefficients.kD=kD;
-        if (Gamepads.gamepad1().rightStickButton().get()) drumMotor.setPower(0);
+
         previousVelocity=drumMotor.getVelocity();
     }
 }

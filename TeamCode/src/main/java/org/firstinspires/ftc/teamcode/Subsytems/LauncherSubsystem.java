@@ -72,6 +72,11 @@ public class LauncherSubsystem implements Subsystem {
             .setIsDone(()-> Math.abs(rpm-cHubMotor.getVelocity())<40)
             .setStop((Boolean b)->{if (b){rpm=0;}});
 
+    public Command runToLowRPM = new LambdaCommand()
+            .setUpdate(()->{rpm=-500;})
+            .setIsDone(()-> Math.abs(rpm-cHubMotor.getVelocity())<100)
+            .setStop((Boolean b)->{if (b){rpm=0;}});
+
     public Command runBackToCalculatedPos = new LambdaCommand()
             .setUpdate(this::calculateVelocity)
             .setIsDone(()-> Math.abs(rpm-cHubMotor.getVelocity())<100)

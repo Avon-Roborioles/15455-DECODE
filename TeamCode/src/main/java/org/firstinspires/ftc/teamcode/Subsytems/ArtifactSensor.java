@@ -33,9 +33,9 @@ public class ArtifactSensor  {
         sensor=hMap.get(ColorSensor.class,colorSensorName);
         dSensor = hMap.get(DistanceSensor.class, distanceSensorName);
 
-//        new TelemetryData("Red",()->1.*nRed);
-//        new TelemetryData("Green",()->1.*nGreen);
-//        new TelemetryData("Blue",()->1.*nBlue);
+        new TelemetryData("Red",()->1.*nRed);
+        new TelemetryData("Green",()->1.*nGreen);
+        new TelemetryData("Blue",()->1.*nBlue);
         new TelemetryItem(()->"Color: "+this.read().toString());
         new TelemetryData("Inches Away",()->distance);
 //        new TelemetryData("Normal Difference",()->normalDifference);

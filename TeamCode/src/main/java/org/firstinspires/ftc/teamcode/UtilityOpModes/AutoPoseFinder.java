@@ -4,6 +4,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 
@@ -22,7 +23,7 @@ public class AutoPoseFinder extends NextFTCOpMode {
     }
     @Override
     public void onInit(){
-        follower().setPose(new Pose(0,0,0));
+        follower().setPose(RobotConfig.FieldConstants.center);
         new TelemetryItem(()->"Pose"+follower().getPose());
 
     }

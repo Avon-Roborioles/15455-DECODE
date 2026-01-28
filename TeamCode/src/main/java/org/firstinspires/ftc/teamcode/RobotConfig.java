@@ -48,7 +48,7 @@ public class RobotConfig {
         public static double[] purpleTemplate = {0.232,0.344,0.427};
         public static double[] greenTemplate = {0.14,0.49,0.37};
 
-        public static double distanceThreshold = 2.5+.8;
+        public static double distanceThreshold = 4.5+.8;
 
 
     }
@@ -58,8 +58,8 @@ public class RobotConfig {
         public static String intakeName = "intakeMotor";
 
         public static double stallCurrentThreshold = 8.5;//amps
-        public static double unJamPower = .2;
-        public static double unJamTimeMs = 150;
+        public static double unJamPower = 1;
+        public static double unJamTimeMs = 20;
         public static final double ticksPerRev = 1211.6;
         public static double kp=.0055;
         public static double kI=150./Math.pow(10,13);
@@ -120,8 +120,11 @@ public class RobotConfig {
 
     public static class FieldConstants {
         public static Pose center= new Pose(72,72, Math.toRadians(90));
-        public static Pose redGoal = new Pose(72+70.5,72+70.5);
-        public static Pose blueGoal = new Pose (72-70.5,72+70.5);
+        public static Pose redGoal = new Pose(72+67.5,72+67.5);
+        public static Pose blueGoal = new Pose (72-67.5,72+67.5);
+        public static Pose redBasePose = new Pose(37.77,33.96,Math.toRadians(90));
+        public static Pose blueBasePose = new Pose(144-37.77,33.96,Math.toRadians(90));
+
     }
     public static class GlobalConstants {
         public static Pose startPose = FieldConstants.center;
@@ -129,10 +132,34 @@ public class RobotConfig {
 
     public static class PoseConstants {
         public static Pose redBackStart = new Pose(79,9, Math.toRadians(-90));
-        public static Pose redBackPose2 = new Pose(87,19,Math.toRadians(247));
-        public static Pose redBackPose3 = new Pose(98,35,Math.toRadians(0));
-        public static Pose redBackPose4 = new Pose(132,35,Math.toRadians(0));
-        public static Pose redHPZoneIntakeStart = new Pose(134,26,Math.toRadians(-30));
-        public static Pose redHPZoneIntakeEnd = new Pose(redHPZoneIntakeStart.getX(),9,redHPZoneIntakeStart.getHeading());
+        public static Pose redBackPose2 = new Pose(87,19,Math.toRadians(248.5));
+        public static Pose redBackPose3 = new Pose(98,33,Math.toRadians(0));
+        public static Pose redBackPose4 = new Pose(130,33,Math.toRadians(0));
+        public static Pose redHPZoneIntakeStart = new Pose(98,57,Math.toRadians(0));
+        public static Pose redHPZoneIntakeEnd =   new Pose(130,57,redHPZoneIntakeStart.getHeading());
+        public static Pose redLeavePose =         new Pose(83,40,Math.toRadians(-90));
+
+        public static Pose mirrorRedToBlue(Pose original){
+            return new Pose(
+                    144-original.getX(),
+                    original.getY(),
+                    -(original.getHeading()-Math.PI/2)+Math.PI/2
+            );
+        }
+        public static double headingInverter(double original){
+            return -(original-Math.PI/2)+Math.PI/2;
+        }
+
+        public static Pose blueBackStart =         new Pose(144-79,9, headingInverter(Math.toRadians(-90)));
+        public static Pose blueBackPose2 =         new Pose(144-87,19,headingInverter(Math.toRadians(248.5)));
+        public static Pose blueBackPose3 =         new Pose(144-95,33,headingInverter(Math.toRadians(0)));
+        public static Pose blueBackPose4 =         new Pose(144-130.5,33,headingInverter(Math.toRadians(0)));
+        public static Pose blueHPZoneIntakeStart = new Pose(144-95,60,headingInverter(Math.toRadians(0)));
+        public static Pose blueHPZoneIntakeEnd =   new Pose(144-130.5,60,headingInverter(redHPZoneIntakeStart.getHeading()));
+        public static Pose blueLeavePose =         new Pose(144-83,40,headingInverter(Math.toRadians(-90)));
+
+
     }
+
+
 }
