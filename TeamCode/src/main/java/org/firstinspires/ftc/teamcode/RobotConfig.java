@@ -68,7 +68,7 @@ public class RobotConfig {
         public static double servoEjectPos = .2994;
         public static double servoIntakePos=.0239;
 
-        public static KineticState kineticStateTolerance = new KineticState(25,50);
+        public static KineticState kineticStateTolerance = new KineticState(25,200);
 
         public static double pinkOuttake = 0;
         public static double pinkIntake = 607;

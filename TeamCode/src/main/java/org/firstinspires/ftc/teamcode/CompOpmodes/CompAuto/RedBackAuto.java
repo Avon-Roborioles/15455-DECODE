@@ -167,7 +167,7 @@ public class RedBackAuto extends NextFTCOpMode {
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
 
 
-                
+
                 new ParallelRaceGroup(
                         DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
                         new SequentialGroup(

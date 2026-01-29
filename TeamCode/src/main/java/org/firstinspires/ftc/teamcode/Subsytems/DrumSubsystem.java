@@ -98,9 +98,9 @@ public class DrumSubsystem implements Subsystem {
 
 
     private double smoothEjectDirection=1;
-    public static double kp=0.007;
+    public static double kp=0.003;
     public static double kI=0.000000000008;
-    public static double kD = 0.00025;
+    public static double kD = 0.0003;
 
     public ServoEx servo= new ServoEx(servoName);
     private PIDCoefficients coefficients = new PIDCoefficients(kp,kI,kD);
@@ -375,8 +375,10 @@ public class DrumSubsystem implements Subsystem {
     public void disableArtifactSensor(){
         artifactSensorEnabled=false;
     }
-
-    private void setToIntake(){
+    public void resetSensor(){
+        colorSensor.reset();
+    }
+    private  void setToIntake(){
         targetCompartments.clear();
         for (Compartment compartment:compartments){
             if (compartment.color().equals(ArtifactColor.NOTHING)){

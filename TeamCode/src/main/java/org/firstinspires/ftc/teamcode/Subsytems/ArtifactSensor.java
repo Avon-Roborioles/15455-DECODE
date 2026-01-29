@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.Subsytems;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.SensorConstants.*;
+
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,10 +15,12 @@ import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 
+import dev.nextftc.ftc.ActiveOpMode;
+
 public class ArtifactSensor  {
 
-    ColorSensor sensor;
-    DistanceSensor dSensor;
+    RevColorSensorV3 sensor;
+    Rev2mDistanceSensor dSensor;
 
     double sum;
     double nRed,nGreen, nBlue;
@@ -30,17 +35,21 @@ public class ArtifactSensor  {
 
 
     public ArtifactSensor(HardwareMap hMap){
-        sensor=hMap.get(ColorSensor.class,colorSensorName);
-        dSensor = hMap.get(DistanceSensor.class, distanceSensorName);
+        sensor=hMap.get(RevColorSensorV3.class,colorSensorName);
+        dSensor = hMap.get(Rev2mDistanceSensor.class, distanceSensorName);
+        sensor.status();
 
         new TelemetryData("Red",()->1.*nRed);
         new TelemetryData("Green",()->1.*nGreen);
         new TelemetryData("Blue",()->1.*nBlue);
         new TelemetryItem(()->"Color: "+this.read().toString());
         new TelemetryData("Inches Away",()->distance);
+        new TelemetryData("Csensor Distance",()->sensor.getDistance(DistanceUnit.INCH));
+        new TelemetryItem(()->"CSensor Status"+sensor.status());
 //        new TelemetryData("Normal Difference",()->normalDifference);
 //        new TelemetryData("Purple Difference",()->purpleDifference);
 //        new TelemetryData("Green Difference",()->greenDifference);
+
     }
 
 
@@ -102,5 +111,11 @@ public class ArtifactSensor  {
         }
         return  color;
     }
+
+    public void reset(){
+        
+
+        sensor=ActiveOpMode.hardwareMap().get(RevColorSensorV3.class,colorSensorName);
+        dSensor = ActiveOpMode.hardwareMap().get(Rev2mDistanceSensor.class, distanceSensorName);    }
 
 }

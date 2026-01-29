@@ -151,6 +151,7 @@ public  class TestOpMode extends NextFTCOpMode {
                                 LauncherSubsystem.INSTANCE.stop
                         )
                 );
+        Gamepads.gamepad1().a().whenBecomesTrue(DrumSubsystem.INSTANCE::resetSensor);
 
         //DEBUG COMMANDS
 
