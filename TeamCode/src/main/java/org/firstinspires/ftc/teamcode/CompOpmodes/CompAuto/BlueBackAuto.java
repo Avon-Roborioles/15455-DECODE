@@ -15,6 +15,7 @@ import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.AllianceComponent;
+import org.firstinspires.ftc.teamcode.Commands.BetterParallelRaceGroup;
 import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.PoseTrackerComponent;
@@ -127,16 +128,17 @@ public class BlueBackAuto extends NextFTCOpMode {
 
         new TelemetryItem(()->"Pose: "+PedroComponent.follower().getPose());
         Command autoRoutine = new SequentialGroup(
-
                 new ParallelGroup(
-                        DrumSubsystem.INSTANCE.secureBalls,
+                        new SequentialGroup(
+                                DrumSubsystem.INSTANCE.secureBalls,
+                                DrumSubsystem.INSTANCE.servoEject
+                        ),
                         new SequentialGroup(
                                 LimelightSubsystem.INSTANCE.detectObelisk,
                                 startTurnToShootCommand
                         ),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos
                 ),
-
                 new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 DrumSubsystem.INSTANCE.shootFirstPattern,
                 //LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
@@ -146,7 +148,7 @@ public class BlueBackAuto extends NextFTCOpMode {
 
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
 
-                new ParallelRaceGroup(
+                new BetterParallelRaceGroup(
                         DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
                         new SequentialGroup(
                                 backToIntake3Command,
@@ -162,9 +164,10 @@ public class BlueBackAuto extends NextFTCOpMode {
                 ),
                 new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
                 new ParallelGroup(
-                                new FollowPath(intake3ToShoot),
-                                LauncherSubsystem.INSTANCE.runToCalculatedPos
-                        ),
+                        new FollowPath(intake3ToShoot),
+                        LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                        DrumSubsystem.INSTANCE.servoEject
+                ),
                 new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootFirstPattern,
@@ -175,21 +178,28 @@ public class BlueBackAuto extends NextFTCOpMode {
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
 
 
-                new ParallelRaceGroup(
+                new BetterParallelRaceGroup(
                         DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
 
                         new SequentialGroup(
                                 new FollowPath(shootToIntakeHPZone),
-                                new InstantCommand(()->PedroComponent.follower().setMaxPower(.45)),
-                                new FollowPath(intakeHP),
+                                new InstantCommand(()->PedroComponent.follower().setMaxPower(.5)),
+                                new ParallelGroup(
+                                        new SequentialGroup(
+                                                new Delay(.3),
+                                                new InstantCommand(()->PedroComponent.follower().setMaxPower(.5))
+                                        ),
+                                        new FollowPath(intakeHP)
+                                ),
                                 new Delay(3)
 
                         )
                 ),
                 new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
-                new ParallelRaceGroup(
+                new ParallelGroup(
                         new FollowPath(intakeHpToShoot),
-                        LauncherSubsystem.INSTANCE.runToCalculatedPos
+                        LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                        DrumSubsystem.INSTANCE.servoEject
                 ),
                 new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 LauncherSubsystem.INSTANCE.runToCalculatedPos,

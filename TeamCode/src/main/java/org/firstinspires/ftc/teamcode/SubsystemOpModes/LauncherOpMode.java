@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.SubsystemOpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.AllianceComponent;
+import org.firstinspires.ftc.teamcode.CompOpmodes.CompAuto.BlueBackAuto;
+import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Subsytems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
@@ -28,7 +31,8 @@ public class LauncherOpMode extends NextFTCOpMode {
                 new PedroComponent(Constants::createFollower),
                 new TelemetryComponent(),
                 new LoopTimeComponent(),
-                BulkReadComponent.INSTANCE
+                BulkReadComponent.INSTANCE,
+                AllianceComponent.getINSTANCE(AllianceColor.BLUE)
         );
     }
 

@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.RobotConfig.SensorConstants.*;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.robot.Robot;
@@ -14,19 +15,23 @@ import org.firstinspires.ftc.teamcode.Enums.ArtifactColor;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 
 import dev.nextftc.ftc.ActiveOpMode;
+
 
 public class ArtifactSensor  {
 
     RevColorSensorV3 sensor;
-    Rev2mDistanceSensor dSensor;
+//    Rev2mDistanceSensor dSensor;
 
     double sum;
-    double nRed,nGreen, nBlue;
+    double nRed=0,nGreen=0, nBlue=0;
     double normalDifference;
     double purpleDifference;
     double greenDifference;
+    DigitalChannel digitalChannel;
+
 
     private double red=0;
     private double blue =0;
@@ -36,15 +41,17 @@ public class ArtifactSensor  {
 
     public ArtifactSensor(HardwareMap hMap){
         sensor=hMap.get(RevColorSensorV3.class,colorSensorName);
-        dSensor = hMap.get(Rev2mDistanceSensor.class, distanceSensorName);
+        //dSensor = hMap.get(Rev2mDistanceSensor.class, distanceSensorName);
         sensor.status();
+        digitalChannel=hMap.get(DigitalChannel.class,"laserSensor");
+
 
         new TelemetryData("Red",()->1.*nRed);
         new TelemetryData("Green",()->1.*nGreen);
         new TelemetryData("Blue",()->1.*nBlue);
         new TelemetryItem(()->"Color: "+this.read().toString());
         new TelemetryData("Inches Away",()->distance);
-        new TelemetryData("Csensor Distance",()->sensor.getDistance(DistanceUnit.INCH));
+        //new TelemetryData("Csensor Distance",()->sensor.getDistance(DistanceUnit.INCH));
         new TelemetryItem(()->"CSensor Status"+sensor.status());
 //        new TelemetryData("Normal Difference",()->normalDifference);
 //        new TelemetryData("Purple Difference",()->purpleDifference);
@@ -62,11 +69,24 @@ public class ArtifactSensor  {
         return sum;
     }
     public void updateSensorReads(){
-        distance= dSensor.getDistance(DistanceUnit.INCH);
-        if (distance< RobotConfig.SensorConstants.distanceThreshold){
-            red=sensor.red();
-            green= sensor.green();
-            blue= sensor.blue();
+        //distance= dSensor.getDistance(DistanceUnit.INCH);
+        double d2 = sensor.getDistance(DistanceUnit.INCH);
+        TelemetryManager.getInstance().addTempTelemetry("Getting Distance");
+        if (digitalChannel.getState()){
+
+
+                red = sensor.red();
+                green = sensor.green();
+                blue = sensor.blue();
+
+            TelemetryManager.getInstance().addTempTelemetry("Getting Color");
+
+        } else if (d2<2.5) {
+            distance=d2;
+            red = sensor.red();
+            green = sensor.green();
+            blue = sensor.blue();
+
         }
 
 
@@ -115,7 +135,8 @@ public class ArtifactSensor  {
     public void reset(){
         
 
-        sensor=ActiveOpMode.hardwareMap().get(RevColorSensorV3.class,colorSensorName);
-        dSensor = ActiveOpMode.hardwareMap().get(Rev2mDistanceSensor.class, distanceSensorName);    }
+        sensor= ActiveOpMode.hardwareMap().get(RevColorSensorV3.class,colorSensorName);
+        //dSensor = ActiveOpMode.hardwareMap().get(Rev2mDistanceSensor.class, distanceSensorName);
+    }
 
 }

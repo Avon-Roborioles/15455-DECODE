@@ -64,7 +64,7 @@ public class LauncherSubsystem implements Subsystem {
             .build();
 
 
-    private  double rpm;
+    private static double rpm;
     public static double distanceCm= 100;
     public static double realPower=0 ;
     public Command runToCalculatedPos= new LambdaCommand()
@@ -135,7 +135,7 @@ public class LauncherSubsystem implements Subsystem {
         //rpm = distance*Math.sqrt(gravity/ ( 2*Math.pow(Math.cos(radians),2)*(87-distance*Math.tan(radians)) ) );
          // 500
 //        rpm = shootRPM;
-        rpm =0.000151386*Math.pow(distance,3)-0.121004*Math.pow(distance,2)+29.927*Math.pow(distance,1)-3629;
+        rpm =-1.64914*Math.pow(10,-7)*Math.pow(distance,4)+0.000239159*Math.pow(distance,3)-0.124849*Math.pow(distance,2)+26.05336*Math.pow(distance,1)-3148.56015;
         normalControlSystem.setGoal(new KineticState(0,rpm));
 
     }

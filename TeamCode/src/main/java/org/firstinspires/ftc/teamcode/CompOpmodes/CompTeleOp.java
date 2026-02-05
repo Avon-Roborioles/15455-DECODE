@@ -113,30 +113,34 @@ public abstract class CompTeleOp extends NextFTCOpMode {
                 )
         );
 
+        Command reset = new InstantCommand(()->{
+                if (AllianceComponent.getColor().equals(AllianceColor.BLUE)){
+                    PedroComponent.follower().setPose(RobotConfig.FieldConstants.blueHPZoneReset);
+                } else {
+                    PedroComponent.follower().setPose(RobotConfig.FieldConstants.redHPZoneReset);
+                }
+        });
+        Gamepads.gamepad1().dpadUp().whenBecomesTrue(reset);
+
         Command aprilTagTracking = new SequentialGroup(
                 new ParallelGroup(
                         new InstantCommand(()->servo.setPosition(.63)),
                         new SequentialGroup(
                                 new LambdaCommand()
-                                        .setUpdate(LauncherSubsystem.INSTANCE::calculateVelocity)
-                                //new InstantCommand(()->new TelemetryItem(()->"Finished Running to speed"))
-
-
-                                ),
-                        LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                                        .setUpdate(LauncherSubsystem.INSTANCE::calculateVelocity),
+                                new InstantCommand(()->new TelemetryItem(()->"Finished Running to speed"))
+                        ),
                         new SequentialGroup(
 
                                 new Delay(.015),
                                 DriveSubsystem.INSTANCE.targetDrive,
-                                new InstantCommand(DriveSubsystem.INSTANCE::resetLastAprilTagReadms),
-                                new InstantCommand(()-> follower().holdPoint(follower.getPose()))
-                                //new InstantCommand(()->new TelemetryItem(()->"Finished Aiming")),
-
+                                new InstantCommand(()->new TelemetryItem(()->"Finished Aiming"))
                         )
                 ),
+                LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 new SequentialGroup(
                         DrumSubsystem.INSTANCE.servoEject,
-                        new Delay(.5),
+
                         DrumSubsystem.INSTANCE.shootPattern,
                         new Delay(.5),
                         new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.schedule())

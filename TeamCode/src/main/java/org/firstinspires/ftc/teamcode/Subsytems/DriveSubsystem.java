@@ -8,6 +8,7 @@ import com.pedropathing.geometry.Pose;
 
 
 import org.firstinspires.ftc.teamcode.AllianceComponent;
+import org.firstinspires.ftc.teamcode.Commands.LazyTurnTo;
 import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
@@ -30,18 +31,18 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.extensions.pedro.PedroDriverControlled;
 import dev.nextftc.extensions.pedro.TurnTo;
 import dev.nextftc.ftc.Gamepads;
+import kotlin.Lazy;
 
 @Configurable
 public class DriveSubsystem implements Subsystem {
 
 
     public static DriveSubsystem INSTANCE = new DriveSubsystem();
-    public static double kP = 1;
+    public static double kP = .8;
     public static double kI=0.000000005;
     public static double kD = 0.0001;
     public PIDCoefficients coefficients = new PIDCoefficients(kP,kI,kD);
     public double integral = 0;
-    public double lastAprilTagReadms=0;
 
     private Command defaultCommand = new NullCommand();
     ControlSystem lockOnConrolSystem = new ControlSystemBuilder()
@@ -54,7 +55,37 @@ public class DriveSubsystem implements Subsystem {
 
     @Override
     public void initialize(){
-
+        if (AllianceComponent.getColor().equals(AllianceColor.BLUE)){
+            targetDrive=new SequentialGroup(
+                    new InstantCommand(lockOnConrolSystem::reset),
+                    new ParallelDeadlineGroup(
+                            new LambdaCommand()
+                                    .setIsDone(()->Gamepads.gamepad1().square().get()),
+                            new PedroDriverControlled(
+                                    Gamepads.gamepad1().leftStickY(),
+                                    Gamepads.gamepad1().leftStickX(),
+                                    this::getAprilTagHeadingPower,
+                                    false
+                            )
+                    ),
+                    new LazyTurnTo(this::getGoalHeadingRad)
+            ).requires(this);
+        } else {
+            new SequentialGroup(
+                    new InstantCommand(lockOnConrolSystem::reset),
+                    new ParallelDeadlineGroup(
+                            new LambdaCommand()
+                                    .setIsDone(()->Gamepads.gamepad1().square().get()),
+                            new PedroDriverControlled(
+                                    Gamepads.gamepad1().leftStickY().negate(),
+                                    Gamepads.gamepad1().leftStickX().negate(),
+                                    this::getAprilTagHeadingPower,
+                                    false
+                            )
+                    ),
+                    new LazyTurnTo(this::getGoalHeadingRad)
+            ).requires(this);
+        }
 
     }
     public Command normalDrive= new PedroDriverControlled(
@@ -82,25 +113,28 @@ public class DriveSubsystem implements Subsystem {
                     )
             )
     ).requires(this);
-    public void resetLastAprilTagReadms(){
-        lastAprilTagReadms=0;
-    }
 
     public double getAprilTagHeadingPower(){
 
 
+
+        double requiredAngle = getGoalHeadingRad();
+        lockOnConrolSystem.setGoal(new KineticState(requiredAngle));
+        double currentAngle = follower().getPose().getHeading();
+        double power = lockOnConrolSystem.calculate(new KineticState(currentAngle));
+//        TelemetryManager.getInstance().addTempTelemetry("Lock on power: "+power);
+//        TelemetryManager.getInstance().addTempTelemetry("Goal Error: "+(requiredAngle-currentAngle));
+        return power;
+    }
+
+    public double getGoalHeadingRad(){
         Pose difference = follower().getPose().copy().minus(RobotConfig.FieldConstants.redGoal);
         if (AllianceComponent.getColor().equals(AllianceColor.BLUE)){
             difference = follower().getPose().copy().minus(RobotConfig.FieldConstants.blueGoal);
         }
 
         double requiredAngle = Math.atan2(difference.getY(),difference.getX());
-        lockOnConrolSystem.setGoal(new KineticState(requiredAngle));
-        double currentAngle = follower().getPose().getHeading();
-        double power = lockOnConrolSystem.calculate(new KineticState(currentAngle));
-        TelemetryManager.getInstance().addTempTelemetry("Lock on power: "+power);
-        TelemetryManager.getInstance().addTempTelemetry("Goal Error: "+(requiredAngle-currentAngle));
-        return power;
+        return requiredAngle;
     }
 
     @Override

@@ -23,6 +23,6 @@ public class ColorSensorTest extends OpMode {
         telemetry.addData("Artifact",sensor.read());
         sensor.updateSensorReads();
         TelemetryManager.getInstance().print(telemetry);
-
+        TelemetryManager.getInstance().resetTempTelemetry();
     }
 }

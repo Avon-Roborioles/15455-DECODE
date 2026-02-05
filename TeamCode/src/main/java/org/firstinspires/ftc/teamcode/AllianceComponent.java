@@ -14,9 +14,9 @@ public class AllianceComponent implements Component {
     }
 
     public static AllianceComponent getINSTANCE(AllianceColor color) {
-        if (INSTANCE==null){
+
             INSTANCE=new AllianceComponent(color);
-        }
+
         return INSTANCE;
     }
 

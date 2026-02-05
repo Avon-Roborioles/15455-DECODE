@@ -22,7 +22,9 @@ public class Constants {
             .lateralZeroPowerAcceleration(lateralZPwrAcc)
             .translationalPIDFCoefficients(translationalPID)
             .headingPIDFCoefficients(headingPID)
+            .secondaryHeadingPIDFCoefficients(secondaryHeadingPID)
             .useSecondaryDrivePIDF(true)
+            .useSecondaryHeadingPIDF(true)
             .centripetalScaling(centripetalScaling)
             ;
 
