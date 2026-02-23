@@ -31,8 +31,8 @@ public class RedCompTeleOp extends CompTeleOp {
     @Override
     public Command getRobotCentricDrive() {
         return new PedroDriveCommand(
-                Gamepads.gamepad1().leftStickY().negate().deadZone(.1),
-                Gamepads.gamepad1().leftStickX().negate().deadZone(.1),
+                Gamepads.gamepad1().leftStickY().negate().deadZone(.1).map((Double input)->{return input/2;}),
+                Gamepads.gamepad1().leftStickX().negate().deadZone(.1).map((Double input)->{return input/2;}),
                 Gamepads.gamepad1().rightStickX().negate().deadZone(.1).map((Double input)->{return input/3;}),
                 true,
                 Math.toRadians(0)

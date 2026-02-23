@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorGoBildaPinpoint;
+
 import java.util.function.DoubleSupplier;
 
 import dev.nextftc.core.commands.Command;
@@ -13,6 +17,7 @@ public class LazyTurnTo extends Command {
 
     public LazyTurnTo(DoubleSupplier angleRad){
         angleSupp=angleRad;
+
     }
 
 
@@ -20,12 +25,14 @@ public class LazyTurnTo extends Command {
     public void start(){
         turnTo=new TurnTo(Angle.fromRad(angleSupp.getAsDouble()));
         turnTo.start();
+
     }
 
 
     @Override
     public void update(){
         turnTo.update();
+
     }
 
     @Override

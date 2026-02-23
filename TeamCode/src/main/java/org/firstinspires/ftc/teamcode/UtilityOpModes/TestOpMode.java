@@ -125,6 +125,7 @@ public  class TestOpMode extends NextFTCOpMode {
                         }
                 )
         );
+        Gamepads.gamepad1().leftBumper().whenBecomesTrue(DriveSubsystem.INSTANCE.targetDrive);
 
         Command aprilTagTracking = new SequentialGroup(
                 LauncherSubsystem.INSTANCE.runToLowRPM,

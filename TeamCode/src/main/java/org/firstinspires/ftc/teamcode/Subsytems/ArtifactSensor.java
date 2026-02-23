@@ -31,6 +31,7 @@ public class ArtifactSensor  {
     double purpleDifference;
     double greenDifference;
     DigitalChannel digitalChannel;
+    public boolean isEnabled=true;
 
 
     private double red=0;
@@ -69,33 +70,48 @@ public class ArtifactSensor  {
         return sum;
     }
     public void updateSensorReads(){
-        //distance= dSensor.getDistance(DistanceUnit.INCH);
-        double d2 = sensor.getDistance(DistanceUnit.INCH);
-        TelemetryManager.getInstance().addTempTelemetry("Getting Distance");
-        if (digitalChannel.getState()){
+        if (isEnabled) {
+            //distance= dSensor.getDistance(DistanceUnit.INCH);
+            double d2 = sensor.getDistance(DistanceUnit.INCH);
+            TelemetryManager.getInstance().addTempTelemetry("Getting Distance");
+            if (digitalChannel.getState()) {
 
 
                 red = sensor.red();
                 green = sensor.green();
                 blue = sensor.blue();
 
-            TelemetryManager.getInstance().addTempTelemetry("Getting Color");
+                TelemetryManager.getInstance().addTempTelemetry("Getting Color");
 
-        } else if (d2<2.5) {
-            distance=d2;
-            red = sensor.red();
-            green = sensor.green();
-            blue = sensor.blue();
+            } else if (d2 < 2.5) {
+                distance = d2;
+                red = sensor.red();
+                green = sensor.green();
+                blue = sensor.blue();
 
+            }
+        } else {
+            red = normal[0];
+            blue = normal[2];
+            green = normal[1];
         }
 
 
 
     }
+    public void enable(){
+        isEnabled=true;
+    }
+
+    public void disable(){
+        isEnabled=false;
+    }
 
     public ArtifactColor read() {
         ArtifactColor color;
-
+        if (!isEnabled){
+            return ArtifactColor.NOTHING;
+        }
 
 
 

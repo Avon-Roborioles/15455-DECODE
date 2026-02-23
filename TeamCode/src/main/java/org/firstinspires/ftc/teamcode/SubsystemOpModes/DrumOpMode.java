@@ -30,13 +30,15 @@ public class DrumOpMode extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed(){
+
 //        Gamepads.gamepad1().leftBumper().whenBecomesTrue(DrumSubsystem.INSTANCE.shootPurple);
 //        Gamepads.gamepad1().rightBumper().whenBecomesTrue(DrumSubsystem.INSTANCE.shootGreen);
 //        Gamepads.gamepad1().dpadRight().whenBecomesTrue(DrumSubsystem.INSTANCE.intakeOneBall);
 //        Gamepads.gamepad1().rightBumper().whenBecomesTrue(DrumSubsystem.INSTANCE.secureBalls);
         //Gamepads.gamepad1().dpadUp().whenBecomesTrue(DrumSubsystem.INSTANCE.shootPattern);
         //Gamepads.gamepad1().a().whenBecomesTrue(new NullCommand());//
-
+        Gamepads.gamepad1().a().whenBecomesTrue(DrumSubsystem.INSTANCE.rotateIntakeWheels);
+        Gamepads.gamepad1().a().whenBecomesFalse(DrumSubsystem.INSTANCE.stopIntakeWheels);
         //Gamepads.gamepad2().a().whenBecomesTrue(DrumSubsystem.INSTANCE::readColorAndReturnValidity);
     }
 }

@@ -19,8 +19,8 @@ public class RobotConfig {
         public static String frontRightWheel = "frontRight";
         public static String backLeftWheel = "backLeft";
         public static String backRightWheel = "backRight";
-        public static double xVelocity = 75.64;
-        public static double yVelocity = 58.5;
+        public static double xVelocity = 72.99;
+        public static double yVelocity = 55.24;
 
 /// Follower constants:
 
@@ -29,7 +29,7 @@ public class RobotConfig {
         public static double lateralZPwrAcc = -61.21; ///lateralZeroPowerAcceleration
         public static double centripetalScaling = 0.0009;
         public static PIDFCoefficients translationalPID = new PIDFCoefficients(0.6,.0001,0.055,0); ///translationalPIDFCoefficients
-        public static PIDFCoefficients headingPID = new PIDFCoefficients(5,34,0.2,0.01); ///headingPIDFCoefficients
+        public static PIDFCoefficients headingPID = new PIDFCoefficients(2,.5,0.1,0.01); ///headingPIDFCoefficients
         public static PathConstraints constraints = new PathConstraints(0.99, 100, 1, 1);
         public static PIDFCoefficients secondaryHeadingPID = new PIDFCoefficients(5.5,5.2,.08,.01);
 /// Pinpoint constants:
@@ -62,14 +62,17 @@ public class RobotConfig {
         public static double unJamTimeMs = 20;
         public static final double ticksPerRev = 8192;
         public static final double motorTPR = 1211.6;
-        public static double kp=.0055;
-        public static double kI=150./Math.pow(10,13);
+        public static double kP =.0009;
+        public static double kI=0.0000000000008;
+        public static double kD=.000062;
+        public static double staticKS = .0;
+        public static double kineticKS = 0;
 
         public static String servoName ="ejectServo";
         public static double servoEjectPos = .2994;
         public static double servoIntakePos=.0239;
 
-        public static KineticState kineticStateTolerance = new KineticState(200,2000);
+        public static KineticState kineticStateTolerance = new KineticState(200,1000);
 
         public static double pinkOuttake = 0;
         public static double pinkIntake = 4119;
@@ -121,26 +124,36 @@ public class RobotConfig {
 
     public static class FieldConstants {
         public static Pose center= new Pose(72,72, Math.toRadians(90));
-        public static Pose redGoal = new Pose(72+67.5,72+67.5);
+        public static Pose redGoal = new Pose(140,140);
+        public static Pose redAimPose = new Pose(135,135);
         public static Pose blueGoal = new Pose (5,144-5);
+        public static Pose blueAimPose = new Pose(7.5,144-7.5);
         public static Pose redBasePose = new Pose(37.77,33.96,Math.toRadians(90));
         public static Pose blueBasePose = new Pose(144-37.77,33.96,Math.toRadians(90));
-        public static Pose redHPZoneReset = new Pose(7.5,9,Math.toRadians(-90));
-        public static Pose blueHPZoneReset = new Pose(144-7.5,9,Math.toRadians(-90));
+        public static Pose redHPZoneReset = new Pose(9.5,10.8,Math.toRadians(-90));
+        public static Pose blueHPZoneReset = new Pose(144-7.5,12.8,Math.toRadians(-90));
 
     }
     public static class GlobalConstants {
         public static Pose startPose = FieldConstants.center;
     }
-
+    @Configurable
     public static class PoseConstants {
-        public static Pose redBackStart = new Pose(79,9, Math.toRadians(-90));
-        public static Pose redBackPose2 = new Pose(87,19,Math.toRadians(245.5));
-        public static Pose redBackPose3 = new Pose(95,33,Math.toRadians(0));
-        public static Pose redBackPose4 = new Pose(130,33,Math.toRadians(0));
-        public static Pose redHPZoneIntakeStart = new Pose(95,57,Math.toRadians(0));
-        public static Pose redHPZoneIntakeEnd =   new Pose(130,57,redHPZoneIntakeStart.getHeading());
-        public static Pose redLeavePose =         new Pose(83,40,Math.toRadians(-90));
+        public static Pose redBackStart =          new Pose(77,9, Math.toRadians(-90));
+        public static Pose redBackShootPose =      new Pose(87,19,Math.toRadians(248.5));
+        public static Pose redBackSpike3Start =    new Pose(95,33,Math.toRadians(0));
+        public static Pose redBackSpike3End =      new Pose(130,33,Math.toRadians(0));
+        public static Pose redBackSpike2Start =    new Pose(95,57,Math.toRadians(0));
+        public static Pose redBackSpike2End =      new Pose(130,57, redBackSpike2Start.getHeading());
+        public static Pose redHPZoneIntakePose1 = new Pose(128,20.97,Math.toRadians(-29.88));
+        public static Pose redHPZoneIntakePose2 = new Pose(128,12,Math.toRadians(-29));
+        public static Pose redHPZoneIntakePose3 = new Pose(127,7,Math.toRadians(0));
+        public static Pose redHPZoneIntakePose4 = new Pose(125.5,12,Math.toRadians(30.6));
+        public static Pose redHPZoneIntakePose5 = new Pose(121,12,Math.toRadians(0));
+        public static Pose redHPZoneIntakePose6 = new Pose(131,7.5,Math.toRadians(0));
+        public static Pose redHPZoneIntakePose7 = new Pose();
+
+        public static Pose redLeavePose =          new Pose(83,40,Math.toRadians(-90));
 
 
         public static double headingInverter(double original){
@@ -148,11 +161,11 @@ public class RobotConfig {
         }
 
         public static Pose blueBackStart =         new Pose(144-79,9, headingInverter(Math.toRadians(-90)));
-        public static Pose blueBackPose2 =         new Pose(144-87,19,headingInverter(Math.toRadians(248.5)));
-        public static Pose blueBackPose3 =         new Pose(144-95,36,headingInverter(Math.toRadians(0)));
-        public static Pose blueBackPose4 =         new Pose(144-130.5,36,headingInverter(Math.toRadians(0)));
-        public static Pose blueHPZoneIntakeStart = new Pose(144-95,60,headingInverter(Math.toRadians(0)));
-        public static Pose blueHPZoneIntakeEnd =   new Pose(144-130.5,60,headingInverter(redHPZoneIntakeStart.getHeading()));
+        public static Pose blueShootPose =         new Pose(144-87,19,headingInverter(Math.toRadians(248.5)));
+        public static Pose blueBackSpike3Start =   new Pose(144-95,36,headingInverter(Math.toRadians(0)));
+        public static Pose blueBackSpike3End =     new Pose(144-130.5,36,headingInverter(Math.toRadians(0)));
+        public static Pose blueBackSpike2Start =   new Pose(144-95,60,headingInverter(Math.toRadians(0)));
+        public static Pose blueBackSpike2End =     new Pose(144-130.5,60,headingInverter(redBackSpike2Start.getHeading()));
         public static Pose blueLeavePose =         new Pose(144-83,40,headingInverter(Math.toRadians(-90)));
 
 

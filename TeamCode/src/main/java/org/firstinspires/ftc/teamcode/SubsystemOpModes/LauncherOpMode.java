@@ -6,10 +6,12 @@ import org.firstinspires.ftc.teamcode.AllianceComponent;
 import org.firstinspires.ftc.teamcode.CompOpmodes.CompAuto.BlueBackAuto;
 import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Subsytems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 
 import dev.nextftc.core.components.BindingsComponent;
@@ -32,13 +34,16 @@ public class LauncherOpMode extends NextFTCOpMode {
                 new TelemetryComponent(),
                 new LoopTimeComponent(),
                 BulkReadComponent.INSTANCE,
-                AllianceComponent.getINSTANCE(AllianceColor.BLUE)
+                AllianceComponent.getINSTANCE(AllianceColor.RED)
         );
     }
 
     public void onStartButtonPressed(){
+        PedroComponent.follower().setPose(RobotConfig.FieldConstants.center);
         Gamepads.gamepad1().dpadUp().whenBecomesFalse(LauncherSubsystem.INSTANCE.runToCalculatedPos);
         Gamepads.gamepad1().dpadDown().whenBecomesFalse(LauncherSubsystem.INSTANCE::stop);
+        new TelemetryItem(()->"Pose: "+PedroComponent.follower().getPose().toString());
+
     }
 
 

@@ -34,6 +34,8 @@ public class DrumTuner extends NextFTCOpMode {
 
         Gamepads.gamepad1().a().whenBecomesTrue(DrumSubsystem.INSTANCE.tuneDrum);
         Gamepads.gamepad1().b().whenBecomesTrue(DrumSubsystem.INSTANCE::resetTuneTimes);
+        Gamepads.gamepad1().x().whenBecomesTrue(DrumSubsystem.INSTANCE::setTuning);
+        Gamepads.gamepad1().y().whenBecomesTrue(DrumSubsystem.INSTANCE::setNormal);
         timer.startTime();
         new TelemetryData("Average Rotation Time ms",()->DrumSubsystem.INSTANCE.avgTime);
 

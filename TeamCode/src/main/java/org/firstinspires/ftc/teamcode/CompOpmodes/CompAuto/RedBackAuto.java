@@ -19,9 +19,7 @@ import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
-import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.ParallelGroup;
-import dev.nextftc.core.commands.groups.ParallelRaceGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -49,29 +47,30 @@ public class RedBackAuto extends NextFTCOpMode {
     }
 
     public void onStartButtonPressed(){
+
         DrumSubsystem.INSTANCE.useObelisk();
         PedroComponent.follower().setPose(redBackStart);
         DrumSubsystem.INSTANCE.readyAuto();
         Path startTurnToShoot = new Path(
                 new BezierLine(
                         redBackStart,
-                        redBackPose2
+                        redBackShootPose
                 )
         );
-        startTurnToShoot.setLinearHeadingInterpolation(redBackStart.getHeading(),redBackPose2.getHeading());
+        startTurnToShoot.setLinearHeadingInterpolation(redBackStart.getHeading(), redBackShootPose.getHeading());
         Path backToIntake3 = new Path(
                 new BezierLine(
-                        redBackPose2,
-                        redBackPose3
+                        redBackShootPose,
+                        redBackSpike3Start
                 )
         );
-        backToIntake3.setLinearHeadingInterpolation(redBackPose2.getHeading(), redBackPose3.getHeading());
+        backToIntake3.setLinearHeadingInterpolation(redBackShootPose.getHeading(), redBackSpike3Start.getHeading());
         FollowPath startTurnToShootCommand = new FollowPath(startTurnToShoot);
         Path intake3 = new Path(
                 new BezierLine(
 
-                        redBackPose3,
-                        redBackPose4
+                        redBackSpike3Start,
+                        redBackSpike3End
                 )
         );
         intake3.setLinearHeadingInterpolation(0,0);
@@ -80,55 +79,66 @@ public class RedBackAuto extends NextFTCOpMode {
 
         Path intake3ToShoot = new Path(
                 new BezierLine(
-                        redBackPose4,
-                        redBackPose2
+                        redBackSpike3End,
+                        redBackShootPose
                 )
         );
-        intake3ToShoot.setLinearHeadingInterpolation(redBackPose4.getHeading(), redBackPose2.getHeading());
+        intake3ToShoot.setLinearHeadingInterpolation(redBackSpike3End.getHeading(), redBackShootPose.getHeading());
 
         Path shootToIntakeHPZone = new Path(
                 new BezierLine(
-                        redBackPose2,
-                        redHPZoneIntakeStart
+                        redBackShootPose,
+                        redBackSpike2Start
                 )
         );
-        shootToIntakeHPZone.setLinearHeadingInterpolation(redBackPose2.getHeading(), redHPZoneIntakeStart.getHeading());
+        shootToIntakeHPZone.setLinearHeadingInterpolation(redBackShootPose.getHeading(), redBackSpike2Start.getHeading());
 
         Path intakeHP = new Path(
                 new BezierLine(
-                        redHPZoneIntakeStart,
-                        redHPZoneIntakeEnd
+                        redBackSpike2Start,
+                        redBackSpike2End
                 )
         );
-        intakeHP.setLinearHeadingInterpolation(redHPZoneIntakeStart.getHeading(), redHPZoneIntakeEnd.getHeading());
+        intakeHP.setLinearHeadingInterpolation(redBackSpike2Start.getHeading(), redBackSpike2End.getHeading());
 
         Path intakeHpToShoot = new Path(
                 new BezierLine(
-                        redHPZoneIntakeEnd,
-                        redBackPose2
+                        redBackSpike2End,
+                        redBackShootPose
                 )
         );
-        intakeHpToShoot.setLinearHeadingInterpolation(redHPZoneIntakeEnd.getHeading(), redBackPose2.getHeading());
+        intakeHpToShoot.setLinearHeadingInterpolation(redBackSpike2End.getHeading(), redBackShootPose.getHeading());
         Path toCenter = new Path(
                 new BezierLine(
-                        redBackPose2,
+                        redBackShootPose,
                         redLeavePose
                 )
         );
-        toCenter.setLinearHeadingInterpolation(redBackPose2.getHeading(), redLeavePose.getHeading());
+        toCenter.setLinearHeadingInterpolation(redBackShootPose.getHeading(), redLeavePose.getHeading());
 
 
         new TelemetryItem(()->"Pose: "+PedroComponent.follower().getPose());
         Command autoRoutine = new SequentialGroup(
 
                 new ParallelGroup(
-                        DrumSubsystem.INSTANCE.secureBalls,
                         new SequentialGroup(
-                                LimelightSubsystem.INSTANCE.detectObelisk,
+                                DrumSubsystem.INSTANCE.secureBalls,
+                                DrumSubsystem.INSTANCE.servoEject,
+                                new Delay(.5)
+                        ),
+                        new SequentialGroup(
+                                new BetterParallelRaceGroup(
+
+                                        LimelightSubsystem.INSTANCE.detectObelisk,
+                                        new Delay(2)
+                                ),
                                 startTurnToShootCommand
                         ),
+
                         LauncherSubsystem.INSTANCE.runToCalculatedPos
                 ),
+
+
 
                 new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 DrumSubsystem.INSTANCE.shootFirstPattern,
@@ -139,7 +149,7 @@ public class RedBackAuto extends NextFTCOpMode {
 
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
 
-                new ParallelGroup(
+                new BetterParallelRaceGroup(
                         DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
                         new SequentialGroup(
                                 backToIntake3Command,
@@ -149,9 +159,9 @@ public class RedBackAuto extends NextFTCOpMode {
                                                 new InstantCommand(()->PedroComponent.follower().setMaxPower(.5))
                                         ),
                                         intake3Command
-                                )
-                        ),
-                        DrumSubsystem.INSTANCE.servoEject
+                                ),
+                                new Delay(3)
+                        )
                 ),
                 new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
                 new ParallelGroup(
@@ -167,7 +177,7 @@ public class RedBackAuto extends NextFTCOpMode {
                 //LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootThirdPattern,
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
-                new ParallelGroup(
+                new BetterParallelRaceGroup(
 
                         DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
                         new SequentialGroup(
@@ -179,7 +189,8 @@ public class RedBackAuto extends NextFTCOpMode {
                                         ),
                                         new FollowPath(intakeHP)
 
-                                )
+                                ),
+                                new Delay(3)
                         )
                 ),
                 new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),

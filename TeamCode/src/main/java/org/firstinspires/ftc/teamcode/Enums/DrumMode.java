@@ -8,7 +8,8 @@ public enum DrumMode {
     ZEROING("Zeroing"),
     SECURE("Secure"),
     STANDBY("Standby"),
-    MANUAL("Manual");
+    MANUAL("Manual"),
+    TUNING("Tuning");
 
     private String name;
     DrumMode(String name){

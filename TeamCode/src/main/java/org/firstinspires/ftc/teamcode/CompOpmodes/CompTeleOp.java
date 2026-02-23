@@ -10,6 +10,7 @@ import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.AllianceComponent;
+import org.firstinspires.ftc.teamcode.Commands.BetterParallelRaceGroup;
 import org.firstinspires.ftc.teamcode.Commands.PatternSetCommand;
 import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
@@ -20,12 +21,14 @@ import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 
 import dev.nextftc.bindings.BindingManager;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -45,6 +48,9 @@ public abstract class CompTeleOp extends NextFTCOpMode {
 
 
     public Servo servo;
+    public double totShootTime = 0;
+    public double startShootTime=0;
+    public double totShots=0;
 
     public CompTeleOp(){
         addComponents(
@@ -121,23 +127,28 @@ public abstract class CompTeleOp extends NextFTCOpMode {
                 }
         });
         Gamepads.gamepad1().dpadUp().whenBecomesTrue(reset);
-
+        new TelemetryItem(()->"Pose: "+PedroComponent.follower().getPose().toString());
+        new TelemetryData("AvgShootTime",()->{if (totShots==0)return 0.0;return totShootTime/totShots;});
         Command aprilTagTracking = new SequentialGroup(
+
                 new ParallelGroup(
-                        new InstantCommand(()->servo.setPosition(.63)),
-                        new SequentialGroup(
-                                new LambdaCommand()
-                                        .setUpdate(LauncherSubsystem.INSTANCE::calculateVelocity),
-                                new InstantCommand(()->new TelemetryItem(()->"Finished Running to speed"))
-                        ),
                         new SequentialGroup(
 
                                 new Delay(.015),
                                 DriveSubsystem.INSTANCE.targetDrive,
-                                new InstantCommand(()->new TelemetryItem(()->"Finished Aiming"))
+                                new InstantCommand(()->PedroComponent.follower().holdPoint(PedroComponent.follower().getPose()))
+                                //,new InstantCommand(()->new TelemetryItem(()->"Finished Aiming"))
+                        ),
+                        new SequentialGroup(
+                                new InstantCommand(()->servo.setPosition(.63)),
+                                new LambdaCommand()
+                                        .setUpdate(LauncherSubsystem.INSTANCE::calculateVelocity)
+                                //,new InstantCommand(()->new TelemetryItem(()->"Finished Running to speed"))
                         )
+
                 ),
                 LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                new InstantCommand(()->startShootTime=System.currentTimeMillis()),
                 new SequentialGroup(
                         DrumSubsystem.INSTANCE.servoEject,
 
@@ -146,7 +157,8 @@ public abstract class CompTeleOp extends NextFTCOpMode {
                         new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.schedule())
                 ),
                 new InstantCommand(follower::breakFollowing),
-                new InstantCommand(()->servo.setPosition(.388))
+                new InstantCommand(()->servo.setPosition(.388)),
+                new InstantCommand(()->{totShootTime+=System.currentTimeMillis()-startShootTime;totShots++;})
 
         ).requires(DriveSubsystem.INSTANCE).setInterruptible(true).named("April Tag Alignment");
         Gamepads.gamepad1().leftTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(aprilTagTracking);

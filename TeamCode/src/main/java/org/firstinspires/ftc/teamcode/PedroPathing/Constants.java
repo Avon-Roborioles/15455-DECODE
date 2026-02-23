@@ -24,7 +24,7 @@ public class Constants {
             .headingPIDFCoefficients(headingPID)
             .secondaryHeadingPIDFCoefficients(secondaryHeadingPID)
             .useSecondaryDrivePIDF(true)
-            .useSecondaryHeadingPIDF(true)
+            .useSecondaryHeadingPIDF(false)
             .centripetalScaling(centripetalScaling)
             ;
 

@@ -44,18 +44,19 @@ public class LauncherSubsystem implements Subsystem {
 
     public Servo servo;
 
-    public static double vkP=.003;
+    public static double vkP=-0.003;
     public static double vkI=0;
     public static double vkD=0;
 
-    public static double kV = .00055;
+    public static double kV = -0.00062;
     public static double kA =.00;
+    public static double kS=0;
 
     public static double shootRPM = 1600;
 
 
     PIDCoefficients coefficients=new PIDCoefficients(.02);
-    BasicFeedforwardParameters basicFeedforwardParameters=new BasicFeedforwardParameters(kV,kA);
+    BasicFeedforwardParameters basicFeedforwardParameters=new BasicFeedforwardParameters(kV,kA,kS);
 
     private ControlSystem normalControlSystem = ControlSystem.builder()
             .velPid(coefficients)
@@ -64,7 +65,7 @@ public class LauncherSubsystem implements Subsystem {
             .build();
 
 
-    private static double rpm;
+    public static double rpm;
     public static double distanceCm= 100;
     public static double realPower=0 ;
     public Command runToCalculatedPos= new LambdaCommand()
@@ -95,7 +96,7 @@ public class LauncherSubsystem implements Subsystem {
         eHubMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         cHubMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         cHubMotor.setDirection(-1);
-        eHubMotor.setDirection(1);
+        eHubMotor.setDirection(-1);
         new TelemetryData("Launcher Position",()-> cHubMotor.getCurrentPosition());
         new TelemetryData("Launcher Velocity",()->cHubMotor.getVelocity());
         new TelemetryData("Launcher Target Velocity",()->rpm);
@@ -136,6 +137,9 @@ public class LauncherSubsystem implements Subsystem {
          // 500
 //        rpm = shootRPM;
         rpm =-1.64914*Math.pow(10,-7)*Math.pow(distance,4)+0.000239159*Math.pow(distance,3)-0.124849*Math.pow(distance,2)+26.05336*Math.pow(distance,1)-3148.56015;
+        //rpm =-.0168109*Math.pow(distance,2)+6.93*Math.pow(distance,1)-1750.58;
+        //rpm = -1.39609*distance-882.96292;
+        //rpm =-0.00395575*Math.pow(distance,2)+0.478954*Math.pow(distance,1)-1056.5860;
         normalControlSystem.setGoal(new KineticState(0,rpm));
 
     }

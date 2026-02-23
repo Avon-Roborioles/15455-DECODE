@@ -1,15 +1,23 @@
 package org.firstinspires.ftc.teamcode.CompOpmodes.CompAuto;
 
-import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.blueShootPose;
-import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.blueBackStart;
-import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.blueBackSpike3Start;
-import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.blueBackSpike3End;
-import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.blueBackSpike2End;
-import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.blueBackSpike2Start;
-import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.blueLeavePose;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redBackShootPose;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redBackSpike2End;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redBackSpike2Start;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redBackSpike3End;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redBackSpike3Start;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redBackStart;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redHPZoneIntakePose1;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redHPZoneIntakePose2;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redHPZoneIntakePose3;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redHPZoneIntakePose4;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redHPZoneIntakePose5;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redHPZoneIntakePose6;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redHPZoneIntakePose7;
+import static org.firstinspires.ftc.teamcode.RobotConfig.PoseConstants.redLeavePose;
 
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.paths.Path;
+import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.AllianceComponent;
@@ -37,108 +45,158 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 import dev.nextftc.ftc.components.LoopTimeComponent;
 
 @Autonomous
-public class BlueBackAuto extends NextFTCOpMode {
-    public BlueBackAuto(){
+public class HPRedBack extends NextFTCOpMode {
+    public HPRedBack(){
         addComponents(
-                new SubsystemComponent(LauncherSubsystem.INSTANCE, DriveSubsystem.INSTANCE, DrumSubsystem.INSTANCE,LimelightSubsystem.INSTANCE),
+                new SubsystemComponent(LauncherSubsystem.INSTANCE, DriveSubsystem.INSTANCE, DrumSubsystem.INSTANCE, LimelightSubsystem.INSTANCE),
                 new TelemetryComponent(),
                 new PedroComponent(Constants::createFollower),
                 PoseTrackerComponent.INSTANCE,
                 new LoopTimeComponent(),
                 BulkReadComponent.INSTANCE,
-                AllianceComponent.getINSTANCE(AllianceColor.BLUE)
+                AllianceComponent.getINSTANCE(AllianceColor.RED)
         );
     }
-    public void onInit(){
-
-    }
+    public static PathConstraints constraints=new PathConstraints(0.99, 100, 1, .1);
 
     public void onStartButtonPressed(){
+
         DrumSubsystem.INSTANCE.useObelisk();
-        PedroComponent.follower().setPose(blueBackStart);
+        PedroComponent.follower().setPose(redBackStart);
         DrumSubsystem.INSTANCE.readyAuto();
         Path startTurnToShoot = new Path(
                 new BezierLine(
-                        blueBackStart,
-                        blueShootPose
+                        redBackStart,
+                        redBackShootPose
                 )
         );
-        startTurnToShoot.setLinearHeadingInterpolation(blueBackStart.getHeading(), blueShootPose.getHeading());
+        startTurnToShoot.setLinearHeadingInterpolation(redBackStart.getHeading(), redBackShootPose.getHeading());
         Path backToIntake3 = new Path(
                 new BezierLine(
-                        blueShootPose,
-                        blueBackSpike3Start
+                        redBackShootPose,
+                        redBackSpike3Start
                 )
         );
-        backToIntake3.setLinearHeadingInterpolation(blueShootPose.getHeading(), blueBackSpike3Start.getHeading());
+        backToIntake3.setLinearHeadingInterpolation(redBackShootPose.getHeading(), redBackSpike3Start.getHeading());
         FollowPath startTurnToShootCommand = new FollowPath(startTurnToShoot);
         Path intake3 = new Path(
                 new BezierLine(
 
-                        blueBackSpike3Start,
-                        blueBackSpike3End
+                        redBackSpike3Start,
+                        redBackSpike3End
                 )
         );
-        intake3.setLinearHeadingInterpolation(blueBackSpike3Start.getHeading(), blueBackSpike3End.getHeading());
+        intake3.setLinearHeadingInterpolation(0,0);
         FollowPath backToIntake3Command = new FollowPath(backToIntake3);
         FollowPath intake3Command = new FollowPath(intake3);
 
         Path intake3ToShoot = new Path(
                 new BezierLine(
-                        blueBackSpike3End,
-                        blueShootPose
+                        redBackSpike3End,
+                        redBackShootPose
                 )
         );
-        intake3ToShoot.setLinearHeadingInterpolation(blueBackSpike3End.getHeading(), blueShootPose.getHeading());
+        intake3ToShoot.setLinearHeadingInterpolation(redBackSpike3End.getHeading(), redBackShootPose.getHeading());
 
         Path shootToIntakeHPZone = new Path(
                 new BezierLine(
-                        blueShootPose,
-                        blueBackSpike2Start
+                        redBackShootPose,
+                        redBackSpike2Start
                 )
         );
-        shootToIntakeHPZone.setLinearHeadingInterpolation(blueShootPose.getHeading(), blueBackSpike2Start.getHeading());
+        shootToIntakeHPZone.setLinearHeadingInterpolation(redBackShootPose.getHeading(), redBackSpike2Start.getHeading());
 
         Path intakeHP = new Path(
                 new BezierLine(
-                        blueBackSpike2Start,
-                        blueBackSpike2End
+                        redBackSpike2Start,
+                        redBackSpike2End
                 )
         );
-        intakeHP.setLinearHeadingInterpolation(blueBackSpike2Start.getHeading(), blueBackSpike2End.getHeading());
+        intakeHP.setLinearHeadingInterpolation(redBackSpike2Start.getHeading(), redBackSpike2End.getHeading());
 
         Path intakeHpToShoot = new Path(
                 new BezierLine(
-                        blueBackSpike2End,
-                        blueShootPose
+                        redHPZoneIntakePose7,
+                        redBackShootPose
                 )
         );
-        intakeHpToShoot.setLinearHeadingInterpolation(blueBackSpike2End.getHeading(), blueShootPose.getHeading());
+        intakeHpToShoot.setLinearHeadingInterpolation(redHPZoneIntakePose7.getHeading(), redBackShootPose.getHeading());
         Path toCenter = new Path(
                 new BezierLine(
-                        blueShootPose,
-                        blueLeavePose
+                        redBackShootPose,
+                        redLeavePose
                 )
         );
-        toCenter.setLinearHeadingInterpolation(blueShootPose.getHeading(), blueLeavePose.getHeading());
+        toCenter.setLinearHeadingInterpolation(redBackShootPose.getHeading(), redLeavePose.getHeading());
+        Path path1 = new Path(
+                new BezierLine(
+                        redBackShootPose,
+                        redHPZoneIntakePose1
+                ),
+                constraints
+        );
+        path1.setLinearHeadingInterpolation(redBackShootPose.getHeading(),redHPZoneIntakePose1.getHeading());
+
+        Path path2 = new Path(
+                new BezierLine(
+                        redHPZoneIntakePose1,
+                        redHPZoneIntakePose2
+                )
+        );
+        path2.setLinearHeadingInterpolation(redHPZoneIntakePose1.getHeading(), redHPZoneIntakePose2.getHeading());
+        Path path3 = new Path(
+                new BezierLine(
+                        redHPZoneIntakePose2,
+                        redHPZoneIntakePose3
+                )
+        );
+        path3.setLinearHeadingInterpolation(redHPZoneIntakePose2.getHeading(), redHPZoneIntakePose3.getHeading());
+        Path path4 = new Path(
+                new BezierLine(
+                        redHPZoneIntakePose3,
+                        redHPZoneIntakePose4
+                )
+        );
+        path4.setLinearHeadingInterpolation(redHPZoneIntakePose3.getHeading(), redHPZoneIntakePose4.getHeading());
+        Path path5 = new Path(
+                new BezierLine(
+                        redHPZoneIntakePose4,
+                        redHPZoneIntakePose5
+                )
+        );
+        path5.setLinearHeadingInterpolation(redHPZoneIntakePose4.getHeading(), redHPZoneIntakePose5.getHeading());
+        Path path6 = new Path(
+                new BezierLine(
+                        redHPZoneIntakePose5,
+                        redHPZoneIntakePose6
+                )
+        );
+        path6.setLinearHeadingInterpolation(redHPZoneIntakePose5.getHeading(), redHPZoneIntakePose6.getHeading());
+        Path path7 = new Path(
+                new BezierLine(
+                        redHPZoneIntakePose6,
+                        redHPZoneIntakePose7
+                )
+        );
+        path7.setLinearHeadingInterpolation(redHPZoneIntakePose6.getHeading(), redHPZoneIntakePose7.getHeading());
 
 
         new TelemetryItem(()->"Pose: "+PedroComponent.follower().getPose());
         Command autoRoutine = new SequentialGroup(
+
                 new ParallelGroup(
                         new SequentialGroup(
                                 DrumSubsystem.INSTANCE.secureBalls,
-                                DrumSubsystem.INSTANCE.servoEject
+                                DrumSubsystem.INSTANCE.servoEject,
+                                new Delay(.5)
                         ),
                         new SequentialGroup(
-                                new BetterParallelRaceGroup(
-                                        LimelightSubsystem.INSTANCE.detectObelisk,
-                                        new Delay(2)
-                                ),
+                                LimelightSubsystem.INSTANCE.detectObelisk,
                                 startTurnToShootCommand
                         ),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos
                 ),
+
                 new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 DrumSubsystem.INSTANCE.shootFirstPattern,
                 //LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
@@ -176,24 +234,24 @@ public class BlueBackAuto extends NextFTCOpMode {
                 //LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootThirdPattern,
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
-
-
                 new BetterParallelRaceGroup(
-                        DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
 
-                        new SequentialGroup(
-                                new FollowPath(shootToIntakeHPZone),
-                                new InstantCommand(()->PedroComponent.follower().setMaxPower(.5)),
-                                new ParallelGroup(
-                                        new SequentialGroup(
-                                                new Delay(.3),
-                                                new InstantCommand(()->PedroComponent.follower().setMaxPower(.5))
-                                        ),
-                                        new FollowPath(intakeHP)
+                        new ParallelGroup(
+                                new SequentialGroup(
+                                        new InstantCommand(()->PedroComponent.follower().setMaxPower(.75)),
+                                        new FollowPath(path1),
+
+                                        new FollowPath(path2),
+                                        new FollowPath(path3),
+                                        new FollowPath(path4),
+                                        new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
+                                        new FollowPath(path5),
+
+                                        new FollowPath(path6)
                                 ),
-                                new Delay(3)
-
-                        )
+                                DrumSubsystem.INSTANCE.intakeThreeBallsWithPause
+                        ),
+                        new Delay(10)
                 ),
                 new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
                 new ParallelGroup(
@@ -209,16 +267,10 @@ public class BlueBackAuto extends NextFTCOpMode {
                 //LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootThirdPattern,
                 new InstantCommand(LauncherSubsystem.INSTANCE::stop),
-                new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
                 new FollowPath(toCenter)
 
         );
         autoRoutine.schedule();
 
-    }
-
-    @Override
-    public void onStop(){
-        PedroComponent.follower().setMaxPower(1);
     }
 }
