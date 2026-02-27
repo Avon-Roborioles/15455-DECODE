@@ -70,12 +70,18 @@ public abstract class CompTeleOp extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed(){
+        new TelemetryData("Heading Velocity",follower()::getAngularVelocity);
         servo =hardwareMap.get(Servo.class,"driverLight");
         //BindingManager.update();
         Follower follower=PedroComponent.follower();
 
         Gamepads.gamepad2().dpadUp().inLayer(normalOperationLayer).whenBecomesTrue(new PatternSetCommand());
-        Gamepads.gamepad1().rightTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBalls);
+        Gamepads.gamepad1().rightTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(
+                new SequentialGroup(
+                        DrumSubsystem.INSTANCE.intakeThreeBalls,
+                        DrumSubsystem.INSTANCE.secureBalls
+                )
+        );
 
         Gamepads.gamepad1().rightBumper().inLayer(normalOperationLayer).whenBecomesTrue(DrumSubsystem.INSTANCE.intakeThreeBallsWithPause);
 

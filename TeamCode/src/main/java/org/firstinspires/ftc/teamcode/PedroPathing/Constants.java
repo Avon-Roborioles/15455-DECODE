@@ -43,6 +43,7 @@ public class Constants {
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .xVelocity( xVelocity)
             .yVelocity(yVelocity)
+            .useBrakeModeInTeleOp(true)
 
 
             ;
@@ -53,6 +54,7 @@ public class Constants {
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .hardwareMapName(pinpointName)
+
             ;
 
 

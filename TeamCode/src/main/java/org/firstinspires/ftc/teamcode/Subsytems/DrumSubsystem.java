@@ -262,7 +262,7 @@ public class DrumSubsystem implements Subsystem {
                     new LambdaCommand()
                             .setIsDone(()->false)
                             //.setStart(this::enableArtifactSensor)
-                            .setStop((Boolean b)->{intakeMotor.getMotor().setPower(0);disableArtifactSensor();})
+                            .setStop((Boolean b)->{if (b){intakeMotor.getMotor().setPower(0);}disableArtifactSensor();})
             )
             ,
             new NullCommand()
@@ -286,8 +286,7 @@ public class DrumSubsystem implements Subsystem {
                     new Delay(.01),
                     spitOutIntakeWheels
             ),
-            stopIntakeWheels,
-            secureBalls
+            stopIntakeWheels
     ).requires(this);
     public Command intakeThreeBallsWithPause = new SequentialGroup(
             intakeOneBall,
@@ -298,8 +297,7 @@ public class DrumSubsystem implements Subsystem {
                     spitOutIntakeWheels
             ),
 
-            stopIntakeWheels,
-            secureBalls
+            stopIntakeWheels
     ).requires(this);
 
     public Command manual = new InstantCommand(()->{drumMode=DrumMode.MANUAL;});

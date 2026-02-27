@@ -128,19 +128,19 @@ public class RedBackAuto extends NextFTCOpMode {
                         ),
                         new SequentialGroup(
                                 new BetterParallelRaceGroup(
-
                                         LimelightSubsystem.INSTANCE.detectObelisk,
                                         new Delay(2)
                                 ),
-                                startTurnToShootCommand
+                                new ParallelGroup(
+                                        startTurnToShootCommand,
+                                        new InstantCommand(DrumSubsystem.INSTANCE::preparePattern)
+                                )
                         ),
 
                         LauncherSubsystem.INSTANCE.runToCalculatedPos
                 ),
 
 
-
-                new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 DrumSubsystem.INSTANCE.shootFirstPattern,
                 //LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootSecondPattern,
@@ -150,7 +150,7 @@ public class RedBackAuto extends NextFTCOpMode {
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
 
                 new BetterParallelRaceGroup(
-                        DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
+                        DrumSubsystem.INSTANCE.intakeThreeBalls,
                         new SequentialGroup(
                                 backToIntake3Command,
                                 new ParallelGroup(
@@ -160,14 +160,17 @@ public class RedBackAuto extends NextFTCOpMode {
                                         ),
                                         intake3Command
                                 ),
-                                new Delay(3)
+                                new Delay(1)
                         )
                 ),
                 new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
                 new ParallelGroup(
                         new FollowPath(intake3ToShoot),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                        DrumSubsystem.INSTANCE.servoEject
+                        new SequentialGroup(
+                                DrumSubsystem.INSTANCE.secureBalls,
+                                DrumSubsystem.INSTANCE.servoEject
+                        )
                 ),
                 new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 LauncherSubsystem.INSTANCE.runToCalculatedPos,
@@ -179,7 +182,7 @@ public class RedBackAuto extends NextFTCOpMode {
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
                 new BetterParallelRaceGroup(
 
-                        DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
+                        DrumSubsystem.INSTANCE.intakeThreeBalls,
                         new SequentialGroup(
                                 new FollowPath(shootToIntakeHPZone),
                                 new ParallelGroup(
@@ -197,7 +200,10 @@ public class RedBackAuto extends NextFTCOpMode {
                 new ParallelGroup(
                         new FollowPath(intakeHpToShoot),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                        DrumSubsystem.INSTANCE.servoEject
+                        new SequentialGroup(
+                                DrumSubsystem.INSTANCE.secureBalls,
+                                DrumSubsystem.INSTANCE.servoEject
+                        )
                 ),
                 new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 LauncherSubsystem.INSTANCE.runToCalculatedPos,

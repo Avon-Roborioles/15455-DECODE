@@ -251,7 +251,7 @@ public class HPRedBack extends NextFTCOpMode {
                                 ),
                                 DrumSubsystem.INSTANCE.intakeThreeBallsWithPause
                         ),
-                        new Delay(10)
+                        new Delay(8)
                 ),
                 new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
                 new ParallelGroup(

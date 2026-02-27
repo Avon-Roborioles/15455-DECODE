@@ -86,7 +86,9 @@ public class LauncherSubsystem implements Subsystem {
             .setUpdate(this::stop)
             .setIsDone(()->true);
 
-
+    public boolean isUpToSpeed(){
+        return normalControlSystem.isWithinTolerance(new KineticState(0,40));
+    }
     @Override
     public void initialize(){
         deltaCharge=0;

@@ -19,13 +19,13 @@ public class RobotConfig {
         public static String frontRightWheel = "frontRight";
         public static String backLeftWheel = "backLeft";
         public static String backRightWheel = "backRight";
-        public static double xVelocity = 72.99;
-        public static double yVelocity = 55.24;
+        public static double xVelocity = 73.99;
+        public static double yVelocity = 59.39;
 
 /// Follower constants:
 
-        public static double mass = 12.35;
-        public static double forwardZPwrAcc = -42.44; ///forwardZeroPowerAcceleration
+        public static double mass = 14.05;
+        public static double forwardZPwrAcc = -27.95; ///forwardZeroPowerAcceleration
         public static double lateralZPwrAcc = -61.21; ///lateralZeroPowerAcceleration
         public static double centripetalScaling = 0.0009;
         public static PIDFCoefficients translationalPID = new PIDFCoefficients(0.6,.0001,0.055,0); ///translationalPIDFCoefficients
@@ -122,16 +122,17 @@ public class RobotConfig {
         public static String debugOperationLayer = "Debug Operation";
     }
 
+    @Configurable
     public static class FieldConstants {
         public static Pose center= new Pose(72,72, Math.toRadians(90));
         public static Pose redGoal = new Pose(140,140);
-        public static Pose redAimPose = new Pose(135,135);
+        public static Pose redAimPose = new Pose(134,123);
         public static Pose blueGoal = new Pose (5,144-5);
         public static Pose blueAimPose = new Pose(7.5,144-7.5);
-        public static Pose redBasePose = new Pose(37.77,33.96,Math.toRadians(90));
-        public static Pose blueBasePose = new Pose(144-37.77,33.96,Math.toRadians(90));
-        public static Pose redHPZoneReset = new Pose(9.5,10.8,Math.toRadians(-90));
-        public static Pose blueHPZoneReset = new Pose(144-7.5,12.8,Math.toRadians(-90));
+        public static Pose redBasePose = new Pose(35.77,33.5,Math.toRadians(180));
+        public static Pose blueBasePose = new Pose(102,34,Math.toRadians(180));
+        public static Pose redHPZoneReset = new Pose(4.4,10.8,Math.toRadians(-90));
+        public static Pose blueHPZoneReset = new Pose(132,8.74,Math.toRadians(-90));
 
     }
     public static class GlobalConstants {
@@ -145,8 +146,8 @@ public class RobotConfig {
         public static Pose redBackSpike3End =      new Pose(130,33,Math.toRadians(0));
         public static Pose redBackSpike2Start =    new Pose(95,57,Math.toRadians(0));
         public static Pose redBackSpike2End =      new Pose(130,57, redBackSpike2Start.getHeading());
-        public static Pose redHPZoneIntakePose1 = new Pose(128,20.97,Math.toRadians(-29.88));
-        public static Pose redHPZoneIntakePose2 = new Pose(128,12,Math.toRadians(-29));
+        public static Pose redHPZoneIntakePose1 = new Pose(130,20.97,Math.toRadians(-20));
+        public static Pose redHPZoneIntakePose2 = new Pose(128,12,Math.toRadians(-20));
         public static Pose redHPZoneIntakePose3 = new Pose(127,7,Math.toRadians(0));
         public static Pose redHPZoneIntakePose4 = new Pose(125.5,12,Math.toRadians(30.6));
         public static Pose redHPZoneIntakePose5 = new Pose(121,12,Math.toRadians(0));

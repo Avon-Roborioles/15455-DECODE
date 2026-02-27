@@ -9,36 +9,27 @@ import com.pedropathing.math.MathFunctions;
 
 
 import org.firstinspires.ftc.teamcode.AllianceComponent;
-import org.firstinspires.ftc.teamcode.Commands.BetterParallelRaceGroup;
-import org.firstinspires.ftc.teamcode.Commands.LazyLockOn;
-import org.firstinspires.ftc.teamcode.Commands.LazyTurnTo;
 import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-import dev.nextftc.bindings.BindingManager;
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
 import dev.nextftc.control.builder.ControlSystemBuilder;
 import dev.nextftc.control.feedback.AngleType;
 import dev.nextftc.control.feedback.PIDCoefficients;
 import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.commands.delays.WaitUntil;
 import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.commands.utility.NullCommand;
 import dev.nextftc.core.subsystems.Subsystem;
-import dev.nextftc.core.units.Angle;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.extensions.pedro.PedroDriverControlled;
-import dev.nextftc.extensions.pedro.TurnTo;
 import dev.nextftc.ftc.Gamepads;
-import kotlin.Lazy;
 
 @Configurable
 public class DriveSubsystem implements Subsystem {
@@ -48,7 +39,9 @@ public class DriveSubsystem implements Subsystem {
     public static double kP = .8;
     public static double kI=0;
     public static double kD = 0;
-    public static double kS = .12;
+    public static double kStatic = .12;
+    public static double kKinetic = .07;
+    public static double headingThreshold = .01;
     public static double usePID = 1;
     public PIDCoefficients coefficients = new PIDCoefficients(kP,kI,kD);
     public double integral = 0;
@@ -65,6 +58,7 @@ public class DriveSubsystem implements Subsystem {
 
     @Override
     public void initialize(){
+
         new TelemetryItem(()->"Pose"+PedroComponent.follower().getPose());
         new TelemetryData("Nice heading",this::getGoalHeadingRad);
         if (AllianceComponent.getColor().equals(AllianceColor.BLUE)){
@@ -137,10 +131,17 @@ public class DriveSubsystem implements Subsystem {
         double requiredAngle = getGoalHeadingRad();
         lockOnConrolSystem.setGoal(new KineticState(requiredAngle));
         double currentAngle = follower().getPose().getHeading();
+
+        double kStaticToUse = kStatic;
+        if (follower().getPoseTracker().getAngularVelocity()>headingThreshold) kStaticToUse=kKinetic;
+
         double error =MathFunctions.normalizeAngle(requiredAngle)-MathFunctions.normalizeAngle(currentAngle);
-        double power = usePID*lockOnConrolSystem.calculate(new KineticState(currentAngle))+kS*Math.signum(sigmoid(error));
+        double power = usePID*lockOnConrolSystem.calculate(new KineticState(currentAngle))+ kStaticToUse *Math.signum(sigmoid(error));
 //        TelemetryManager.getInstance().addTempTelemetry("Lock on power: "+power);
         TelemetryManager.getInstance().addTempTelemetry("Goal Error: "+error);
+        if (error==0){
+            return 0;
+        }
         return power;
     }
     public double sigmoid(double input){

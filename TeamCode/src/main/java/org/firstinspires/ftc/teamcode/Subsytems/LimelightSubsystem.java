@@ -37,7 +37,7 @@ public class LimelightSubsystem implements Subsystem {
             .setIsDone(()->obeliskAprilTag!=0)
             .setStop(this::endDetectObelisk);
     public void initialize(){
-        limelight= ActiveOpMode.hardwareMap().get(Limelight3A.class,"limeLight");
+        limelight= ActiveOpMode.hardwareMap().get(Limelight3A.class,"limelight");
         limelight.pipelineSwitch(targetPipeline);
         //limelight.start();
     }
@@ -77,6 +77,15 @@ public class LimelightSubsystem implements Subsystem {
         limelight.stop();
         DrumSubsystem.INSTANCE.setObeliskPattern(obeliskAprilTag);
         new TelemetryData("ID",()->obeliskAprilTag*1.);
+    }
+    public String lookAtRamp(){
+        limelight.start();
+        limelight.pipelineSwitch(4);
+        LLResult result= limelight.getLatestResult();
+        if (result.getPipelineIndex()!=4){
+            return "Not Good";
+        }
+        return result.getClassifierResults().get(0).getClassId()+" Balls/"+result.getClassifierResults().get(0).getClassName();
     }
 
 
