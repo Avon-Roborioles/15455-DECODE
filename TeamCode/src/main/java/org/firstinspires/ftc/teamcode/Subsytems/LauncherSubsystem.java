@@ -24,6 +24,7 @@ import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.ActiveOpMode;
+import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.controllable.MotorGroup;
 import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.hardware.impl.VoltageCompensatingMotor;
@@ -53,6 +54,7 @@ public class LauncherSubsystem implements Subsystem {
     public static double kS=0;
 
     public static double shootRPM = 1600;
+    public boolean hasBeenUpToSpeed = false;
 
 
     PIDCoefficients coefficients=new PIDCoefficients(.02);
@@ -86,6 +88,11 @@ public class LauncherSubsystem implements Subsystem {
             .setUpdate(this::stop)
             .setIsDone(()->true);
 
+    public double totalSpeedUpTime = 0;
+    public double numSpeedUps = 0;
+    public double lastSpeedUpStartTime = 0;
+
+
     public boolean isUpToSpeed(){
         return normalControlSystem.isWithinTolerance(new KineticState(0,40));
     }
@@ -104,6 +111,12 @@ public class LauncherSubsystem implements Subsystem {
         new TelemetryData("Launcher Target Velocity",()->rpm);
         new TelemetryData("Calculated Distance Cm",()->distanceCm);
         new TelemetryData("Launcher Power",()-> launchGroup.getPower());
+        new TelemetryData("Avg Speed Up Time",()->{
+            if (numSpeedUps==0){
+                return totalSpeedUpTime;
+            }
+            return totalSpeedUpTime/numSpeedUps;
+        });
 
     }
 
@@ -179,13 +192,28 @@ public class LauncherSubsystem implements Subsystem {
         }
         //deltaCharge+=(System.currentTimeMillis()-lastTickTime)/1000.* (cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS));
         lastTickTime=System.currentTimeMillis();
-        if (normalControlSystem.isWithinTolerance(new KineticState(0,40))){
+        if (isUpToSpeed()){
             servo.setPosition(.5);
+            if (!hasBeenUpToSpeed) {
+                numSpeedUps = numSpeedUps + 1;
+                totalSpeedUpTime += System.currentTimeMillis() - lastSpeedUpStartTime;
+            }
             TelemetryManager.getInstance().addTempTelemetry("Finished Speed");
+            hasBeenUpToSpeed=true;
+
         } else {
             servo.setPosition(.63);
             TelemetryManager.getInstance().addTempTelemetry("NOT FINISHED");
+            if (hasBeenUpToSpeed) {
+                lastSpeedUpStartTime = System.currentTimeMillis();
+            }
+            hasBeenUpToSpeed=false;
 
+        }
+        if (Gamepads.gamepad1().b().get()){
+            totalSpeedUpTime=0;
+            numSpeedUps=0;
+            lastSpeedUpStartTime=0;
         }
     }
 }
