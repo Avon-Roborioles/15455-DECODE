@@ -6,6 +6,8 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.AllianceComponent;
+import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Subsytems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
@@ -20,19 +22,23 @@ import dev.nextftc.ftc.NextFTCOpMode;
 @Configurable
 public class IntakeSpeedTest extends NextFTCOpMode {
 
-    public static double maxPower=.2;
+    public static double maxPower=.283;
 
     public IntakeSpeedTest(){
+        super();
+        addComponents(AllianceComponent.getINSTANCE(AllianceColor.RED));
         addComponents(
                 new SubsystemComponent(DriveSubsystem.INSTANCE, DrumSubsystem.INSTANCE),
                 new TelemetryComponent(),
                 new PedroComponent(Constants::createFollower)
         );
+
     }
 
 
     public void onStartButtonPressed(){
         DrumSubsystem.INSTANCE.setZero(0);
+        DrumSubsystem.INSTANCE.resetCompartments();
         Path forward = new Path(
                 new BezierLine(
                         new Pose(0,0),

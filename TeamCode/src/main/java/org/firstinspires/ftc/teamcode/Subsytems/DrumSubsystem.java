@@ -333,7 +333,7 @@ public class DrumSubsystem implements Subsystem {
         isServoEjecting=false;
         hasBeenJammed=false;
         lastJamTime=0;
-        magneticSensor=ActiveOpMode.hardwareMap().get(TouchSensor.class,"magSensor");
+//        magneticSensor=ActiveOpMode.hardwareMap().get(TouchSensor.class,"magSensor");
         controlSystem2 = ControlSystem.builder()
                 .posPid(coefficients)
                 .build();
