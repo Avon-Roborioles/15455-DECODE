@@ -300,6 +300,12 @@ public class DrumSubsystem implements Subsystem {
             stopIntakeWheels
     ).requires(this);
 
+    public Command intakeThreeBallsWithPauseNoStop = new SequentialGroup(
+            intakeOneWithoutStop,
+            intakeOneWithoutStop,
+            intakeOneWithoutStop
+    ).requires(this);
+
     public Command manual = new InstantCommand(()->{drumMode=DrumMode.MANUAL;});
 
 

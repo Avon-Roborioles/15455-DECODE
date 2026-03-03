@@ -75,11 +75,11 @@ public class RobotConfig {
         public static KineticState kineticStateTolerance = new KineticState(200,1000);
 
         public static double pinkOuttake = 0;
-        public static double pinkIntake = 4119;
-        public static double redOuttake = 2750;
-        public static double redIntake = 6836;
-        public static double blackOuttake = 5470;
-        public static double blackIntake = 1413;
+        public static double pinkIntake = 3972;
+        public static double redOuttake = 2603;
+        public static double redIntake = 6818;
+        public static double blackOuttake = 5355;
+        public static double blackIntake = 1331;
 
 
 
@@ -126,7 +126,7 @@ public class RobotConfig {
     public static class FieldConstants {
         public static Pose center= new Pose(72,72, Math.toRadians(90));
         public static Pose redGoal = new Pose(140,140);
-        public static Pose redAimPose = new Pose(134,123);
+        public static Pose redAimPose = new Pose(134,133);
         public static Pose blueGoal = new Pose (5,144-5);
         public static Pose blueAimPose = new Pose(7.5,144-7.5);
         public static Pose redBasePose = new Pose(35.77,33.5,Math.toRadians(180));
@@ -146,10 +146,10 @@ public class RobotConfig {
         public static Pose redBackSpike3End =      new Pose(130,33,Math.toRadians(0));
         public static Pose redBackSpike2Start =    new Pose(95,57,Math.toRadians(0));
         public static Pose redBackSpike2End =      new Pose(130,57, redBackSpike2Start.getHeading());
-        public static Pose redHPZoneIntakePose1 = new Pose(130,20.97,Math.toRadians(-20));
-        public static Pose redHPZoneIntakePose2 = new Pose(128,12,Math.toRadians(-20));
-        public static Pose redHPZoneIntakePose3 = new Pose(127,7,Math.toRadians(0));
-        public static Pose redHPZoneIntakePose4 = new Pose(125.5,12,Math.toRadians(30.6));
+        public static Pose redHPZoneIntakePose1 = new Pose(128.5,15.97,-0.3490658504);
+        public static Pose redHPZoneIntakePose2 = new Pose(128.5,12,-0.2690658504);
+        public static Pose redHPZoneIntakePose3 = new Pose(128,7,Math.toRadians(0));
+        public static Pose redHPZoneIntakePose4 = new Pose(125.5,12,0.5340707511);
         public static Pose redHPZoneIntakePose5 = new Pose(121,12,Math.toRadians(0));
         public static Pose redHPZoneIntakePose6 = new Pose(131,7.5,Math.toRadians(0));
         public static Pose redHPZoneIntakePose7 = new Pose();
@@ -168,7 +168,13 @@ public class RobotConfig {
         public static Pose blueBackSpike2Start =   new Pose(144-95,60,headingInverter(Math.toRadians(0)));
         public static Pose blueBackSpike2End =     new Pose(144-130.5,60,headingInverter(redBackSpike2Start.getHeading()));
         public static Pose blueLeavePose =         new Pose(144-83,40,headingInverter(Math.toRadians(-90)));
-
+        public static Pose blueHPZoneIntakePose1 = new Pose(144-128.5,15.97,-0.3490658504);
+        public static Pose blueHPZoneIntakePose2 = new Pose(144-128.5,12,-0.2690658504);
+        public static Pose blueHPZoneIntakePose3 = new Pose(144-128,7,Math.toRadians(0));
+        public static Pose blueHPZoneIntakePose4 = new Pose(144-125.5,12,0.5340707511);
+        public static Pose blueHPZoneIntakePose5 = new Pose(144-121,12,Math.toRadians(0));
+        public static Pose blueHPZoneIntakePose6 = new Pose(144-131,7.5,Math.toRadians(0));
+        public static Pose blueHPZoneIntakePose7 = new Pose();
 
     }
 
