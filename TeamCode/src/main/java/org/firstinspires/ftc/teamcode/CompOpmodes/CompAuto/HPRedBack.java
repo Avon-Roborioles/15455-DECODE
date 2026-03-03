@@ -120,7 +120,7 @@ public class HPRedBack extends NextFTCOpMode {
                         redBackShootPose
                 )
         );
-        intakeHpToShoot.setLinearHeadingInterpolation(redHPZoneIntakePose6.getHeading(), Math.toRadians(248.5));
+        intakeHpToShoot.setLinearHeadingInterpolation(redHPZoneIntakePose6.getHeading(), Math.toRadians(250));
         Path toCenter = new Path(
                 new BezierLine(
                         redBackShootPose,
@@ -225,7 +225,7 @@ public class HPRedBack extends NextFTCOpMode {
                         new FollowPath(intake3ToShoot),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
                         new SequentialGroup(
-                                new Delay(1),
+                                new Delay(.5),
                                 DrumSubsystem.INSTANCE.stopIntakeWheels,
                                 DrumSubsystem.INSTANCE.secureBalls,
                                 DrumSubsystem.INSTANCE.servoEject
@@ -263,7 +263,7 @@ public class HPRedBack extends NextFTCOpMode {
                         new FollowPath(intakeHpToShoot),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
                         new SequentialGroup(
-                                new Delay(1),
+                                new Delay(.5),
                                 DrumSubsystem.INSTANCE.stopIntakeWheels,
                                 DrumSubsystem.INSTANCE.secureBalls,
                                 DrumSubsystem.INSTANCE.servoEject

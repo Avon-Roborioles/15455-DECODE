@@ -76,7 +76,7 @@ public class HPBlueBack extends NextFTCOpMode {
                         blueBackSpike3End
                 )
         );
-        intake3.setLinearHeadingInterpolation(0,0);
+        intake3.setLinearHeadingInterpolation(blueBackSpike3Start.getHeading(),blueBackSpike3End.getHeading());
         FollowPath backToIntake3Command = new FollowPath(backToIntake3);
         FollowPath intake3Command = new FollowPath(intake3);
 
@@ -215,7 +215,7 @@ public class HPBlueBack extends NextFTCOpMode {
                         new FollowPath(intake3ToShoot),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
                         new SequentialGroup(
-                                new Delay(1),
+                                new Delay(.5),
                                 DrumSubsystem.INSTANCE.stopIntakeWheels,
                                 DrumSubsystem.INSTANCE.secureBalls,
                                 DrumSubsystem.INSTANCE.servoEject
@@ -253,7 +253,7 @@ public class HPBlueBack extends NextFTCOpMode {
                         new FollowPath(intakeHpToShoot),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
                         new SequentialGroup(
-                                new Delay(1),
+                                new Delay(.5),
                                 DrumSubsystem.INSTANCE.stopIntakeWheels,
                                 DrumSubsystem.INSTANCE.secureBalls,
                                 DrumSubsystem.INSTANCE.servoEject
