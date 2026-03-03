@@ -181,7 +181,10 @@ public class HPBlueBack extends NextFTCOpMode {
                                 new Delay(.5)
                         ),
                         new SequentialGroup(
-                                LimelightSubsystem.INSTANCE.detectObelisk,
+                                new BetterParallelRaceGroup(
+                                        LimelightSubsystem.INSTANCE.detectObelisk,
+                                        new Delay(2)
+                                ),
                                 startTurnToShootCommand
                         ),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos
