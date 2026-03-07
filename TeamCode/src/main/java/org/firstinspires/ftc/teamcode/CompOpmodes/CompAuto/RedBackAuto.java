@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Subsytems.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
+import org.firstinspires.ftc.teamcode.UtilityCommands.ShootCommand;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
@@ -139,16 +140,7 @@ public class RedBackAuto extends NextFTCOpMode {
 
                         LauncherSubsystem.INSTANCE.runToCalculatedPos
                 ),
-
-
-                DrumSubsystem.INSTANCE.shootFirstPattern,
-                //LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootSecondPattern,
-                //LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootThirdPattern,
-
-                new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
-
+                ShootCommand.getShootCommand(),
                 new BetterParallelRaceGroup(
                         DrumSubsystem.INSTANCE.intakeThreeBalls,
                         new SequentialGroup(
@@ -172,14 +164,7 @@ public class RedBackAuto extends NextFTCOpMode {
                                 DrumSubsystem.INSTANCE.servoEject
                         )
                 ),
-                new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
-                LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootFirstPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootSecondPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootThirdPattern,
-                new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
+                ShootCommand.getShootCommand(),
                 new BetterParallelRaceGroup(
 
                         DrumSubsystem.INSTANCE.intakeThreeBalls,
@@ -205,14 +190,7 @@ public class RedBackAuto extends NextFTCOpMode {
                                 DrumSubsystem.INSTANCE.servoEject
                         )
                 ),
-                new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
-                LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootFirstPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootSecondPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootThirdPattern,
-                new InstantCommand(LauncherSubsystem.INSTANCE::stop),
+                ShootCommand.getShootCommand(),
                 new FollowPath(toCenter)
 
         );

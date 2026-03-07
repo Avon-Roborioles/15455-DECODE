@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.Subsytems.LauncherSubsystem;
 import org.firstinspires.ftc.teamcode.Subsytems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
+import org.firstinspires.ftc.teamcode.UtilityCommands.ShootCommand;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
@@ -139,14 +140,7 @@ public class BlueBackAuto extends NextFTCOpMode {
                         ),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos
                 ),
-                new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
-                DrumSubsystem.INSTANCE.shootFirstPattern,
-                //LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootSecondPattern,
-                //LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootThirdPattern,
-
-                new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
+                ShootCommand.getShootCommand(),
 
                 new BetterParallelRaceGroup(
                         DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
@@ -168,14 +162,7 @@ public class BlueBackAuto extends NextFTCOpMode {
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
                         DrumSubsystem.INSTANCE.servoEject
                 ),
-                new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
-                LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootFirstPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootSecondPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootThirdPattern,
-                new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
+                ShootCommand.getShootCommand(),
 
 
                 new BetterParallelRaceGroup(
@@ -201,14 +188,7 @@ public class BlueBackAuto extends NextFTCOpMode {
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
                         DrumSubsystem.INSTANCE.servoEject
                 ),
-                new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
-                LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootFirstPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootSecondPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                DrumSubsystem.INSTANCE.shootThirdPattern,
-                new InstantCommand(LauncherSubsystem.INSTANCE::stop),
+                ShootCommand.getShootCommand(),
                 new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
                 new FollowPath(toCenter)
 

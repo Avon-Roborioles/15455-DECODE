@@ -126,7 +126,7 @@ public class RobotConfig {
     public static class FieldConstants {
         public static Pose center= new Pose(72,72, Math.toRadians(90));
         public static Pose redGoal = new Pose(140,140);
-        public static Pose redAimPose = new Pose(134,133);
+        public static Pose redAimPose = new Pose(134,139);
         public static Pose blueGoal = new Pose (5,144-5);
         public static Pose blueAimPose = new Pose(7.5,144-7.5);
         public static Pose redBasePose = new Pose(35.77,33.5,Math.toRadians(180));

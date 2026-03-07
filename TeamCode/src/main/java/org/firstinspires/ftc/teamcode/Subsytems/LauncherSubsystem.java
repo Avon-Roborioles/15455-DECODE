@@ -53,6 +53,9 @@ public class LauncherSubsystem implements Subsystem {
     public static double kA =.00;
     public static double kS=0;
 
+    public static double runBackToSpeedThreshold=200;
+    public static double hasShotThreshold = 150;
+
     public static double shootRPM = 1600;
     public boolean hasBeenUpToSpeed = false;
 
@@ -82,11 +85,13 @@ public class LauncherSubsystem implements Subsystem {
 
     public Command runBackToCalculatedPos = new LambdaCommand()
             .setUpdate(this::calculateVelocity)
-            .setIsDone(()-> Math.abs(rpm-cHubMotor.getVelocity())<100)
+            .setIsDone(()-> Math.abs(rpm-cHubMotor.getVelocity())<getRunBackToSpeedThreshold())
             .setStop((Boolean b)->{if (b){rpm=0;}});
     public Command stop= new LambdaCommand()
             .setUpdate(this::stop)
             .setIsDone(()->true);
+
+
 
     public double totalSpeedUpTime = 0;
     public double numSpeedUps = 0;
@@ -96,6 +101,15 @@ public class LauncherSubsystem implements Subsystem {
     public boolean isUpToSpeed(){
         return normalControlSystem.isWithinTolerance(new KineticState(0,40));
     }
+
+    public static double rpmDividerThreshold = -1300;
+    public double getRunBackToSpeedThreshold(){
+        if (Math.abs(rpm)>Math.abs(rpmDividerThreshold))
+            return 100;
+
+        return 170;
+    }
+
     @Override
     public void initialize(){
         deltaCharge=0;
@@ -118,6 +132,10 @@ public class LauncherSubsystem implements Subsystem {
             return totalSpeedUpTime/numSpeedUps;
         });
 
+    }
+
+    public boolean hasShot(){
+        return Math.abs(rpm-cHubMotor.getVelocity())>hasShotThreshold;
     }
 
     public void increaseRPMby50(){
@@ -192,6 +210,17 @@ public class LauncherSubsystem implements Subsystem {
         }
         //deltaCharge+=(System.currentTimeMillis()-lastTickTime)/1000.* (cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS));
         lastTickTime=System.currentTimeMillis();
+        if (false&&hasBeenUpToSpeed&&hasShot()){
+            double current = cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS);
+            double voltage = cHubMotor.getMotor().getPower()*ActiveOpMode.hardwareMap().voltageSensor.iterator().next().getVoltage();
+            double targetAngSpeed = ticksToAngVel(rpm);
+            double curAngSpeed = ticksToAngVel(cHubMotor.getVelocity());
+            new TelemetryData("Total Current",()->current);
+            new TelemetryData("Voltage",()->voltage);
+            new TelemetryData("Target Ang Vel",()->targetAngSpeed);
+            new TelemetryData("Current Ang Vel",()->curAngSpeed);
+            new TelemetryData("Estimated Back Time (s)",()->2*current*voltage/(1.2*Math.pow(10,-5)*(targetAngSpeed*targetAngSpeed-curAngSpeed*curAngSpeed)));
+        }
         if (isUpToSpeed()){
             servo.setPosition(.5);
             if (!hasBeenUpToSpeed) {
@@ -201,7 +230,9 @@ public class LauncherSubsystem implements Subsystem {
             TelemetryManager.getInstance().addTempTelemetry("Finished Speed");
             hasBeenUpToSpeed=true;
 
+
         } else {
+
             servo.setPosition(.63);
             TelemetryManager.getInstance().addTempTelemetry("NOT FINISHED");
             if (hasBeenUpToSpeed) {
@@ -215,5 +246,10 @@ public class LauncherSubsystem implements Subsystem {
             numSpeedUps=0;
             lastSpeedUpStartTime=0;
         }
+
+
+    }
+    public double ticksToAngVel(double ticks){
+        return 1.5*2*Math.PI*ticks/103.8;
     }
 }

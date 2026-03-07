@@ -39,19 +39,27 @@ public class DriveSubsystem implements Subsystem {
     public static double kP = .8;
     public static double kI=0;
     public static double kD = 0;
+
+    public static double aKP = 1;
+
     public static double kStatic = .12;
     public static double kKinetic = .07;
     public static double headingThreshold = .01;
     public static double usePID = 1;
     public PIDCoefficients coefficients = new PIDCoefficients(kP,kI,kD);
+    public PIDCoefficients aprilTagCoefficients = new PIDCoefficients(aKP,kI,kD);
     public double integral = 0;
 
 
     private Command defaultCommand = new NullCommand();
     ControlSystem lockOnConrolSystem = new ControlSystemBuilder()
-
             .angular(AngleType.RADIANS,
                     feedback -> feedback.posPid(coefficients)
+            )
+            .build();
+    ControlSystem aprilTagControlSystem = new ControlSystemBuilder()
+            .angular(AngleType.RADIANS,
+                    feedback -> feedback.posPid(aprilTagCoefficients)
             )
             .build();
 
@@ -68,8 +76,23 @@ public class DriveSubsystem implements Subsystem {
                             new LambdaCommand()
                                     .setIsDone(()->Gamepads.gamepad1().square().get()),
                             new PedroDriverControlled(
-                                    Gamepads.gamepad1().leftStickY(),
-                                    Gamepads.gamepad1().leftStickX(),
+                                    Gamepads.gamepad1().leftStickY().negate(),
+                                    Gamepads.gamepad1().leftStickX().negate(),
+                                    this::getOdometryHeadingPower,
+                                    false
+                            )
+                    )
+
+            ).requires(this);
+            aprilTagTargetDrive=new SequentialGroup(
+                    new InstantCommand(lockOnConrolSystem::reset),
+                    LimelightSubsystem.INSTANCE.aprilTagAim,
+                    new ParallelDeadlineGroup(
+                            new LambdaCommand()
+                                    .setIsDone(()->Gamepads.gamepad1().square().get()),
+                            new PedroDriverControlled(
+                                    Gamepads.gamepad1().leftStickY().negate(),
+                                    Gamepads.gamepad1().leftStickX().negate(),
                                     this::getAprilTagHeadingPower,
                                     false
                             )
@@ -83,9 +106,9 @@ public class DriveSubsystem implements Subsystem {
                             new LambdaCommand()
                                     .setIsDone(()->Gamepads.gamepad1().square().get()),
                             new PedroDriverControlled(
-                                    Gamepads.gamepad1().leftStickY().negate(),
-                                    Gamepads.gamepad1().leftStickX().negate(),
-                                    this::getAprilTagHeadingPower,
+                                    Gamepads.gamepad1().leftStickY(),
+                                    Gamepads.gamepad1().leftStickX(),
+                                    this::getOdometryHeadingPower,
                                     false
                             )
                     )
@@ -95,23 +118,42 @@ public class DriveSubsystem implements Subsystem {
 //                    new WaitUntil(()->Gamepads.gamepad1().y().get())
 //                    )
             ).requires(this);
+            aprilTagTargetDrive=new SequentialGroup(
+                    new InstantCommand(lockOnConrolSystem::reset),
+                    LimelightSubsystem.INSTANCE.aprilTagAim,
+                    new ParallelDeadlineGroup(
+                            new LambdaCommand()
+                                    .setIsDone(()->Gamepads.gamepad1().square().get()),
+                            new PedroDriverControlled(
+                                    Gamepads.gamepad1().leftStickY(),
+                                    Gamepads.gamepad1().leftStickX(),
+                                    this::getAprilTagHeadingPower,
+                                    false
+                            )
+                    )
+
+            ).requires(this);
         }
 
     }
-    public Command normalDrive= new PedroDriverControlled(
-            Gamepads.gamepad1().leftStickY().negate().deadZone(.1),
-            Gamepads.gamepad1().leftStickX().negate().deadZone(.1),
-            Gamepads.gamepad1().rightStickX().negate().deadZone(.1).map((Double input)->{return input/3;}),
-            false
-    ).requires(this).setInterruptible(true).named("Field Centric");
-    public Command robotCentric = new PedroDriverControlled(
-            Gamepads.gamepad1().leftStickY().negate().deadZone(.1),
-            Gamepads.gamepad1().leftStickX().negate().deadZone(.1),
-            Gamepads.gamepad1().rightStickX().negate().deadZone(.1).map((Double input)->{return input/3;}),
-            true
-    ).requires(this).setInterruptible(true).named("Robot Centric");
+
     public Command targetDrive = new SequentialGroup(
             new InstantCommand(lockOnConrolSystem::reset),
+            new ParallelDeadlineGroup(
+                    new LambdaCommand()
+                            .setIsDone(()->Gamepads.gamepad1().square().get()),
+                    new PedroDriverControlled(
+                            Gamepads.gamepad1().leftStickY().negate(),
+                            Gamepads.gamepad1().leftStickX().negate(),
+                            this::getOdometryHeadingPower,
+                            false
+                    )
+            )
+    ).requires(this);
+
+    public Command aprilTagTargetDrive = new SequentialGroup(
+            new InstantCommand(lockOnConrolSystem::reset),
+            LimelightSubsystem.INSTANCE.aprilTagAim,
             new ParallelDeadlineGroup(
                     new LambdaCommand()
                             .setIsDone(()->Gamepads.gamepad1().square().get()),
@@ -124,10 +166,8 @@ public class DriveSubsystem implements Subsystem {
             )
     ).requires(this);
 
-    public double getAprilTagHeadingPower(){
 
-
-
+    public double getOdometryHeadingPower(){
         double requiredAngle = getGoalHeadingRad();
         lockOnConrolSystem.setGoal(new KineticState(requiredAngle));
         double currentAngle = follower().getPose().getHeading();
@@ -158,12 +198,26 @@ public class DriveSubsystem implements Subsystem {
 
         return requiredAngle;
     }
+    public double getAprilTagHeadingPower(){
+        double kStaticToUse = kStatic;
+        if (follower().getPoseTracker().getAngularVelocity()>headingThreshold) kStaticToUse=kKinetic;
+
+        double heading;
+        try {
+            double result = -LimelightSubsystem.INSTANCE.getAprilTagOffset();
+            heading = aprilTagControlSystem.calculate(new KineticState(result))+kStaticToUse*Math.signum(result);
+        } catch (Exception e) {
+            heading = -Gamepads.gamepad1().getGamepad().invoke().right_stick_x;
+        }
+        return  heading;
+    }
 
     @Override
     public void periodic(){
         coefficients.kP=kP;
         coefficients.kD=kD;
         coefficients.kI=kI;
+        aprilTagCoefficients.kP =aKP;
     }
     public void setDefaultCommand(Command command){
         defaultCommand=command;

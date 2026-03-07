@@ -129,6 +129,13 @@ public class DrumSubsystem implements Subsystem {
         numTunes=0;
         avgTime=0;
     }
+
+    public boolean isEmpty(){
+        return red.color().equals(ArtifactColor.NOTHING)
+                &&black.color().equals(ArtifactColor.NOTHING)
+                &&pink.color().equals(ArtifactColor.NOTHING);
+    }
+
     public Command tuneDrum = new LambdaCommand()
             .setStart(()->{timer.reset();timer.startTime();plusOneRev();})
             .setIsDone(()->controlSystem2.isWithinTolerance(kineticStateTolerance))
@@ -147,7 +154,7 @@ public class DrumSubsystem implements Subsystem {
                     .setStart(this::servoEjectPos)
                     .setIsDone(this::servoIsFinished)
     );
-    private double ejectDelay = 0.5;
+    private double ejectDelay = 0;
 
     public Command shootPurple= new IfElse(
             ()->!isValid(false,true),
@@ -158,8 +165,6 @@ public class DrumSubsystem implements Subsystem {
                     new LambdaCommand()
                             .setStart((()->this.setToOuttakeColor(ArtifactColor.PURPLE)))
                             .setIsDone(this::isWithinTolerance),
-
-
                     new Delay(ejectDelay),
                     new InstantCommand(this::setEjectCompartmentToNothing)
 
@@ -169,7 +174,7 @@ public class DrumSubsystem implements Subsystem {
             ()->!isValid(true,false),
             new NullCommand(5,6),
             new SequentialGroup(
-                    servoEject,
+                    //servoEject,
                     new LambdaCommand()
                             .setStart((()->this.setToOuttakeColor(ArtifactColor.GREEN)))
                             .setIsDone(this::isWithinTolerance),
@@ -407,7 +412,7 @@ public class DrumSubsystem implements Subsystem {
         for (Compartment compartment:compartments){
             if (compartment.color().equals(ArtifactColor.NOTHING)){
                 targetCompartments.add(compartment);
-                new TelemetryItem(()->compartment+" is candidate for intake");
+                //new TelemetryItem(()->compartment+" is candidate for intake");
             }
         }
         drumMode = DrumMode.INTAKE;
@@ -694,7 +699,7 @@ public class DrumSubsystem implements Subsystem {
         for (Compartment compartment:compartments){
             if (compartment.color().equals(ArtifactColor.NOTHING)){
                 toRet=true;
-                new TelemetryItem(()->compartment.toString()+" Compartment is valid intake: "+compartment.color().toString());
+                //new TelemetryItem(()->compartment.toString()+" Compartment is valid intake: "+compartment.color().toString());
                 return  true;
             }
         }

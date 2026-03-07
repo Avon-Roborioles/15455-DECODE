@@ -202,9 +202,9 @@ public class HPRedBack extends NextFTCOpMode {
 
                 new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 DrumSubsystem.INSTANCE.shootFirstPattern,
-                //LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
+                LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootSecondPattern,
-                //LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
+                LauncherSubsystem.INSTANCE.runBackToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootThirdPattern,
 
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
@@ -237,9 +237,9 @@ public class HPRedBack extends NextFTCOpMode {
                 new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootFirstPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootSecondPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootThirdPattern,
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.update()),
                 new BetterParallelRaceGroup(
@@ -275,9 +275,9 @@ public class HPRedBack extends NextFTCOpMode {
                 new InstantCommand(DrumSubsystem.INSTANCE::preparePattern),
                 LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootFirstPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootSecondPattern,
-                //LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 DrumSubsystem.INSTANCE.shootThirdPattern,
                 new InstantCommand(LauncherSubsystem.INSTANCE::stop),
                 new FollowPath(toCenter)

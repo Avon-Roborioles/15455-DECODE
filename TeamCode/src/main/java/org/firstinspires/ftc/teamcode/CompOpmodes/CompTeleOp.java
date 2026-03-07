@@ -23,11 +23,13 @@ import org.firstinspires.ftc.teamcode.Subsytems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
+import org.firstinspires.ftc.teamcode.UtilityCommands.ShootCommand;
 
 import dev.nextftc.bindings.BindingManager;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.delays.WaitUntil;
 import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
@@ -155,14 +157,8 @@ public abstract class CompTeleOp extends NextFTCOpMode {
                 ),
                 LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 new InstantCommand(()->startShootTime=System.currentTimeMillis()),
-                new SequentialGroup(
-                        DrumSubsystem.INSTANCE.servoEject,
 
-                        DrumSubsystem.INSTANCE.shootPattern,
-                        new Delay(.5),
-                        new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.schedule())
-                ),
-                new InstantCommand(follower::breakFollowing),
+                ShootCommand.getShootCommand(),
                 new InstantCommand(()->servo.setPosition(.388)),
                 new InstantCommand(()->{totShootTime+=System.currentTimeMillis()-startShootTime;totShots++;})
 
@@ -204,6 +200,7 @@ public abstract class CompTeleOp extends NextFTCOpMode {
                     DrumSubsystem.INSTANCE.resetCompartments();
                 }
         );
+        Gamepads.gamepad1().leftBumper().whenBecomesTrue(DriveSubsystem.INSTANCE.aprilTagTargetDrive);
         new TelemetryItem(()->"Current Layer: " +BindingManager.getLayer());
         new TelemetryItem(()->"G2 Right Bumper"+Gamepads.gamepad2().rightBumper().get());
     }
@@ -213,7 +210,6 @@ public abstract class CompTeleOp extends NextFTCOpMode {
     @Override
     public void onUpdate(){
         BindingManager.update();
-
     }
     @Override
     public void onStop(){

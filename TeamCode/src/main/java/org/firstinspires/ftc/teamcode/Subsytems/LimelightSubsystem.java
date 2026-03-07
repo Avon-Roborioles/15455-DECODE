@@ -4,6 +4,8 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.teamcode.AllianceComponent;
+import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 
@@ -18,7 +20,8 @@ import dev.nextftc.ftc.ActiveOpMode;
 public class LimelightSubsystem implements Subsystem {
     public static LimelightSubsystem INSTANCE = new LimelightSubsystem();
 
-    private final int targetPipeline = 0;
+    private final int redTargetPipeline = 0;
+    private final int blueTargetPipeline = 2;
     private final int obeliskPipeline = 1;
     private int obeliskAprilTag=0;
     private Limelight3A limelight;
@@ -26,7 +29,8 @@ public class LimelightSubsystem implements Subsystem {
     public Command aprilTagAim = new InstantCommand(
             ()->{
                 limelight.start();
-                limelight.pipelineSwitch(targetPipeline);
+                if (AllianceComponent.getColor().equals(AllianceColor.RED)){limelight.pipelineSwitch(redTargetPipeline);}
+                else {limelight.pipelineSwitch(blueTargetPipeline);}
             }
     );
 
@@ -36,13 +40,15 @@ public class LimelightSubsystem implements Subsystem {
             .setUpdate(this::detectObelisk)
             .setIsDone(()->obeliskAprilTag!=0)
             .setStop(this::endDetectObelisk);
+
+
     public void initialize(){
         limelight= ActiveOpMode.hardwareMap().get(Limelight3A.class,"limelight");
-        limelight.pipelineSwitch(targetPipeline);
+        limelight.pipelineSwitch(redTargetPipeline);
         //limelight.start();
     }
     public double getAprilTagOffset ()throws Exception{
-        limelight.pipelineSwitch(targetPipeline);
+        limelight.pipelineSwitch(redTargetPipeline);
         LLResult result = limelight.getLatestResult();
         if (result!=null&&result.isValid()){
             return result.getTx();
@@ -76,7 +82,7 @@ public class LimelightSubsystem implements Subsystem {
     public void endDetectObelisk(Boolean b){
         limelight.stop();
         DrumSubsystem.INSTANCE.setObeliskPattern(obeliskAprilTag);
-        new TelemetryData("ID",()->obeliskAprilTag*1.);
+        //new TelemetryData("ID",()->obeliskAprilTag*1.);
     }
     public String lookAtRamp(){
         limelight.start();
