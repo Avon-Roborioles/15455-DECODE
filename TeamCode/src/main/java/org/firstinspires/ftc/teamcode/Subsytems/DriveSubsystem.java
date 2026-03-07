@@ -76,8 +76,8 @@ public class DriveSubsystem implements Subsystem {
                             new LambdaCommand()
                                     .setIsDone(()->Gamepads.gamepad1().square().get()),
                             new PedroDriverControlled(
-                                    Gamepads.gamepad1().leftStickY().negate(),
-                                    Gamepads.gamepad1().leftStickX().negate(),
+                                    Gamepads.gamepad1().leftStickY(),
+                                    Gamepads.gamepad1().leftStickX(),
                                     this::getOdometryHeadingPower,
                                     false
                             )
@@ -91,8 +91,8 @@ public class DriveSubsystem implements Subsystem {
                             new LambdaCommand()
                                     .setIsDone(()->Gamepads.gamepad1().square().get()),
                             new PedroDriverControlled(
-                                    Gamepads.gamepad1().leftStickY().negate(),
-                                    Gamepads.gamepad1().leftStickX().negate(),
+                                    Gamepads.gamepad1().leftStickY(),
+                                    Gamepads.gamepad1().leftStickX(),
                                     this::getAprilTagHeadingPower,
                                     false
                             )
@@ -106,8 +106,8 @@ public class DriveSubsystem implements Subsystem {
                             new LambdaCommand()
                                     .setIsDone(()->Gamepads.gamepad1().square().get()),
                             new PedroDriverControlled(
-                                    Gamepads.gamepad1().leftStickY(),
-                                    Gamepads.gamepad1().leftStickX(),
+                                    Gamepads.gamepad1().leftStickY().negate(),
+                                    Gamepads.gamepad1().leftStickX().negate(),
                                     this::getOdometryHeadingPower,
                                     false
                             )
@@ -125,8 +125,8 @@ public class DriveSubsystem implements Subsystem {
                             new LambdaCommand()
                                     .setIsDone(()->Gamepads.gamepad1().square().get()),
                             new PedroDriverControlled(
-                                    Gamepads.gamepad1().leftStickY(),
-                                    Gamepads.gamepad1().leftStickX(),
+                                    Gamepads.gamepad1().leftStickY().negate(),
+                                    Gamepads.gamepad1().leftStickX().negate(),
                                     this::getAprilTagHeadingPower,
                                     false
                             )

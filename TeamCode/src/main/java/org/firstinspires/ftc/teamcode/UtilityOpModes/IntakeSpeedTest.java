@@ -7,6 +7,7 @@ import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.AllianceComponent;
+import org.firstinspires.ftc.teamcode.Commands.BetterParallelRaceGroup;
 import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.Subsytems.DriveSubsystem;
@@ -37,7 +38,6 @@ public class IntakeSpeedTest extends NextFTCOpMode {
 
 
     public void onStartButtonPressed(){
-        DrumSubsystem.INSTANCE.setZero(0);
         DrumSubsystem.INSTANCE.resetCompartments();
         Path forward = new Path(
                 new BezierLine(
@@ -46,8 +46,10 @@ public class IntakeSpeedTest extends NextFTCOpMode {
                 )
         );
         PedroComponent.follower().setMaxPower(maxPower);
-        FollowPath forwardComand = new FollowPath(forward);
-        DrumSubsystem.INSTANCE.intakeThreeBalls.schedule();
-        forwardComand.schedule();
+
+        new BetterParallelRaceGroup(
+                DrumSubsystem.INSTANCE.intakeThreeBalls,
+                new FollowPath(forward)
+        ).schedule();
     }
 }

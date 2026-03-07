@@ -143,7 +143,7 @@ public class BlueBackAuto extends NextFTCOpMode {
                 ShootCommand.getShootCommand(),
 
                 new BetterParallelRaceGroup(
-                        DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
+                        DrumSubsystem.INSTANCE.intakeThreeBallsWithPauseNoStop,
                         new SequentialGroup(
                                 backToIntake3Command,
                                 new ParallelGroup(
@@ -160,13 +160,18 @@ public class BlueBackAuto extends NextFTCOpMode {
                 new ParallelGroup(
                         new FollowPath(intake3ToShoot),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                        DrumSubsystem.INSTANCE.servoEject
+                        new SequentialGroup(
+                                new Delay(.5),
+                                DrumSubsystem.INSTANCE.stopIntakeWheels,
+                                DrumSubsystem.INSTANCE.secureBalls,
+                                DrumSubsystem.INSTANCE.servoEject
+                        )
                 ),
                 ShootCommand.getShootCommand(),
 
 
                 new BetterParallelRaceGroup(
-                        DrumSubsystem.INSTANCE.intakeThreeBallsWithPause,
+                        DrumSubsystem.INSTANCE.intakeThreeBallsWithPauseNoStop,
 
                         new SequentialGroup(
                                 new FollowPath(shootToIntakeHPZone),
@@ -186,7 +191,12 @@ public class BlueBackAuto extends NextFTCOpMode {
                 new ParallelGroup(
                         new FollowPath(intakeHpToShoot),
                         LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                        DrumSubsystem.INSTANCE.servoEject
+                        new SequentialGroup(
+                                new Delay(.5),
+                                DrumSubsystem.INSTANCE.stopIntakeWheels,
+                                DrumSubsystem.INSTANCE.secureBalls,
+                                DrumSubsystem.INSTANCE.servoEject
+                        )
                 ),
                 ShootCommand.getShootCommand(),
                 new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
