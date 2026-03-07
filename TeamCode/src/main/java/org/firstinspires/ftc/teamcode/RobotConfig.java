@@ -73,13 +73,14 @@ public class RobotConfig {
         public static double servoIntakePos=.0239;
 
         public static KineticState kineticStateTolerance = new KineticState(200,1000);
+        public static KineticState intakeTolerance = new KineticState(1000,1000);
 
         public static double pinkOuttake = 0;
         public static double pinkIntake = 3972;
         public static double redOuttake = 2603;
         public static double redIntake = 6818;
-        public static double blackOuttake = 5355;
-        public static double blackIntake = 1331;
+        public static double blackOuttake = 5500;
+        public static double blackIntake = 1391;
 
 
 
@@ -128,7 +129,7 @@ public class RobotConfig {
         public static Pose redGoal = new Pose(140,140);
         public static Pose redAimPose = new Pose(134,139);
         public static Pose blueGoal = new Pose (5,144-5);
-        public static Pose blueAimPose = new Pose(7.5,144-7.5);
+        public static Pose blueAimPose = new Pose(2,144-7.5);
         public static Pose redBasePose = new Pose(35.77,33.5,Math.toRadians(180));
         public static Pose blueBasePose = new Pose(102,34,Math.toRadians(180));
         public static Pose redHPZoneReset = new Pose(4.4,10.8,Math.toRadians(-90));

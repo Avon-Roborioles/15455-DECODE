@@ -108,6 +108,8 @@ public abstract class CompTeleOp extends NextFTCOpMode {
 
         Gamepads.gamepad1().leftStickButton().whenBecomesTrue(realRobotCentric);
         Gamepads.gamepad1().leftStickButton().whenBecomesFalse(realNormalDrive);
+        Gamepads.gamepad1().dpadDown().whenBecomesTrue(new InstantCommand(()->PedroComponent.follower().holdPoint(PedroComponent.follower().getPose())).requires(DriveSubsystem.INSTANCE));
+        Gamepads.gamepad1().dpadDown().whenBecomesFalse(realNormalDrive);
         DriveSubsystem.INSTANCE.setDefaultCommand(normalDrive);
 
         Gamepads.gamepad2().dpadDown().inLayer(normalOperationLayer).whenBecomesTrue(

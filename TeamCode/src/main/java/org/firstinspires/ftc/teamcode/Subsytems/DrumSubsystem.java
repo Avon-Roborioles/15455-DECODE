@@ -240,7 +240,7 @@ public class DrumSubsystem implements Subsystem {
     public Command turnToIntake=
             new LambdaCommand()
             .setStart(this::setToIntake)
-            .setIsDone(()->controlSystem2.isWithinTolerance(kineticStateTolerance));
+            .setIsDone(()->controlSystem2.isWithinTolerance(intakeTolerance));
 
     public Command rotateIntakeWheels= new LambdaCommand()
             .setStart(()->intakeMotor.getMotor().setPower(-1));

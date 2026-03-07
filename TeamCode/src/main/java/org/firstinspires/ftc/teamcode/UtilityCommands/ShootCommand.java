@@ -45,7 +45,7 @@ public class ShootCommand {
                         new WaitUntil(DrumSubsystem.INSTANCE::isEmpty),
                         new Delay(waitTime)
                 ),
-                new Delay(.5),
+                new Delay(.25),
                 new InstantCommand(DrumSubsystem.INSTANCE::resetNextPattern),
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.schedule())
         );
