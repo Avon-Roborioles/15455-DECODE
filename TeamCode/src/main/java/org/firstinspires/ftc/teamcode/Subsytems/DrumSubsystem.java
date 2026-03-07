@@ -5,6 +5,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import static org.firstinspires.ftc.teamcode.RobotConfig.DrumConstants.*;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -47,6 +48,9 @@ public class DrumSubsystem implements Subsystem {
     public static final DrumSubsystem INSTANCE = new DrumSubsystem();
     private MotorEx drumMotor= new MotorEx(drumName);
     private MotorEx intakeMotor=new MotorEx(intakeName);
+    
+    public Servo dLight;
+
 
     private int loopsSinceSensorUpdate=0;
 
@@ -349,6 +353,8 @@ public class DrumSubsystem implements Subsystem {
                 .posPid(coefficients)
                 .build();
         controlSystem2.setGoal(new KineticState(getCurPos()));
+        
+        dLight = ActiveOpMode.hardwareMap().get(Servo.class, "driverLight2");
 
         //drum motor
         {
@@ -930,6 +936,15 @@ public class DrumSubsystem implements Subsystem {
     public void setNormal(){
         drumMode=DrumMode.INTAKE;
     }
+    public int compartmentCount(){
+        int res = 0;
+        for(Compartment compartment : compartments){
+            if(compartment.color().equals(ArtifactColor.NOTHING)){
+                res++;
+            }
+        }
+        return res;
+    }
 
     @Override
     public void periodic(){
@@ -998,5 +1013,22 @@ public class DrumSubsystem implements Subsystem {
         coefficients.kD=RobotConfig.DrumConstants.kD;
 
         previousVelocity=drumMotor.getVelocity();
+
+        switch(compartmentCount()){
+            case 2:
+                dLight.setPosition(0.25);
+                break;
+            case 1:
+                dLight.setPosition(0.388);
+                break;
+            case 0:
+                dLight.setPosition(0.5);
+                break;
+            default:
+                dLight.setPosition(1);
+                break;
+        }
+
+
     }
 }
