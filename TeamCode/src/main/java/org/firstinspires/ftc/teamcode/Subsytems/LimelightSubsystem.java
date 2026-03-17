@@ -48,9 +48,10 @@ public class LimelightSubsystem implements Subsystem {
         //limelight.start();
     }
     public double getAprilTagOffset ()throws Exception{
-        limelight.pipelineSwitch(redTargetPipeline);
+
         LLResult result = limelight.getLatestResult();
         if (result!=null&&result.isValid()){
+            TelemetryManager.getInstance().addTempTelemetry("Limelight Error: "+result.getTx());
             return result.getTx();
         }
         if (result==null){
@@ -93,6 +94,7 @@ public class LimelightSubsystem implements Subsystem {
         }
         return result.getClassifierResults().get(0).getClassId()+" Balls/"+result.getClassifierResults().get(0).getClassName();
     }
+
 
 
 }

@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.PedroPathing;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.DriveConstants.*;
+
+import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
@@ -26,6 +28,7 @@ public class Constants {
             .useSecondaryDrivePIDF(true)
             .useSecondaryHeadingPIDF(false)
             .centripetalScaling(centripetalScaling)
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(.05,0,.00001,.6,1))
             ;
 
     public static PathConstraints pathConstraints = constraints;

@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.AllianceComponent;
 import org.firstinspires.ftc.teamcode.Commands.BetterParallelRaceGroup;
 import org.firstinspires.ftc.teamcode.Commands.PatternSetCommand;
 import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
+import org.firstinspires.ftc.teamcode.Enums.ArtifactColor;
+import org.firstinspires.ftc.teamcode.Enums.Pattern;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.PoseTrackerComponent;
 import org.firstinspires.ftc.teamcode.RobotConfig;
@@ -24,6 +26,8 @@ import org.firstinspires.ftc.teamcode.Telemetry.TelemetryComponent;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 import org.firstinspires.ftc.teamcode.UtilityCommands.ShootCommand;
+
+import java.util.ArrayList;
 
 import dev.nextftc.bindings.BindingManager;
 import dev.nextftc.core.commands.Command;
@@ -77,7 +81,6 @@ public abstract class CompTeleOp extends NextFTCOpMode {
         //BindingManager.update();
         Follower follower=PedroComponent.follower();
 
-        Gamepads.gamepad2().dpadUp().inLayer(normalOperationLayer).whenBecomesTrue(new PatternSetCommand());
         Gamepads.gamepad1().rightTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(
                 new SequentialGroup(
                         DrumSubsystem.INSTANCE.intakeThreeBalls,
@@ -112,23 +115,48 @@ public abstract class CompTeleOp extends NextFTCOpMode {
         Gamepads.gamepad1().dpadDown().whenBecomesFalse(realNormalDrive);
         DriveSubsystem.INSTANCE.setDefaultCommand(normalDrive);
 
-        Gamepads.gamepad2().dpadDown().inLayer(normalOperationLayer).whenBecomesTrue(
-                new InstantCommand(
-                        ()->{
-                            Pose baseZone = RobotConfig.FieldConstants.redBasePose;
-                            if (AllianceComponent.getColor().equals(AllianceColor.BLUE)) baseZone = RobotConfig.FieldConstants.blueBasePose;
-                            Path path = new Path(
-                                    new BezierLine(
-                                            PedroComponent.follower().getPose(),
-                                            baseZone
-                                    )
-                            );
-                            path.setLinearHeadingInterpolation(PedroComponent.follower().getHeading(), baseZone.getHeading());
-                            new FollowPath(path).schedule();
-                        }
+//        Gamepads.gamepad2().dpadDown().inLayer(normalOperationLayer).whenBecomesTrue(
+//                new InstantCommand(
+//                        ()->{
+//                            Pose baseZone = RobotConfig.FieldConstants.redBasePose;
+//                            if (AllianceComponent.getColor().equals(AllianceColor.BLUE)) baseZone = RobotConfig.FieldConstants.blueBasePose;
+//                            Path path = new Path(
+//                                    new BezierLine(
+//                                            PedroComponent.follower().getPose(),
+//                                            baseZone
+//                                    )
+//                            );
+//                            path.setLinearHeadingInterpolation(PedroComponent.follower().getHeading(), baseZone.getHeading());
+//                            new FollowPath(path).schedule();
+//                        }
+//                )
+//        );
+
+
+        Gamepads.gamepad2().dpadLeft().whenBecomesTrue(()->DrumSubsystem.INSTANCE.setNextPattern(
+                        new Pattern.PatternBuilder().
+                                first(ArtifactColor.GREEN)
+                                .second(ArtifactColor.PURPLE)
+                                .third(ArtifactColor.PURPLE)
+                                .build()
                 )
         );
-
+        Gamepads.gamepad2().dpadUp().whenBecomesTrue(()->DrumSubsystem.INSTANCE.setNextPattern(
+                        new Pattern.PatternBuilder().
+                                first(ArtifactColor.PURPLE)
+                                .second(ArtifactColor.GREEN)
+                                .third(ArtifactColor.PURPLE)
+                                .build()
+                )
+        );
+        Gamepads.gamepad2().dpadRight().whenBecomesTrue(()->DrumSubsystem.INSTANCE.setNextPattern(
+                        new Pattern.PatternBuilder().
+                                first(ArtifactColor.PURPLE)
+                                .second(ArtifactColor.PURPLE)
+                                .third(ArtifactColor.GREEN)
+                                .build()
+                )
+        );
         Command reset = new InstantCommand(()->{
                 if (AllianceComponent.getColor().equals(AllianceColor.BLUE)){
                     PedroComponent.follower().setPose(RobotConfig.FieldConstants.blueHPZoneReset);
@@ -136,14 +164,16 @@ public abstract class CompTeleOp extends NextFTCOpMode {
                     PedroComponent.follower().setPose(RobotConfig.FieldConstants.redHPZoneReset);
                 }
         });
+        Command switchToHighVoltage= new InstantCommand(LauncherSubsystem.INSTANCE::setHighVoltage);
+        Command switchToLowVoltage= new InstantCommand(LauncherSubsystem.INSTANCE::setLowVoltage);
+        Gamepads.gamepad2().leftTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(switchToHighVoltage);
+        Gamepads.gamepad2().rightTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(switchToLowVoltage);
         Gamepads.gamepad1().dpadUp().whenBecomesTrue(reset);
         new TelemetryItem(()->"Pose: "+PedroComponent.follower().getPose().toString());
         new TelemetryData("AvgShootTime",()->{if (totShots==0)return 0.0;return totShootTime/totShots;});
-        Command aprilTagTracking = new SequentialGroup(
-
+        Command odometryTracking = new SequentialGroup(
                 new ParallelGroup(
                         new SequentialGroup(
-
                                 new Delay(.015),
                                 DriveSubsystem.INSTANCE.targetDrive,
                                 new InstantCommand(()->PedroComponent.follower().holdPoint(PedroComponent.follower().getPose()))
@@ -155,17 +185,39 @@ public abstract class CompTeleOp extends NextFTCOpMode {
                                         .setUpdate(LauncherSubsystem.INSTANCE::calculateVelocity)
                                 //,new InstantCommand(()->new TelemetryItem(()->"Finished Running to speed"))
                         )
-
                 ),
                 LauncherSubsystem.INSTANCE.runToCalculatedPos,
                 new InstantCommand(()->startShootTime=System.currentTimeMillis()),
-
                 ShootCommand.getShootCommand(),
                 new InstantCommand(()->servo.setPosition(.388)),
                 new InstantCommand(()->{totShootTime+=System.currentTimeMillis()-startShootTime;totShots++;})
 
         ).requires(DriveSubsystem.INSTANCE).setInterruptible(true).named("April Tag Alignment");
-        Gamepads.gamepad1().leftTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(aprilTagTracking);
+        Gamepads.gamepad1().leftTrigger().atLeast(.7).inLayer(normalOperationLayer).whenBecomesTrue(odometryTracking);
+
+        Gamepads.gamepad1().leftBumper().whenBecomesTrue(
+                new SequentialGroup(
+                        new ParallelGroup(
+                                new SequentialGroup(
+                                        new Delay(.015),
+                                        DriveSubsystem.INSTANCE.aprilTagTargetDrive,
+                                        new InstantCommand(()->PedroComponent.follower().holdPoint(PedroComponent.follower().getPose()))
+                                        //,new InstantCommand(()->new TelemetryItem(()->"Finished Aiming"))
+                                ),
+                                new SequentialGroup(
+                                        new InstantCommand(()->servo.setPosition(.63)),
+                                        new LambdaCommand()
+                                                .setUpdate(LauncherSubsystem.INSTANCE::calculateVelocity)
+                                        //,new InstantCommand(()->new TelemetryItem(()->"Finished Running to speed"))
+                                )
+                        ),
+                        LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                        new InstantCommand(()->startShootTime=System.currentTimeMillis()),
+                        ShootCommand.getShootCommand(),
+                        new InstantCommand(()->servo.setPosition(.388)),
+                        new InstantCommand(()->{totShootTime+=System.currentTimeMillis()-startShootTime;totShots++;})
+                ).requires(DriveSubsystem.INSTANCE).setInterruptible(true).named("April Tag Alignment")
+        );
 
         BindingManager.setLayer(RobotConfig.TeleOpConstants.normalOperationLayer);
 
@@ -202,7 +254,6 @@ public abstract class CompTeleOp extends NextFTCOpMode {
                     DrumSubsystem.INSTANCE.resetCompartments();
                 }
         );
-        Gamepads.gamepad1().leftBumper().whenBecomesTrue(DriveSubsystem.INSTANCE.aprilTagTargetDrive);
         new TelemetryItem(()->"Current Layer: " +BindingManager.getLayer());
         new TelemetryItem(()->"G2 Right Bumper"+Gamepads.gamepad2().rightBumper().get());
     }

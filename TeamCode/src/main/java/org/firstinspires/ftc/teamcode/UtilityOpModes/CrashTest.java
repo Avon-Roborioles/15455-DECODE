@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.UtilityOpModes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
@@ -15,6 +16,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 import dev.nextftc.ftc.components.LoopTimeComponent;
 
 @TeleOp
+@Disabled
 public class CrashTest extends NextFTCOpMode {
     public CrashTest(){
         addComponents(

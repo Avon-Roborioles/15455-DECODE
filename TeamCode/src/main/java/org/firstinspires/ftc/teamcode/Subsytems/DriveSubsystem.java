@@ -40,7 +40,7 @@ public class DriveSubsystem implements Subsystem {
     public static double kI=0;
     public static double kD = 0;
 
-    public static double aKP = 1;
+    public static double aKP = .02;
 
     public static double kStatic = .12;
     public static double kKinetic = .07;
@@ -200,12 +200,14 @@ public class DriveSubsystem implements Subsystem {
     }
     public double getAprilTagHeadingPower(){
         double kStaticToUse = kStatic;
-        if (follower().getPoseTracker().getAngularVelocity()>headingThreshold) kStaticToUse=kKinetic;
+        //if (follower().getPoseTracker().getAngularVelocity()>headingThreshold) kStaticToUse=kKinetic;
 
         double heading;
         try {
-            double result = -LimelightSubsystem.INSTANCE.getAprilTagOffset();
-            heading = aprilTagControlSystem.calculate(new KineticState(result))+kStaticToUse*Math.signum(result);
+            double result = LimelightSubsystem.INSTANCE.getAprilTagOffset();
+            double cSystem = aprilTagControlSystem.calculate(new KineticState(result));
+            heading = cSystem+kStaticToUse*Math.signum(-result);
+
         } catch (Exception e) {
             heading = -Gamepads.gamepad1().getGamepad().invoke().right_stick_x;
         }

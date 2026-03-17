@@ -42,12 +42,19 @@ public class ShootCommand {
                 DrumSubsystem.INSTANCE.shootThirdPattern,
                 new BetterParallelRaceGroup(
                         new WaitUntil(LauncherSubsystem.INSTANCE::hasShot),
-                        new WaitUntil(DrumSubsystem.INSTANCE::isEmpty),
+                        new SequentialGroup(
+                                new Delay(1),
+                                new WaitUntil(DrumSubsystem.INSTANCE::isEmpty)
+                        ),
+
                         new Delay(waitTime)
                 ),
                 new Delay(.25),
                 new InstantCommand(DrumSubsystem.INSTANCE::resetNextPattern),
                 new InstantCommand(()->LauncherSubsystem.INSTANCE.stop.schedule())
         );
+    }
+    public static Command getHighVoltageShootCommand(){
+        return getShootCommand();
     }
 }

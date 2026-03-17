@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.UtilityOpModes;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import dev.nextftc.control.ControlSystem;
@@ -8,6 +9,7 @@ import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
 
 @Configurable
+@Disabled
 public class ShooterAngleSub implements Subsystem {
     public static final ShooterAngleSub INSTANCE = new ShooterAngleSub();
     private MotorEx motorEx;

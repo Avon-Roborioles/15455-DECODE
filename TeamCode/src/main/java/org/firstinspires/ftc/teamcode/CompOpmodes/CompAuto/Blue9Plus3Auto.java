@@ -33,8 +33,8 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 import dev.nextftc.ftc.components.LoopTimeComponent;
 
 @Autonomous
-public class NinePlus3BlueHPAuto extends NextFTCOpMode {
-    public NinePlus3BlueHPAuto(){
+public class Blue9Plus3Auto extends NextFTCOpMode {
+    public Blue9Plus3Auto(){
         addComponents(
                 new SubsystemComponent(LauncherSubsystem.INSTANCE, DriveSubsystem.INSTANCE, DrumSubsystem.INSTANCE,LimelightSubsystem.INSTANCE),
                 new TelemetryComponent(),
@@ -189,14 +189,43 @@ public class NinePlus3BlueHPAuto extends NextFTCOpMode {
                         new SequentialGroup(
                                 new BetterParallelRaceGroup(
                                         LimelightSubsystem.INSTANCE.detectObelisk,
-                                        new Delay(2)
+                                        new Delay(1)
                                 ),
                                 startTurnToShootCommand
                         ),
-                        LauncherSubsystem.INSTANCE.runToCalculatedPos
+                        LauncherSubsystem.INSTANCE.getPoseCalculateVelocity(blueShootPose)
                 ),
-                ShootCommand.getShootCommand(),
+                //new Delay(.3),
+                ShootCommand.getHighVoltageShootCommand(),
+                new BetterParallelRaceGroup(
+                        new BetterParallelRaceGroup(
+                                new SequentialGroup(
+                                        new FollowPath(path1),
+                                        new InstantCommand(()->PedroComponent.follower().setMaxPower(.75)),
+                                        new FollowPath(path2),
+                                        new FollowPath(path3),
+                                        new FollowPath(path4),
+                                        new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
+                                        new FollowPath(path5),
+                                        new FollowPath(path6)
+                                ),
+                                DrumSubsystem.INSTANCE.intakeThreeBallsWithPauseNoStop
+                        ),
+                        new Delay(5)
+                ),
 
+                new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
+                new ParallelGroup(
+                        new FollowPath(intakeHPToShoot),
+                        LauncherSubsystem.INSTANCE.getPoseCalculateVelocity(blueShootPose),
+                        new SequentialGroup(
+                                new Delay(.5),
+                                DrumSubsystem.INSTANCE.stopIntakeWheels,
+                                DrumSubsystem.INSTANCE.secureBalls,
+                                DrumSubsystem.INSTANCE.servoEject
+                        )
+                ),
+                ShootCommand.getHighVoltageShootCommand(),
                 new BetterParallelRaceGroup(
                         DrumSubsystem.INSTANCE.intakeThreeBallsWithPauseNoStop,
                         new SequentialGroup(
@@ -211,10 +240,12 @@ public class NinePlus3BlueHPAuto extends NextFTCOpMode {
                                 new Delay(3)
                         )
                 ),
+
+
                 new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
                 new ParallelGroup(
                         new FollowPath(intake3ToShoot),
-                        LauncherSubsystem.INSTANCE.runToCalculatedPos,
+                        LauncherSubsystem.INSTANCE.getPoseCalculateVelocity(blueShootPose),
                         new SequentialGroup(
                                 new Delay(.5),
                                 DrumSubsystem.INSTANCE.stopIntakeWheels,
@@ -222,69 +253,35 @@ public class NinePlus3BlueHPAuto extends NextFTCOpMode {
                                 DrumSubsystem.INSTANCE.servoEject
                         )
                 ),
-                ShootCommand.getShootCommand(),
-
-
+                ShootCommand.getHighVoltageShootCommand(),
+                new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
                 new BetterParallelRaceGroup(
                         DrumSubsystem.INSTANCE.intakeThreeBallsWithPauseNoStop,
-
                         new SequentialGroup(
                                 new FollowPath(shootToIntakeHPZone),
-                                new InstantCommand(()->PedroComponent.follower().setMaxPower(.5)),
                                 new ParallelGroup(
                                         new SequentialGroup(
-                                                new Delay(1.5),
+                                                new Delay(3),
                                                 new InstantCommand(()->PedroComponent.follower().setMaxPower(.5))
                                         ),
                                         new FollowPath(intakeHP)
                                 ),
                                 new Delay(3)
-
                         )
                 ),
-                new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
-                new ParallelGroup(
-                        new FollowPath(intake2ToShoot),
-                        LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                        new SequentialGroup(
-                                new Delay(.5),
-                                DrumSubsystem.INSTANCE.stopIntakeWheels,
-                                DrumSubsystem.INSTANCE.secureBalls,
-                                DrumSubsystem.INSTANCE.servoEject
-                        )
-                ),
-                ShootCommand.getShootCommand(),
-                new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
-                new BetterParallelRaceGroup(
-
-                        new BetterParallelRaceGroup(
-                                new SequentialGroup(
-                                        new FollowPath(path1),
-                                        new InstantCommand(()->PedroComponent.follower().setMaxPower(.75)),
-                                        new FollowPath(path2),
-                                        new FollowPath(path3),
-                                        new FollowPath(path4),
-                                        new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
-                                        new FollowPath(path5),
-                                        new FollowPath(path6)
-                                ),
-                                DrumSubsystem.INSTANCE.intakeThreeBallsWithPauseNoStop
-                        ),
-                        new Delay(7)
-                ),
-                new InstantCommand(()->PedroComponent.follower().setMaxPower(1)),
-                new ParallelGroup(
-                        new FollowPath(intakeHPToShoot),
-                        LauncherSubsystem.INSTANCE.runToCalculatedPos,
-                        new SequentialGroup(
-                                new Delay(.5),
-                                DrumSubsystem.INSTANCE.stopIntakeWheels,
-                                DrumSubsystem.INSTANCE.secureBalls,
-                                DrumSubsystem.INSTANCE.servoEject
-                        )
-                ),
-                ShootCommand.getShootCommand(),
-                new FollowPath(toCenter)
+                new InstantCommand(()->PedroComponent.follower().setMaxPower(1))
+//                new ParallelGroup(
+//                        new FollowPath(intakeHPToShoot),
+//                        LauncherSubsystem.INSTANCE.getPoseCalculateVelocity(blueShootPose),
+//                        new SequentialGroup(
+//                                new Delay(.5),
+//                                DrumSubsystem.INSTANCE.stopIntakeWheels,
+//                                DrumSubsystem.INSTANCE.secureBalls,
+//                                DrumSubsystem.INSTANCE.servoEject
+//                        )
+//                ),
+//                ShootCommand.getHighVoltageShootCommand(),
+//                new FollowPath(toCenter)
 
         );
         autoRoutine.schedule();

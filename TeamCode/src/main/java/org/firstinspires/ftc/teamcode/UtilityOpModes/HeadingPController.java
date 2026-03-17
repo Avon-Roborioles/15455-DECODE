@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.UtilityOpModes;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
@@ -28,6 +29,7 @@ import static dev.nextftc.extensions.pedro.PedroComponent.follower;
 
 @TeleOp(group = "Test")
 @Configurable
+@Disabled
 public class HeadingPController extends NextFTCOpMode {
     public static double kP = -.01;
     public static double kI=.000001;

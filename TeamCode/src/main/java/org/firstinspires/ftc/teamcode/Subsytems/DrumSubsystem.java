@@ -939,7 +939,7 @@ public class DrumSubsystem implements Subsystem {
     public int compartmentCount(){
         int res = 0;
         for(Compartment compartment : compartments){
-            if(compartment.color().equals(ArtifactColor.NOTHING)){
+            if(!compartment.color().equals(ArtifactColor.NOTHING)){
                 res++;
             }
         }
@@ -949,6 +949,7 @@ public class DrumSubsystem implements Subsystem {
     @Override
     public void periodic(){
         //artifactSensorEnabled=true;
+        if (!ActiveOpMode.opModeIsActive()) return;
         if (Gamepads.gamepad1().rightStickButton().get()){
             drumMotor.setPower(0);
         } else {
@@ -1015,18 +1016,19 @@ public class DrumSubsystem implements Subsystem {
         previousVelocity=drumMotor.getVelocity();
 
         switch(compartmentCount()){
-            case 2:
-                dLight.setPosition(0.25);
+            case 0:
+                dLight.setPosition(0);
                 break;
             case 1:
+                dLight.setPosition(0.3);
+                break;
+            case 2:
                 dLight.setPosition(0.388);
                 break;
-            case 0:
-                dLight.setPosition(0.5);
-                break;
-            default:
+            case 3:
                 dLight.setPosition(1);
                 break;
+
         }
 
 

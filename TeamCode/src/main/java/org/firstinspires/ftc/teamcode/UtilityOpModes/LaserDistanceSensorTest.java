@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.UtilityOpModes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp
+@Disabled
 public class LaserDistanceSensorTest extends OpMode {
 
     public DigitalChannel digitalChannel;

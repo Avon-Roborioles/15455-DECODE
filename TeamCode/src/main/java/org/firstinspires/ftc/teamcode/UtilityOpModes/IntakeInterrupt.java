@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.UtilityOpModes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.AllianceComponent;
@@ -16,6 +17,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.LoopTimeComponent;
 
 @TeleOp
+@Disabled
 public class IntakeInterrupt extends NextFTCOpMode {
     public IntakeInterrupt(){
         addComponents(

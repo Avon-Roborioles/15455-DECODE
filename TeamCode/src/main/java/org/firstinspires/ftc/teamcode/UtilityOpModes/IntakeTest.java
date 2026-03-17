@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.UtilityOpModes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Subsytems.DrumSubsystem;
@@ -9,6 +10,7 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 
 @TeleOp
+@Disabled
 public class IntakeTest extends NextFTCOpMode {
     public IntakeTest(){
         addComponents(

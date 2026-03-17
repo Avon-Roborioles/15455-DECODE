@@ -21,6 +21,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 
 @Autonomous
 @Configurable
+
 public class IntakeSpeedTest extends NextFTCOpMode {
 
     public static double maxPower=.283;

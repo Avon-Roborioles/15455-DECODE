@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.UtilityOpModes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Subsytems.LimelightSubsystem;
@@ -11,6 +12,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.LoopTimeComponent;
 
 @TeleOp
+@Disabled
 public class RampDetection extends NextFTCOpMode {
 
     public RampDetection(){

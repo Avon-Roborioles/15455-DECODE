@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.AllianceComponent;
 import org.firstinspires.ftc.teamcode.Enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryData;
+import org.firstinspires.ftc.teamcode.Telemetry.TelemetryItem;
 import org.firstinspires.ftc.teamcode.Telemetry.TelemetryManager;
 
 import dev.nextftc.control.ControlSystem;
@@ -58,6 +59,7 @@ public class LauncherSubsystem implements Subsystem {
 
     public static double shootRPM = 1600;
     public boolean hasBeenUpToSpeed = false;
+    private boolean isHighVoltage = true;
 
 
     PIDCoefficients coefficients=new PIDCoefficients(.02);
@@ -87,6 +89,10 @@ public class LauncherSubsystem implements Subsystem {
             .setUpdate(this::calculateVelocity)
             .setIsDone(()-> Math.abs(rpm-cHubMotor.getVelocity())<getRunBackToSpeedThreshold())
             .setStop((Boolean b)->{if (b){rpm=0;}});
+    public Command runBackToCalcPosHighVolt = new LambdaCommand()
+            .setUpdate(this::calculateVelocity)
+            .setIsDone(()-> Math.abs(rpm-cHubMotor.getVelocity())<getHighVoltRunBackToSpeedThreshold())
+            .setStop((Boolean b)->{if (b){rpm=0;}});
     public Command stop= new LambdaCommand()
             .setUpdate(this::stop)
             .setIsDone(()->true);
@@ -104,10 +110,17 @@ public class LauncherSubsystem implements Subsystem {
 
     public static double rpmDividerThreshold = -1300;
     public double getRunBackToSpeedThreshold(){
+        if (isHighVoltage) return getHighVoltRunBackToSpeedThreshold();
         if (Math.abs(rpm)>Math.abs(rpmDividerThreshold))
             return 100;
 
         return 170;
+    }
+    public double getHighVoltRunBackToSpeedThreshold(){
+        if (Math.abs(rpm)>Math.abs(rpmDividerThreshold))
+            return 150;
+
+        return 300;
     }
 
     @Override
@@ -134,6 +147,18 @@ public class LauncherSubsystem implements Subsystem {
 
     }
 
+    public Command getPoseCalculateVelocity(Pose pose){
+        return new LambdaCommand()
+                .setUpdate(()->calculateVelocity(pose))
+                .setIsDone(()-> Math.abs(rpm-cHubMotor.getVelocity())<getRunBackToSpeedThreshold())
+                .setStop((Boolean b)->{if (b){rpm=0;}});
+    }
+    public void setHighVoltage(){
+        isHighVoltage=true;
+    }
+    public void setLowVoltage(){
+        isHighVoltage=false;
+    }
     public boolean hasShot(){
         return Math.abs(rpm-cHubMotor.getVelocity())>hasShotThreshold;
     }
@@ -146,18 +171,17 @@ public class LauncherSubsystem implements Subsystem {
         rpm-=50;
 
     }
-    public void calculateVelocity(){
-        Pose pedroPose = PedroComponent.follower().getPose();
 
+    public void calculateVelocity(Pose pose){
         Pose goal = RobotConfig.FieldConstants.redGoal;
         if (AllianceComponent.getColor().equals(AllianceColor.BLUE)){
             goal=RobotConfig.FieldConstants.blueGoal;
         }
         double distanceInch = goal.distanceFrom(
-                pedroPose.copy().linearCombination(
+                pose.copy().linearCombination(
                         new Pose(
-                                Math.cos(pedroPose.getHeading()),
-                                Math.sin(pedroPose.getHeading())
+                                Math.cos(pose.getHeading()),
+                                Math.sin(pose.getHeading())
                         ),
                         1,
                         -7
@@ -167,13 +191,20 @@ public class LauncherSubsystem implements Subsystem {
         distanceCm=distance;
         double radians = Math.toRadians(37);
         //rpm = distance*Math.sqrt(gravity/ ( 2*Math.pow(Math.cos(radians),2)*(87-distance*Math.tan(radians)) ) );
-         // 500
+        // 500
 //        rpm = shootRPM;
         rpm =-1.64914*Math.pow(10,-7)*Math.pow(distance,4)+0.000239159*Math.pow(distance,3)-0.124849*Math.pow(distance,2)+26.05336*Math.pow(distance,1)-3148.56015;
         //rpm =-.0168109*Math.pow(distance,2)+6.93*Math.pow(distance,1)-1750.58;
         //rpm = -1.39609*distance-882.96292;
         //rpm =-0.00395575*Math.pow(distance,2)+0.478954*Math.pow(distance,1)-1056.5860;
         normalControlSystem.setGoal(new KineticState(0,rpm));
+    }
+
+
+    public void calculateVelocity(){
+        Pose pedroPose = PedroComponent.follower().getPose();
+        calculateVelocity(pedroPose);
+
 
     }
     public void stop(){
@@ -210,16 +241,21 @@ public class LauncherSubsystem implements Subsystem {
         }
         //deltaCharge+=(System.currentTimeMillis()-lastTickTime)/1000.* (cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS));
         lastTickTime=System.currentTimeMillis();
-        if (false&&hasBeenUpToSpeed&&hasShot()){
-            double current = cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS)+eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS);
+        if (hasBeenUpToSpeed&&hasShot()){
+            double cHubCurrent = cHubMotor.getMotor().getCurrent(CurrentUnit.AMPS);
+            double eHubCurrent = eHubMotor.getMotor().getCurrent(CurrentUnit.AMPS);
+            double current = cHubCurrent+eHubCurrent;
             double voltage = cHubMotor.getMotor().getPower()*ActiveOpMode.hardwareMap().voltageSensor.iterator().next().getVoltage();
             double targetAngSpeed = ticksToAngVel(rpm);
             double curAngSpeed = ticksToAngVel(cHubMotor.getVelocity());
+            new TelemetryItem(()->"========================");
+            new TelemetryData("E Hub Current", ()->eHubCurrent);
+            new TelemetryData("C Hub Current",()->cHubCurrent);
             new TelemetryData("Total Current",()->current);
             new TelemetryData("Voltage",()->voltage);
             new TelemetryData("Target Ang Vel",()->targetAngSpeed);
             new TelemetryData("Current Ang Vel",()->curAngSpeed);
-            new TelemetryData("Estimated Back Time (s)",()->2*current*voltage/(1.2*Math.pow(10,-5)*(targetAngSpeed*targetAngSpeed-curAngSpeed*curAngSpeed)));
+            new TelemetryData("Estimated Back Time (s)",()->1/(2*current*voltage/(1.2*Math.pow(10,-5)*(targetAngSpeed*targetAngSpeed-curAngSpeed*curAngSpeed))));
         }
         if (isUpToSpeed()){
             servo.setPosition(.5);

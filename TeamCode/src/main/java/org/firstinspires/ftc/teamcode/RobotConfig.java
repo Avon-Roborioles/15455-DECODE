@@ -60,16 +60,16 @@ public class RobotConfig {
         public static double stallCurrentThreshold = 8.5;//amps
         public static double unJamPower = 1;
         public static double unJamTimeMs = 20;
-        public static final double ticksPerRev = 8192;
+        public static double ticksPerRev = 8192;//he he
         public static final double motorTPR = 1211.6;
         public static double kP =.0009;
         public static double kI=0.0000000000008;
-        public static double kD=.000062;
+        public static double kD=.000062;//aidan was here
         public static double staticKS = .0;
         public static double kineticKS = 0;
 
         public static String servoName ="ejectServo";
-        public static double servoEjectPos = .2994;
+        public static double servoEjectPos = .2794;
         public static double servoIntakePos=.0239;
 
         public static KineticState kineticStateTolerance = new KineticState(200,1000);
@@ -126,13 +126,13 @@ public class RobotConfig {
     @Configurable
     public static class FieldConstants {
         public static Pose center= new Pose(72,72, Math.toRadians(90));
-        public static Pose redGoal = new Pose(140,140);
-        public static Pose redAimPose = new Pose(134,139);
+        public static Pose redGoal = new Pose(137,137);
+        public static Pose redAimPose = new Pose(138,139);
         public static Pose blueGoal = new Pose (5,144-5);
-        public static Pose blueAimPose = new Pose(2,144-7.5);
+        public static Pose blueAimPose = new Pose(8,144-7.5);
         public static Pose redBasePose = new Pose(35.77,33.5,Math.toRadians(180));
         public static Pose blueBasePose = new Pose(102,34,Math.toRadians(180));
-        public static Pose redHPZoneReset = new Pose(4.4,10.8,Math.toRadians(-90));
+        public static Pose redHPZoneReset = new Pose(5.4,9.5,Math.toRadians(-90));
         public static Pose blueHPZoneReset = new Pose(132,8.74,Math.toRadians(-90));
 
     }
@@ -142,17 +142,17 @@ public class RobotConfig {
     @Configurable
     public static class PoseConstants {
         public static Pose redBackStart =          new Pose(77,9, Math.toRadians(-90));
-        public static Pose redBackShootPose =      new Pose(87,19,Math.toRadians(250.5));
-        public static Pose redBackSpike3Start =    new Pose(95,33,Math.toRadians(0));
-        public static Pose redBackSpike3End =      new Pose(130,33,Math.toRadians(0));
+        public static Pose redBackShootPose =      new Pose(87,19,Math.toRadians(250));
+        public static Pose redBackSpike3Start =    new Pose(95,35,Math.toRadians(0));
+        public static Pose redBackSpike3End =      new Pose(130,35,Math.toRadians(0));
         public static Pose redBackSpike2Start =    new Pose(95,57,Math.toRadians(0));
         public static Pose redBackSpike2End =      new Pose(130,57, redBackSpike2Start.getHeading());
         public static Pose redHPZoneIntakePose1 = new Pose(128.5,15.97,-0.3490658504);
         public static Pose redHPZoneIntakePose2 = new Pose(128.5,12,-0.2690658504);
-        public static Pose redHPZoneIntakePose3 = new Pose(128,7,Math.toRadians(0));
+        public static Pose redHPZoneIntakePose3 = new Pose(128,9,Math.toRadians(0));
         public static Pose redHPZoneIntakePose4 = new Pose(126,12,0.5340707511);
-        public static Pose redHPZoneIntakePose5 = new Pose(121,7,Math.toRadians(0));
-        public static Pose redHPZoneIntakePose6 = new Pose(131,7.5,Math.toRadians(0));
+        public static Pose redHPZoneIntakePose5 = new Pose(121,9,Math.toRadians(0));
+        public static Pose redHPZoneIntakePose6 = new Pose(131,9.5,Math.toRadians(0));
         public static Pose redHPZoneIntakePose7 = new Pose();
 
         public static Pose redLeavePose =          new Pose(83,40,Math.toRadians(-90));
@@ -171,7 +171,7 @@ public class RobotConfig {
         public static Pose blueLeavePose =         new Pose(144-83,40,Math.toRadians(-90));
         public static Pose blueHPZoneIntakePose1 = new Pose(13.5,18.97,headingInverter(-0.3490658504));
         public static Pose blueHPZoneIntakePose2 = new Pose(13.5,12,headingInverter(-0.2690658504));
-        public static Pose blueHPZoneIntakePose3 = new Pose(15,11,Math.toRadians(180));
+        public static Pose blueHPZoneIntakePose3 = new Pose(14,11,Math.toRadians(180));
         public static Pose blueHPZoneIntakePose4 = new Pose(17,12,headingInverter(0.5340707511));
         public static Pose blueHPZoneIntakePose5 = new Pose(20,12,Math.toRadians(180));
         public static Pose blueHPZoneIntakePose6 = new Pose(11,9,Math.toRadians(180));

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.UtilityOpModes;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -23,6 +24,7 @@ import static dev.nextftc.extensions.pedro.PedroComponent.follower;
 
 
 @TeleOp(group = "Test")
+@Disabled
 public class ShooterAngle extends NextFTCOpMode {
     ShooterAngleSub shooterAngle = ShooterAngleSub.INSTANCE;
     private Limelight3A limelight3A;
