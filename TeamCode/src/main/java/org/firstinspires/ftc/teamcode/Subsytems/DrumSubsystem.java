@@ -936,6 +936,7 @@ public class DrumSubsystem implements Subsystem {
     public void setNormal(){
         drumMode=DrumMode.INTAKE;
     }
+    
     public int compartmentCount(){
         int res = 0;
         for(Compartment compartment : compartments){
